@@ -1,0 +1,241 @@
+import React, { useState, useEffect } from 'react';
+import { Search, Truck, CheckCircle2, Clock, MapPin, Package, ArrowRight, RotateCcw } from 'lucide-react';
+import { api } from '../services/api.js';
+import { Order, ShipmentEvent } from '../types/store.js';
+
+interface TrackOrderPageProps {
+  initialOrderNumber?: string;
+  onNavigate: (view: string, param?: string) => void;
+}
+
+export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({ initialOrderNumber, onNavigate }) => {
+  const [query, setQuery] = useState(initialOrderNumber || 'APNA-2026-7842');
+  const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchOrderTracking = async (q: string) => {
+    if (!q.trim()) return;
+    setLoading(true);
+    setError(null);
+    try {
+      // Try search by order ID
+      const res = await api.getOrder(q.trim());
+      setOrder(res);
+    } catch (e: any) {
+      // Try search by user phone or orders list
+      try {
+        const orders = await api.getOrders();
+        const found = orders.find(
+          o => o.orderNumber.toLowerCase() === q.trim().toLowerCase() ||
+               o.shipment?.awbCode === q.trim()
+        );
+        if (found) {
+          setOrder(found);
+        } else {
+          setError('Order or AWB number not found. Please check your order details.');
+        }
+      } catch (err) {
+        setError('Could not locate tracking information for this order.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (initialOrderNumber) {
+      fetchOrderTracking(initialOrderNumber);
+    } else {
+      fetchOrderTracking('APNA-2026-7842');
+    }
+  }, [initialOrderNumber]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    fetchOrderTracking(query);
+  };
+
+  // Status mapping
+  const statusSteps = [
+    { key: 'order_placed', label: 'Order Placed' },
+    { key: 'confirmed', label: 'Confirmed' },
+    { key: 'packed', label: 'Packed' },
+    { key: 'shipped', label: 'In Transit' },
+    { key: 'out_for_delivery', label: 'Out for Delivery' },
+    { key: 'delivered', label: 'Delivered' },
+  ];
+
+  const getStepIndex = (status: Order['orderStatus']) => {
+    if (status === 'order_placed') return 0;
+    if (status === 'confirmed' || status === 'processing') return 1;
+    if (status === 'packed') return 2;
+    if (status === 'shipped') return 3;
+    if (status === 'out_for_delivery') return 4;
+    if (status === 'delivered') return 5;
+    return 1;
+  };
+
+  const currentStepIdx = order ? getStepIndex(order.orderStatus) : 0;
+
+  return (
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+      {/* Search Bar Header */}
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-zinc-200 shadow-xs text-center space-y-4">
+        <div className="inline-flex p-3 rounded-2xl bg-orange-50 text-orange-600 mb-1">
+          <Truck className="w-8 h-8" />
+        </div>
+
+        <h1 className="text-2xl sm:text-3xl font-black text-zinc-950 font-display">
+          Track Your Apna Shoes Shipment
+        </h1>
+        <p className="text-xs text-zinc-500 max-w-md mx-auto">
+          Enter your Apna Shoes Order Number (e.g. APNA-2026-7842) or Shiprocket AWB code for real-time courier updates.
+        </p>
+
+        <form onSubmit={handleSearch} className="max-w-md mx-auto flex gap-2 pt-2">
+          <input
+            type="text"
+            required
+            placeholder="Order ID or Shiprocket AWB"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="flex-1 px-4 py-2.5 bg-zinc-50 border border-zinc-300 rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-orange-500"
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-5 py-2.5 bg-zinc-950 text-white font-bold text-xs rounded-xl hover:bg-zinc-800 transition-colors disabled:opacity-50"
+          >
+            {loading ? 'Tracking...' : 'Track'}
+          </button>
+        </form>
+
+        {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
+      </div>
+
+      {/* Tracking Result Card */}
+      {order && (
+        <div className="bg-white rounded-3xl border border-zinc-200 shadow-xs overflow-hidden divide-y divide-zinc-100">
+          {/* Top Shipment Summary */}
+          <div className="p-6 sm:p-8 bg-zinc-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-orange-600">
+                  {order.shipment?.courierName || 'Shiprocket Logistics'}
+                </span>
+                <span>·</span>
+                <span className="text-xs font-semibold text-zinc-500">
+                  AWB: <strong className="text-zinc-900 font-mono">{order.shipment?.awbCode || 'Pending Dispatch'}</strong>
+                </span>
+              </div>
+              <h2 className="text-xl font-black text-zinc-950 mt-1 font-display">
+                Order {order.orderNumber}
+              </h2>
+              <p className="text-xs text-zinc-500">
+                Recipient: <strong className="text-zinc-800">{order.customerName}</strong> ({order.shippingAddress.city}, {order.shippingAddress.state})
+              </p>
+            </div>
+
+            <div className="text-left sm:text-right">
+              <span className="text-xs text-zinc-500 block">Status</span>
+              <span className={`text-sm font-extrabold uppercase px-2.5 py-1 rounded-md inline-block mt-0.5 ${
+                order.orderStatus === 'delivered'
+                  ? 'bg-emerald-100 text-emerald-800'
+                  : 'bg-orange-100 text-orange-800'
+              }`}>
+                {order.orderStatus.replace('_', ' ')}
+              </span>
+            </div>
+          </div>
+
+          {/* Stepper Progress Bar */}
+          <div className="p-6 sm:p-8">
+            <div className="relative flex justify-between">
+              {/* Connecting line */}
+              <div className="absolute top-4 left-4 right-4 h-0.5 bg-zinc-200 -z-0" />
+              <div
+                className="absolute top-4 left-4 h-0.5 bg-orange-600 transition-all duration-500 -z-0"
+                style={{
+                  width: `${(currentStepIdx / (statusSteps.length - 1)) * 100}%`,
+                }}
+              />
+
+              {statusSteps.map((step, idx) => {
+                const isPassed = idx <= currentStepIdx;
+                const isCurrent = idx === currentStepIdx;
+
+                return (
+                  <div key={step.key} className="flex flex-col items-center text-center z-10 w-20">
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                        isPassed
+                          ? 'bg-orange-600 text-white ring-4 ring-orange-100'
+                          : 'bg-zinc-200 text-zinc-500'
+                      }`}
+                    >
+                      {isPassed ? <CheckCircle2 className="w-4 h-4" /> : idx + 1}
+                    </div>
+                    <span className={`text-[11px] mt-2 font-medium leading-tight ${
+                      isCurrent ? 'font-bold text-orange-600' : isPassed ? 'text-zinc-800' : 'text-zinc-400'
+                    }`}>
+                      {step.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 7-Day Return Notification If Delivered */}
+          {order.orderStatus === 'delivered' && (
+            <div className="p-4 sm:p-6 bg-emerald-50/60 border-t border-emerald-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-xs">
+              <div className="flex items-center gap-2 text-emerald-900">
+                <RotateCcw className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>
+                  <strong>7-Day Return Window Active:</strong> You can request a size exchange or return until{' '}
+                  <strong>{order.returnDeadline ? new Date(order.returnDeadline).toLocaleDateString('en-IN') : '7 days from delivery'}</strong>.
+                </span>
+              </div>
+              <button
+                onClick={() => onNavigate('returns')}
+                className="px-3.5 py-1.5 bg-emerald-700 text-white rounded-lg font-semibold hover:bg-emerald-800 transition-colors whitespace-nowrap"
+              >
+                Request Return / Exchange
+              </button>
+            </div>
+          )}
+
+          {/* Courier Milestones Timeline */}
+          <div className="p-6 sm:p-8 space-y-4">
+            <h3 className="text-xs font-bold text-zinc-900 uppercase tracking-wider">
+              Shipment Activity Log
+            </h3>
+
+            {order.shipment?.events && order.shipment.events.length > 0 ? (
+              <div className="space-y-4 border-l-2 border-zinc-200 ml-2 pl-4 text-xs">
+                {order.shipment.events.map((ev, i) => (
+                  <div key={ev.id || i} className="relative space-y-0.5">
+                    <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-orange-600 ring-4 ring-white" />
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold text-zinc-900">{ev.statusTitle || 'Milestone Reached'}</span>
+                      <span className="text-[10px] text-zinc-400 font-mono">
+                        {new Date(ev.timestamp).toLocaleString('en-IN')}
+                      </span>
+                    </div>
+                    <p className="text-zinc-600">{ev.description}</p>
+                    <p className="text-[11px] text-zinc-400 font-medium">{ev.location}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-zinc-500 italic">
+                Awaiting carrier pickup scan from Apna Shoes Noida Warehouse. Updates will appear shortly.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

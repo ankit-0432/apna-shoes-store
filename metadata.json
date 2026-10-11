@@ -1,0 +1,6 @@
+{
+  "name": "APNA SHOES — Online Footwear Store",
+  "description": "Affordable, stylish sneakers and footwear store for men, women, and kids across India with online payments, COD, order tracking, 7-day returns, and admin dashboard.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
