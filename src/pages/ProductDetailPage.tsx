@@ -33,6 +33,8 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
   const [selectedSize, setSelectedSize] = useState(product.variants[0]?.size || 'UK 8');
   const [quantity, setQuantity] = useState(1);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [imageError, setImageError] = useState(false);
   const [pincode, setPincode] = useState('110001'); // Default Delhi NCR
   const [pincodeResult, setPincodeResult] = useState<any>(null);
   const [isCheckingPin, setIsCheckingPin] = useState(false);
@@ -108,33 +110,57 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
               {copiedShare && <span className="text-[10px] text-emerald-600 font-bold">Link Copied!</span>}
             </button>
 
-            {/* High fidelity Sneaker Graphic */}
-            <SneakerGraphic
-              type={product.graphicType}
-              accentColor={selectedVariant.colorHex || '#FF5A1F'}
-              className="w-full h-full max-h-96"
-            />
+            {/* Product Image Stage (Photo or Vector Graphic) */}
+            {product.images && product.images.length > 0 && !imageError ? (
+              <img
+                src={product.images[activeImageIndex] || product.images[0]}
+                alt={product.name}
+                onError={() => setImageError(true)}
+                referrerPolicy="no-referrer"
+                className="w-full h-full object-contain max-h-96 transition-all duration-200"
+              />
+            ) : (
+              <SneakerGraphic
+                type={product.graphicType}
+                accentColor={selectedVariant.colorHex || '#FF5A1F'}
+                className="w-full h-full max-h-96"
+              />
+            )}
           </div>
 
           {/* Perspective Thumbnails */}
           <div className="grid grid-cols-4 gap-3">
-            {['Side Profile', 'Top View', 'Sole Grip', 'Heel Counter'].map((viewLabel, i) => (
-              <div
-                key={i}
-                className={`aspect-[4/3] bg-zinc-50 rounded-xl border p-2 flex flex-col items-center justify-between cursor-pointer transition-all ${
-                  i === 0 ? 'border-orange-600 ring-2 ring-orange-600/20' : 'border-zinc-200 hover:border-zinc-400'
-                }`}
-              >
-                <div className="w-full h-12 flex items-center justify-center">
-                  <SneakerGraphic
-                    type={product.graphicType}
-                    accentColor={selectedVariant.colorHex || '#FF5A1F'}
-                    className="w-full h-full"
-                  />
+            {product.images && product.images.length > 0 ? (
+              product.images.slice(0, 4).map((img, i) => (
+                <div
+                  key={i}
+                  onClick={() => setActiveImageIndex(i)}
+                  className={`aspect-[4/3] bg-white rounded-xl border p-1.5 flex items-center justify-center cursor-pointer overflow-hidden transition-all ${
+                    activeImageIndex === i ? 'border-orange-600 ring-2 ring-orange-600/20' : 'border-zinc-200 hover:border-zinc-400'
+                  }`}
+                >
+                  <img src={img} alt={`View ${i + 1}`} className="w-full h-full object-contain" />
                 </div>
-                <span className="text-[10px] font-semibold text-zinc-600">{viewLabel}</span>
-              </div>
-            ))}
+              ))
+            ) : (
+              ['Side Profile', 'Top View', 'Sole Grip', 'Heel Counter'].map((viewLabel, i) => (
+                <div
+                  key={i}
+                  className={`aspect-[4/3] bg-zinc-50 rounded-xl border p-2 flex flex-col items-center justify-between cursor-pointer transition-all ${
+                    i === 0 ? 'border-orange-600 ring-2 ring-orange-600/20' : 'border-zinc-200 hover:border-zinc-400'
+                  }`}
+                >
+                  <div className="w-full h-12 flex items-center justify-center">
+                    <SneakerGraphic
+                      type={product.graphicType}
+                      accentColor={selectedVariant.colorHex || '#FF5A1F'}
+                      className="w-full h-full"
+                    />
+                  </div>
+                  <span className="text-[10px] font-semibold text-zinc-600">{viewLabel}</span>
+                </div>
+              ))
+            )}
           </div>
 
           {/* Trust Guarantees Strip */}

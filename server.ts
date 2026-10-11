@@ -100,9 +100,10 @@ async function startServer() {
   app.get('/api/products/export-csv', (_req: Request, res: Response) => {
     try {
       const products = DB.getAllProductsAdmin();
-      const headers = ['SKU', 'Name', 'Category', 'Gender', 'SellingPrice', 'OriginalPrice', 'Discount', 'Stock', 'Badge'];
+      const headers = ['SKU', 'Name', 'Category', 'Gender', 'SellingPrice', 'OriginalPrice', 'Discount', 'Stock', 'Badge', 'Images'];
       const rows = products.map(p => {
         const totalStock = p.variants.reduce((acc, v) => acc + v.stockQuantity, 0);
+        const imagesStr = (p.images || []).join(';');
         return [
           `"${p.sku}"`,
           `"${p.name.replace(/"/g, '""')}"`,
@@ -113,6 +114,7 @@ async function startServer() {
           `${p.discountPercentage}%`,
           totalStock,
           `"${p.badge || ''}"`,
+          `"${imagesStr.replace(/"/g, '""')}"`,
         ].join(',');
       });
       const csv = [headers.join(','), ...rows].join('\n');
@@ -143,6 +145,10 @@ async function startServer() {
           const gender = (parts[3] as any) || 'unisex';
           const sellingPrice = parseFloat(parts[4]) || 1499;
           const originalPrice = parseFloat(parts[5]) || sellingPrice * 1.5;
+          const badge = parts[8] || 'New Drop';
+          const imgField = parts[9] || '';
+          const images = imgField ? imgField.split(';').map(u => u.trim()).filter(Boolean) : [];
+
           DB.saveProduct({
             sku,
             name,
@@ -150,11 +156,13 @@ async function startServer() {
             gender,
             sellingPrice,
             originalPrice,
+            badge: badge as any,
+            images: images.length > 0 ? images : undefined,
           });
           importedCount++;
         }
       }
-      res.json({ success: true, message: `Successfully imported/updated ${importedCount} products.` });
+      res.json({ success: true, message: `Successfully imported/updated ${importedCount} products in APNA SHOES catalog.` });
     } catch (e: any) {
       res.status(400).json({ success: false, error: e.message });
     }
@@ -273,13 +281,36 @@ async function startServer() {
       const shippingFee = discountedSubtotal >= cms.freeShippingThreshold ? 0 : cms.defaultShippingFee;
       const totalAmount = Math.round((discountedSubtotal + shippingFee) * 100) / 100;
 
+      const normalizedItems = items.map((item: any, idx: number) => {
+        const prod = DB.getProductBySlug(item.productId);
+        const unitPrice = Number(item.unitPrice ?? item.price ?? prod?.sellingPrice ?? 0);
+        const quantity = Number(item.quantity ?? 1);
+        const totalPrice = Number(item.totalPrice ?? (unitPrice * quantity));
+        const sku = item.sku || (prod ? `${prod.sku}-${item.size?.replace(/\s+/g, '') || 'STD'}` : `ITEM-${idx + 1}`);
+        const image = item.image || prod?.images?.[0] || '';
+        return {
+          id: item.id || `oi-${Date.now()}-${idx}`,
+          productId: item.productId,
+          variantId: item.variantId || 'v-default',
+          productName: item.productName || prod?.name || 'Footwear',
+          sku,
+          size: item.size || 'Standard',
+          color: item.color || 'Standard',
+          unitPrice,
+          quantity,
+          totalPrice,
+          image,
+          graphicType: item.graphicType || prod?.graphicType,
+        };
+      });
+
       const order = DB.createOrder({
         customerName,
         customerEmail: customerEmail || `${customerPhone.replace(/\D/g, '')}@apnashoes.in`,
         customerPhone,
         shippingAddress,
         billingAddress: billingAddress || shippingAddress,
-        items,
+        items: normalizedItems,
         subtotal,
         discountAmount,
         couponCode: couponCode || undefined,
@@ -314,12 +345,12 @@ async function startServer() {
 
   app.post('/api/orders/:id/shipment', (req: Request, res: Response) => {
     try {
-      const { courierName } = req.body;
-      const updated = DB.createShipment(req.params.id, courierName);
+      const { courierName, awbCode } = req.body;
+      const updated = DB.createShipment(req.params.id, courierName, awbCode);
       if (!updated) {
         return res.status(404).json({ success: false, error: 'Order not found' });
       }
-      res.json({ success: true, data: updated, message: 'Shiprocket Airway Bill generated & shipment assigned!' });
+      res.json({ success: true, data: updated, message: 'Airway Bill (AWB) generated & order confirmed!' });
     } catch (e: any) {
       res.status(500).json({ success: false, error: e.message });
     }

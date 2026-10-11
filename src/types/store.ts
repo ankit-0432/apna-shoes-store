@@ -227,6 +227,21 @@ export interface ProductReview {
   createdAt: string;
 }
 
+export interface HeroBanner {
+  id: string;
+  headline: string;
+  subheadline: string;
+  offerBadge: string; // e.g. "FLAT 40% OFF", "BUY 1 GET 1", "FESTIVE SALE"
+  badge: string; // e.g. "EDITION 2026", "LIMITED DROP"
+  imageUrl: string;
+  ctaText: string;
+  ctaLink: string;
+  accentColor?: string;
+  graphicType?: 'air-glide' | 'high-top' | 'aero-runner' | 'retro-dunk' | 'street-chunky' | 'junior-bolt' | 'campus-pulse' | 'velocity-pro' | 'flex-slipon';
+  isActive: boolean;
+  displayOrder: number;
+}
+
 export interface StoreCMSConfig {
   storeName: string;
   tagline: string;
@@ -247,6 +262,7 @@ export interface StoreCMSConfig {
   gstNumber: string;
   freeShippingThreshold: number;
   defaultShippingFee: number;
+  heroBanners?: HeroBanner[];
   aboutContent: string;
   faqList: Array<{ question: string; answer: string }>;
   returnPolicyContent: string;

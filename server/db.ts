@@ -40,6 +40,7 @@ interface DatabaseStore {
   integrations: IntegrationStatus;
   auditLogs: Array<{ id: string; timestamp: string; actor: string; action: string; details: any }>;
   notifications: Array<{ id: string; timestamp: string; channel: string; recipient: string; title: string; message: string }>;
+  deletedProductIds?: string[];
 }
 
 let db: DatabaseStore;
@@ -53,11 +54,48 @@ function initDb() {
     try {
       const content = fs.readFileSync(DB_FILE, 'utf-8');
       db = JSON.parse(content);
-      // Ensure any newly added properties exist
-      if (!db.products || db.products.length === 0) db.products = initialProducts;
+      if (!db.deletedProductIds) db.deletedProductIds = [];
+      // Ensure all 52+ products exist in catalog and have photos
+      const existingMap = new Map((db.products || []).map((p: any) => [p.id, p]));
+      let hasChanges = false;
+      const mergedProducts: Product[] = [];
+
+      for (const initProd of initialProducts) {
+        if (db.deletedProductIds?.includes(initProd.id)) {
+          continue; // Admin explicitly deleted this shoe
+        }
+        const existing = existingMap.get(initProd.id);
+        if (!existing) {
+          mergedProducts.push(initProd);
+          hasChanges = true;
+        } else {
+          if ((!existing.images || existing.images.length === 0) && initProd.images && initProd.images.length > 0) {
+            existing.images = initProd.images;
+            hasChanges = true;
+          }
+          mergedProducts.push(existing);
+        }
+      }
+
+      // Keep any custom products created by admin that aren't in initialProducts
+      for (const p of (db.products || [])) {
+        if (!initialProducts.some((init) => init.id === p.id)) {
+          mergedProducts.push(p);
+        }
+      }
+
+      if (hasChanges || !db.products || db.products.length < initialProducts.length) {
+        db.products = mergedProducts;
+        saveDb();
+      }
       if (!db.categories) db.categories = initialCategories;
       if (!db.coupons) db.coupons = initialCoupons;
-      if (!db.cmsConfig) db.cmsConfig = initialCMSConfig;
+      if (!db.cmsConfig) {
+        db.cmsConfig = initialCMSConfig;
+      } else if (!db.cmsConfig.heroBanners || db.cmsConfig.heroBanners.length === 0) {
+        db.cmsConfig.heroBanners = initialCMSConfig.heroBanners;
+        saveDb();
+      }
       if (!db.orders) db.orders = initialOrders;
       if (!db.returns) db.returns = initialReturns;
       if (!db.flipkartMappings) db.flipkartMappings = initialFlipkartMappings;
@@ -249,6 +287,10 @@ export const DB = {
   },
 
   deleteProduct(id: string) {
+    db.deletedProductIds = db.deletedProductIds || [];
+    if (!db.deletedProductIds.includes(id)) {
+      db.deletedProductIds.push(id);
+    }
     const idx = db.products.findIndex(p => p.id === id);
     if (idx !== -1) {
       const deleted = db.products.splice(idx, 1)[0];
@@ -384,11 +426,11 @@ export const DB = {
     return order;
   },
 
-  createShipment(orderId: string, courierName: string = 'Shiprocket — Delhivery Surface') {
+  createShipment(orderId: string, courierName: string = 'Shiprocket — Delhivery Surface', customAwb?: string) {
     const order = db.orders.find(o => o.id === orderId || o.orderNumber === orderId);
     if (!order) return null;
 
-    const awbCode = `${Math.floor(10000000000 + Math.random() * 90000000000)}`;
+    const awbCode = customAwb?.trim() ? customAwb.trim() : `${Math.floor(10000000000 + Math.random() * 90000000000)}`;
     const shipmentId = `SR-${courierName.substring(0, 3).toUpperCase()}-${Date.now().toString().slice(-6)}`;
     const estDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
 

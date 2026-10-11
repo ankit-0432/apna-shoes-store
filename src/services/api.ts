@@ -198,11 +198,11 @@ export const api = {
     return json.data;
   },
 
-  async createShipment(orderId: string, courierName?: string): Promise<Order> {
+  async createShipment(orderId: string, courierName?: string, awbCode?: string): Promise<Order> {
     const res = await fetch(`${API_BASE}/orders/${orderId}/shipment`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ courierName }),
+      body: JSON.stringify({ courierName, awbCode }),
     });
     const json = await res.json();
     if (!json.success) throw new Error(json.error || 'Failed to generate shipment');

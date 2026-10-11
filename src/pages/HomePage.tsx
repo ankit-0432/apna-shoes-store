@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { ArrowRight, ShieldCheck, Truck, RotateCcw, Flame, Sparkles, Star, ChevronRight } from 'lucide-react';
-import { Product } from '../types/store.js';
+import React, { useState, useEffect, useRef } from 'react';
+import { ArrowRight, ShieldCheck, Truck, RotateCcw, Flame, Sparkles, Star, ChevronRight, ChevronLeft, Tag } from 'lucide-react';
+import { Product, HeroBanner } from '../types/store.js';
 import { useStoreConfig } from '../context/StoreConfigContext.js';
 import { ProductCard } from '../components/common/ProductCard.js';
 import { SneakerGraphic } from '../components/common/SneakerGraphic.js';
@@ -11,9 +11,112 @@ interface HomePageProps {
   onNavigate: (view: string, param?: string) => void;
 }
 
+const DEFAULT_BANNERS: HeroBanner[] = [
+  {
+    id: 'banner-1',
+    headline: 'Har Kadam, Apna Style — Indian Streetwear Drop',
+    subheadline: 'Designed for comfort, engineered for endurance. Over 50+ fresh Indian silhouettes ready to ship across 19,000+ pin codes.',
+    offerBadge: '🔥 FLAT 40% OFF · USE CODE APNA40',
+    badge: 'DROP 2026 LIVE',
+    imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=80',
+    ctaText: 'Shop New Drops',
+    ctaLink: 'all',
+    accentColor: '#FF5A1F',
+    graphicType: 'air-glide',
+    isActive: true,
+    displayOrder: 1,
+  },
+  {
+    id: 'banner-2',
+    headline: 'Retro Dunk High-Tops — Ankle Armor Edition',
+    subheadline: 'Classic basketball silhouette paired with cloud-foam cushioning for all-day campus and street wear.',
+    offerBadge: '⚡ BUY 1 GET 1 50% OFF · LIMITED STOCK',
+    badge: 'CAMPUS FAVORITE',
+    imageUrl: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1200&q=80',
+    ctaText: 'Explore High-Tops',
+    ctaLink: 'high-top-sneakers',
+    accentColor: '#2563EB',
+    graphicType: 'high-top',
+    isActive: true,
+    displayOrder: 2,
+  },
+  {
+    id: 'banner-3',
+    headline: 'Aero Speed Marathon Runners — Carbon Sprint Sole',
+    subheadline: 'Featherlight breathable mesh upper with high-energy rebound for early morning 10K runs and gym sessions.',
+    offerBadge: '🎉 FESTIVE MEGA OFFER: FLAT ₹300 OFF',
+    badge: 'TOP RATED 4.9 ★',
+    imageUrl: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=1200&q=80',
+    ctaText: 'Shop Running Gear',
+    ctaLink: 'running-shoes',
+    accentColor: '#059669',
+    graphicType: 'aero-runner',
+    isActive: true,
+    displayOrder: 3,
+  },
+  {
+    id: 'banner-4',
+    headline: 'Pastel Minimalist Kicks — Everyday Chic',
+    subheadline: 'Clean chalk white and lavender tones that match any outfit from college lectures to casual evening dinners.',
+    offerBadge: '✨ SPECIAL BUNDLE: FREE SOCKS & EXTRA LACES',
+    badge: 'WOMEN’S BESTSELLER',
+    imageUrl: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=1200&q=80',
+    ctaText: 'Shop Women’s Kicks',
+    ctaLink: 'womens',
+    accentColor: '#DB2777',
+    graphicType: 'retro-dunk',
+    isActive: true,
+    displayOrder: 4,
+  },
+  {
+    id: 'banner-5',
+    headline: 'Junior Bolt Kids Athletic Sneakers',
+    subheadline: 'Tough scuff-resistant toe guards, zero-slip rubber soles, and electric colorways for school & playground adventures.',
+    offerBadge: '🏷️ FLAT ₹500 OFF ON 2 PAIRS · CODE KIDSCOOL',
+    badge: 'KIDS SPECIAL',
+    imageUrl: 'https://images.unsplash.com/photo-1514989940723-e8e51635b782?auto=format&fit=crop&w=1200&q=80',
+    ctaText: 'Shop Kids Collection',
+    ctaLink: 'kids',
+    accentColor: '#F59E0B',
+    graphicType: 'junior-bolt',
+    isActive: true,
+    displayOrder: 5,
+  },
+];
+
 export const HomePage: React.FC<HomePageProps> = ({ products, onSelectProduct, onNavigate }) => {
   const { config } = useStoreConfig();
   const [activeTab, setActiveTab] = useState<'all' | 'mens' | 'womens' | 'running'>('all');
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [slideImageErrors, setSlideImageErrors] = useState<Record<string, boolean>>({});
+
+  // Get active banners from CMS config, or fallback to default 5
+  const banners: HeroBanner[] = (config.heroBanners && config.heroBanners.length > 0)
+    ? config.heroBanners.filter(b => b.isActive)
+    : DEFAULT_BANNERS;
+
+  const totalSlides = banners.length > 0 ? banners.length : 1;
+
+  // Auto-play slideshow every 5.5 seconds unless paused
+  useEffect(() => {
+    if (isPaused || totalSlides <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % totalSlides);
+    }, 5500);
+    return () => clearInterval(interval);
+  }, [isPaused, totalSlides]);
+
+  const handleNextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % totalSlides);
+  };
+
+  const handlePrevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+  };
+
+  const currentBanner = banners[currentSlide] || DEFAULT_BANNERS[0];
+  const accentColor = currentBanner.accentColor || config.brandPrimaryColor || '#FF5A1F';
 
   const featuredProducts = products.filter(p => p.isFeatured).slice(0, 6);
   const bestsellers = products.filter(p => p.badge === 'Bestseller' || p.rating >= 4.8).slice(0, 4);
@@ -28,99 +131,178 @@ export const HomePage: React.FC<HomePageProps> = ({ products, onSelectProduct, o
 
   return (
     <div className="space-y-16">
-      {/* 1. HERO SECTION (1 bold campaign focal point) */}
-      <section className="relative overflow-hidden bg-zinc-950 text-white rounded-3xl mx-4 sm:mx-6 lg:mx-8 mt-4 border border-zinc-900 shadow-2xl">
-        {/* Ambient background studio lighting glow */}
-        <div 
-          className="absolute -top-24 -right-24 w-96 h-96 rounded-full blur-3xl opacity-20 pointer-events-none"
-          style={{ backgroundColor: config.brandPrimaryColor || '#FF5A1F' }}
+      {/* 1. FRONT 5-BANNER HERO SLIDESHOW (Admin Controlled) */}
+      <section
+        className="relative overflow-hidden bg-zinc-950 text-white rounded-3xl mx-4 sm:mx-6 lg:mx-8 mt-4 border border-zinc-900 shadow-2xl transition-all duration-500"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        {/* Dynamic Studio Ambient Glow matching active slide accent */}
+        <div
+          className="absolute -top-24 -right-24 w-96 h-96 rounded-full blur-3xl opacity-25 pointer-events-none transition-all duration-700"
+          style={{ backgroundColor: accentColor }}
         />
         <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full blur-3xl opacity-10 bg-orange-600 pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 py-16 lg:py-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          {/* Left Hero Copy */}
-          <div className="lg:col-span-7 space-y-6 z-10">
-            {/* Quiet 1-line text kicker */}
-            <div className="flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-orange-400">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{config.heroBadge || 'Drop 2026 Live · Pan-India Delivery'}</span>
+        {/* Carousel Navigation Arrows */}
+        <button
+          onClick={handlePrevSlide}
+          aria-label="Previous banner slide"
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-30 p-2.5 rounded-full bg-black/40 hover:bg-black/80 text-white/80 hover:text-white border border-white/10 backdrop-blur-md transition-all shadow-lg hidden sm:flex items-center justify-center hover:scale-105"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+
+        <button
+          onClick={handleNextSlide}
+          aria-label="Next banner slide"
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-30 p-2.5 rounded-full bg-black/40 hover:bg-black/80 text-white/80 hover:text-white border border-white/10 backdrop-blur-md transition-all shadow-lg hidden sm:flex items-center justify-center hover:scale-105"
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
+
+        {/* Banner Slide Content */}
+        <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 py-14 lg:py-20 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center min-h-[500px]">
+          {/* Left Slide Copy */}
+          <div className="lg:col-span-7 space-y-5 z-10 animate-in fade-in duration-300 key={currentBanner.id}">
+            {/* Top Offer & Campaign Badges */}
+            <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
+              <span
+                className="px-3 py-1 rounded-full font-bold uppercase tracking-wider text-[11px] shadow-sm flex items-center gap-1.5"
+                style={{ backgroundColor: accentColor, color: '#FFFFFF' }}
+              >
+                <Tag className="w-3 h-3" />
+                <span>{currentBanner.offerBadge || 'OFFER ACTIVE'}</span>
+              </span>
+
+              <span className="px-2.5 py-0.5 rounded-full bg-zinc-800/80 border border-zinc-700 text-zinc-300 font-mono text-[10.5px] uppercase tracking-wider">
+                {currentBanner.badge || 'APNA SHOES EXCLUSIVE'}
+              </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white font-display leading-[1.08] text-balance">
-              {config.heroHeadline || 'Har Kadam, Apna Style.'}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white font-display leading-[1.1] text-balance">
+              {currentBanner.headline}
             </h1>
 
-            <p className="text-sm sm:text-base text-zinc-300 max-w-xl leading-relaxed font-normal">
-              {config.heroSubheadline ||
-                'Engineered for India’s streets. High-traction running sneakers, retro high-tops, and lightweight everyday kicks crafted for supreme comfort and all-day endurance.'}
+            <p className="text-xs sm:text-sm text-zinc-300 max-w-xl leading-relaxed font-normal">
+              {currentBanner.subheadline}
             </p>
 
             {/* CTAs */}
-            <div className="pt-2 flex flex-wrap items-center gap-4">
+            <div className="pt-2 flex flex-wrap items-center gap-3">
               <button
-                onClick={() => onNavigate('all')}
-                className="px-6 py-3.5 rounded-xl font-bold text-sm text-white shadow-lg transition-all flex items-center gap-2 hover:opacity-95 active:scale-98"
-                style={{ backgroundColor: config.brandPrimaryColor || '#FF5A1F' }}
+                onClick={() => onNavigate(currentBanner.ctaLink || 'all')}
+                className="px-6 py-3.5 rounded-xl font-bold text-xs text-white shadow-lg transition-all flex items-center gap-2 hover:opacity-95 active:scale-98"
+                style={{ backgroundColor: accentColor }}
               >
-                <span>{config.heroCtaText || 'Shop New Drops'}</span>
+                <span>{currentBanner.ctaText || 'Shop Collection'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
               <button
                 onClick={() => onNavigate('bestsellers')}
-                className="px-6 py-3.5 rounded-xl font-semibold text-sm text-zinc-200 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:text-white transition-colors"
+                className="px-6 py-3.5 rounded-xl font-semibold text-xs text-zinc-200 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:text-white transition-colors"
               >
                 Explore Bestsellers
               </button>
             </div>
 
             {/* Quick trust metrics */}
-            <div className="pt-6 border-t border-zinc-800/80 grid grid-cols-3 gap-4 text-xs">
+            <div className="pt-5 border-t border-zinc-800/80 grid grid-cols-3 gap-3 text-xs">
               <div>
-                <p className="text-lg font-black text-white tabular-nums">₹999+</p>
-                <p className="text-zinc-400 text-[11px] mt-0.5">Free Express Shipping</p>
+                <p className="text-base font-black text-white tabular-nums">₹999+</p>
+                <p className="text-zinc-400 text-[10.5px] mt-0.5">Free Express Shipping</p>
               </div>
               <div>
-                <p className="text-lg font-black text-white tabular-nums">7 Days</p>
-                <p className="text-zinc-400 text-[11px] mt-0.5">Doorstep Returns</p>
+                <p className="text-base font-black text-white tabular-nums">7 Days</p>
+                <p className="text-zinc-400 text-[10.5px] mt-0.5">Doorstep Returns</p>
               </div>
               <div>
-                <p className="text-lg font-black text-white tabular-nums">4.8 ★</p>
-                <p className="text-zinc-400 text-[11px] mt-0.5">15,000+ Happy Feet</p>
+                <p className="text-base font-black text-white tabular-nums">4.8 ★</p>
+                <p className="text-zinc-400 text-[10.5px] mt-0.5">15,000+ Happy Feet</p>
               </div>
             </div>
           </div>
 
-          {/* Right Hero Graphic Showcase */}
+          {/* Right Slide Sneaker Photography Showcase */}
           <div className="lg:col-span-5 relative flex items-center justify-center">
-            <div className="relative w-full aspect-square max-w-md bg-zinc-900/80 rounded-2xl p-6 border border-zinc-800/80 flex flex-col justify-between overflow-hidden shadow-2xl">
-              <div className="flex justify-between items-center text-xs text-zinc-400">
-                <span className="font-mono text-[11px]">APNA AIR GLIDE · 01</span>
-                <span className="text-orange-400 font-semibold font-mono">EDITION 2026</span>
+            <div className="relative w-full aspect-[4/3] max-w-md bg-zinc-900/90 rounded-2xl p-4 sm:p-5 border border-zinc-800 flex flex-col justify-between overflow-hidden shadow-2xl group">
+              <div className="flex justify-between items-center text-xs text-zinc-400 pb-2 border-b border-zinc-800">
+                <span className="font-mono text-[10.5px] uppercase font-bold text-orange-400">
+                  APNA SHOES · SLIDE 0{currentSlide + 1}
+                </span>
+                <span className="text-zinc-400 font-mono text-[10px]">
+                  PAN-INDIA READY
+                </span>
               </div>
 
-              {/* Sneaker Graphic Display */}
-              <div className="my-auto py-4">
-                <SneakerGraphic
-                  type="air-glide"
-                  accentColor={config.brandPrimaryColor || '#FF5A1F'}
-                  className="w-full h-56"
-                />
+              {/* Shoe Image / Graphic */}
+              <div className="my-auto py-3 relative flex items-center justify-center min-h-[190px]">
+                {currentBanner.imageUrl && !slideImageErrors[currentBanner.id] ? (
+                  <img
+                    src={currentBanner.imageUrl}
+                    alt={currentBanner.headline}
+                    className="max-h-48 sm:max-h-52 w-auto object-contain drop-shadow-2xl transition-transform duration-500 group-hover:scale-105"
+                    onError={() => {
+                      setSlideImageErrors((prev) => ({ ...prev, [currentBanner.id]: true }));
+                    }}
+                  />
+                ) : (
+                  <SneakerGraphic
+                    type={currentBanner.graphicType || 'air-glide'}
+                    accentColor={accentColor}
+                    className="w-full h-48 drop-shadow-2xl"
+                  />
+                )}
               </div>
 
               <div className="flex items-center justify-between pt-3 border-t border-zinc-800 text-xs">
                 <div>
-                  <span className="text-zinc-400 block text-[10px]">Price</span>
-                  <span className="text-base font-bold text-white tabular-nums">₹1,499</span>
+                  <span className="text-zinc-400 block text-[9.5px]">Special Campaign</span>
+                  <span className="text-xs font-bold text-white">
+                    {currentBanner.offerBadge || 'Verified Deal'}
+                  </span>
                 </div>
                 <button
-                  onClick={() => onNavigate('all', 'Air Glide')}
-                  className="px-3.5 py-1.5 rounded-lg bg-white text-zinc-950 font-bold text-xs hover:bg-zinc-200 transition-colors"
+                  onClick={() => onNavigate(currentBanner.ctaLink || 'all')}
+                  className="px-3 py-1.5 rounded-lg bg-white text-zinc-950 font-bold text-[11px] hover:bg-zinc-200 transition-colors"
                 >
                   View Details
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Slideshow Progress & Dot Indicators (5 Slides) */}
+        <div className="px-6 py-4 bg-zinc-950/80 border-t border-zinc-900 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] uppercase font-mono text-zinc-400 tracking-wider">
+              Banners (Admin Controlled):
+            </span>
+            <div className="flex items-center gap-1.5">
+              {banners.map((b, idx) => (
+                <button
+                  key={b.id || idx}
+                  onClick={() => setCurrentSlide(idx)}
+                  className={`h-2 rounded-full transition-all ${
+                    idx === currentSlide
+                      ? 'w-8 bg-orange-500'
+                      : 'w-2 bg-zinc-700 hover:bg-zinc-500'
+                  }`}
+                  aria-label={`Go to slide ${idx + 1}: ${b.headline}`}
+                  title={`${idx + 1}. ${b.headline}`}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 text-[11px] text-zinc-400 font-mono">
+            <span>Slide {currentSlide + 1} of {totalSlides}</span>
+            <span className="text-zinc-600">·</span>
+            <span className="text-zinc-500 truncate max-w-[180px] sm:max-w-none">
+              {currentBanner.offerBadge}
+            </span>
           </div>
         </div>
       </section>

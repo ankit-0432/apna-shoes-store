@@ -20,8 +20,15 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, currentView }) => {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      onNavigate('all', searchQuery.trim());
+    const query = searchQuery.trim();
+    if (query.toLowerCase() === 'admin' || query === '#admin') {
+      onNavigate('secret-admin');
+      setSearchOpen(false);
+      setSearchQuery('');
+      return;
+    }
+    if (query) {
+      onNavigate('all', query);
       setSearchOpen(false);
     }
   };
@@ -217,57 +224,54 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, currentView }) => {
                     <span className="text-xs text-orange-600 font-medium">Hassle-Free</span>
                   </button>
 
-                  <button
-                    onClick={() => {
-                      onNavigate('admin');
-                      setAccountMenuOpen(false);
-                    }}
-                    className="w-full text-left px-4 py-2 hover:bg-zinc-50 flex items-center justify-between font-medium text-zinc-900"
-                  >
-                    <span className="flex items-center gap-1.5">
-                      <ShieldCheck className="w-4 h-4 text-orange-600" />
-                      Admin Dashboard
-                    </span>
-                    <span className="text-[10px] uppercase font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded">
-                      Manage Store
-                    </span>
-                  </button>
+                  {isAdmin && (
+                    <button
+                      onClick={() => {
+                        onNavigate('admin');
+                        setAccountMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2 hover:bg-zinc-50 flex items-center justify-between font-medium text-zinc-900 border-t border-zinc-100"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <ShieldCheck className="w-4 h-4 text-orange-600" />
+                        Admin Dashboard
+                      </span>
+                      <span className="text-[10px] uppercase font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded">
+                        Manage Store
+                      </span>
+                    </button>
+                  )}
                 </div>
 
-                <div className="border-t border-zinc-100 pt-2 px-3 space-y-1">
-                  <div className="text-[11px] font-medium text-zinc-400 px-1">Quick Switch Demo Accounts:</div>
-                  <button
-                    onClick={() => {
-                      loginAsDemoAdmin();
-                      setAccountMenuOpen(false);
-                      onNavigate('admin');
-                    }}
-                    className="w-full text-left text-xs px-2 py-1.5 rounded bg-zinc-100 hover:bg-zinc-200 font-medium text-zinc-800"
-                  >
-                    🔑 Switch to Admin (Full Control)
-                  </button>
-                  <button
-                    onClick={() => {
-                      loginAsDemoCustomer();
-                      setAccountMenuOpen(false);
-                    }}
-                    className="w-full text-left text-xs px-2 py-1.5 rounded bg-zinc-50 hover:bg-zinc-100 text-zinc-700"
-                  >
-                    👤 Switch to Customer (Rahul Sharma)
-                  </button>
+                {isAdmin && (
+                  <div className="border-t border-zinc-100 pt-2 px-3 space-y-1">
+                    <button
+                      onClick={() => {
+                        loginAsDemoCustomer();
+                        setAccountMenuOpen(false);
+                        onNavigate('home');
+                      }}
+                      className="w-full text-left text-xs px-2.5 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 font-bold text-red-700 flex items-center justify-between transition-colors"
+                    >
+                      <span>Exit Admin Mode</span>
+                      <span className="text-[10px] bg-red-200 text-red-800 px-1.5 py-0.5 rounded">Storefront</span>
+                    </button>
+                  </div>
+                )}
 
-                  {user && (
+                {user && (
+                  <div className="border-t border-zinc-100 pt-1 px-3">
                     <button
                       onClick={() => {
                         logout();
                         setAccountMenuOpen(false);
                       }}
-                      className="w-full text-left text-xs text-red-600 hover:bg-red-50 px-2 py-1.5 rounded mt-1"
+                      className="w-full text-left text-xs text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 px-2 py-1.5 rounded"
                     >
                       Sign Out
                     </button>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -349,13 +353,15 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, currentView }) => {
             >
               7-Day Returns & Exchanges
             </button>
-            <button
-              onClick={() => { onNavigate('admin'); setMobileMenuOpen(false); }}
-              className="text-left py-2 px-3 font-semibold text-zinc-950 bg-orange-50 rounded flex items-center justify-between"
-            >
-              <span>Admin Dashboard</span>
-              <span className="text-xs text-orange-600">Store Control</span>
-            </button>
+            {isAdmin && (
+              <button
+                onClick={() => { onNavigate('admin'); setMobileMenuOpen(false); }}
+                className="text-left py-2 px-3 font-semibold text-zinc-950 bg-orange-50 rounded flex items-center justify-between"
+              >
+                <span>Admin Dashboard</span>
+                <span className="text-xs text-orange-600">Store Control</span>
+              </button>
+            )}
           </div>
         </div>
       )}

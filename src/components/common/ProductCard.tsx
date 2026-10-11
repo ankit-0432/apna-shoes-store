@@ -13,6 +13,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
   const { addToCart } = useCart();
   const [showSizes, setShowSizes] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
+  const [imageError, setImageError] = useState(false);
 
   const handleQuickAdd = (size: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -37,10 +38,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
 
       {/* Product Image Stage (65-75% visual dominance) */}
       <div className="relative aspect-[4/3] bg-zinc-100 flex items-center justify-center p-4 overflow-hidden group-hover:bg-zinc-50 transition-colors">
-        {product.images && product.images.length > 0 ? (
+        {product.images && product.images.length > 0 && !imageError ? (
           <img
             src={product.images[0]}
             alt={product.name}
+            onError={() => setImageError(true)}
             referrerPolicy="no-referrer"
             className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
           />

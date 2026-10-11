@@ -15,6 +15,7 @@ import { OrdersPage } from './pages/OrdersPage.js';
 import { ReturnsPage } from './pages/ReturnsPage.js';
 import { PoliciesPage } from './pages/PoliciesPage.js';
 import { AdminPortal } from './pages/admin/AdminPortal.js';
+import { AdminSecretModal } from './components/common/AdminSecretModal.js';
 import { api } from './services/api.js';
 import { Product, Order } from './types/store.js';
 
@@ -28,6 +29,34 @@ function MainApp() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showAdminSecretModal, setShowAdminSecretModal] = useState(false);
+
+  // Stealth Hotkey (Ctrl+Shift+A or Cmd+Shift+A) or #admin in URL
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+        e.preventDefault();
+        setShowAdminSecretModal(true);
+      }
+    };
+
+    const handleHash = () => {
+      if (window.location.hash === '#admin') {
+        setShowAdminSecretModal(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('hashchange', handleHash);
+    if (window.location.hash === '#admin') {
+      setShowAdminSecretModal(true);
+    }
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('hashchange', handleHash);
+    };
+  }, []);
 
   // Load catalog on mount
   useEffect(() => {
@@ -50,6 +79,11 @@ function MainApp() {
   const handleNavigate = (view: string, param?: string) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setViewParam(param);
+
+    if (view === 'secret-admin') {
+      setShowAdminSecretModal(true);
+      return;
+    }
 
     if (view === 'about' || view === 'contact' || view === 'faq' || view === 'shipping-policy' || view === 'return-policy' || view === 'privacy-policy' || view === 'terms') {
       const tabMap: Record<string, any> = {
@@ -184,6 +218,15 @@ function MainApp() {
 
       {/* Global Footer */}
       <Footer onNavigate={handleNavigate} />
+
+      {/* Stealth Staff & Admin Gateway Modal */}
+      <AdminSecretModal
+        isOpen={showAdminSecretModal}
+        onClose={() => setShowAdminSecretModal(false)}
+        onSuccess={() => {
+          handleNavigate('admin');
+        }}
+      />
     </div>
   );
 }

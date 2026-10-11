@@ -163,20 +163,25 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <li>
               <button onClick={() => onNavigate('terms')} className="hover:text-white transition-colors">Terms of Service</button>
             </li>
-            <li>
-              <button onClick={() => onNavigate('admin')} className="text-orange-400 hover:text-orange-300 font-medium transition-colors flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                Admin Portal
-              </button>
-            </li>
           </ul>
         </div>
       </div>
 
-      {/* 3. Bottom Bar: Copyright & GSTIN */}
+      {/* 3. Bottom Bar: Copyright & GSTIN (With stealth staff access) */}
       <div className="border-t border-zinc-900 bg-zinc-950/80 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
-          <p>© {new Date().getFullYear()} APNA SHOES Retail India Pvt Ltd. All rights reserved.</p>
+          <div className="flex items-center gap-2">
+            <p>© {new Date().getFullYear()} APNA SHOES Retail India Pvt Ltd. All rights reserved.</p>
+            {/* Stealth Admin Access trigger - invisible to casual shoppers */}
+            <button
+              onClick={() => onNavigate('secret-admin')}
+              className="text-zinc-800 hover:text-zinc-600 transition-colors p-1 rounded"
+              title="APNA"
+              aria-label="Staff Login"
+            >
+              •
+            </button>
+          </div>
           <div className="flex items-center gap-4 text-[11px]">
             <span>GSTIN: {config.gstNumber || '07AAACA1234F1Z8'}</span>
             <span>·</span>

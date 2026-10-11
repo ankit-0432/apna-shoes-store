@@ -1,0 +1,5402 @@
+{
+  "products": [
+    {
+      "id": "prod-1",
+      "sku": "APNA-AG-01",
+      "name": "Apna Air Glide 01 Sneaker",
+      "slug": "apna-air-glide-01-sneaker",
+      "brand": "APNA SHOES",
+      "description": "The flagship street sneaker. Built with breathable dual-density knit mesh, sculpted shock-absorbing EVA midsole, and our signature high-traction rubber waffle outsole. Engineered for all-day comfort on Indian city streets.",
+      "gender": "men",
+      "categorySlug": "mens-sneakers",
+      "originalPrice": 2799,
+      "sellingPrice": 1499,
+      "discountPercentage": 46,
+      "variants": [
+        {
+          "id": "v-1-1",
+          "sku": "APNA-AG-01-BLK-UK7",
+          "size": "UK 7",
+          "colorName": "Jet Black / Solar Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 24
+        },
+        {
+          "id": "v-1-2",
+          "sku": "APNA-AG-01-BLK-UK8",
+          "size": "UK 8",
+          "colorName": "Jet Black / Solar Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 37
+        },
+        {
+          "id": "v-1-3",
+          "sku": "APNA-AG-01-BLK-UK9",
+          "size": "UK 9",
+          "colorName": "Jet Black / Solar Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 19
+        },
+        {
+          "id": "v-1-4",
+          "sku": "APNA-AG-01-BLK-UK10",
+          "size": "UK 10",
+          "colorName": "Jet Black / Solar Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 12
+        },
+        {
+          "id": "v-1-5",
+          "sku": "APNA-AG-01-WHT-UK8",
+          "size": "UK 8",
+          "colorName": "Chalk White / Charcoal",
+          "colorHex": "#18181B",
+          "stockQuantity": 13
+        }
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?auto=format&fit=crop&w=800&q=80"
+      ],
+      "graphicType": "air-glide",
+      "badge": "Bestseller",
+      "rating": 4.8,
+      "reviewCount": 342,
+      "specifications": {
+        "Sole Material": "Dual-Density Sculpted EVA & High-Grip Rubber",
+        "Upper Material": "Engineered Breathable Mesh & Synthetic Leather",
+        "Closure": "Lace-Up with Reinforced Eyelets",
+        "Insole": "Memory Foam Comfort Footbed",
+        "Origin": "Proudly Assembled in India",
+        "Ideal For": "Daily Commute, Casual Outings, College"
+      },
+      "weightGrams": 680,
+      "dimensionsCm": {
+        "length": 32,
+        "width": 20,
+        "height": 12
+      },
+      "isActive": true,
+      "isFeatured": true,
+      "returnEligible": true,
+      "createdAt": "2026-03-01T10:00:00Z"
+    },
+    {
+      "id": "prod-2",
+      "sku": "APNA-HT-02",
+      "name": "Apna Retro Dunk High-Top",
+      "slug": "apna-retro-dunk-high-top",
+      "brand": "APNA SHOES",
+      "description": "Timeless retro basketball court styling elevated for contemporary street culture. Features padded collar, cupsole cushioning, and bold color blocking in premium matte vegan leather.",
+      "gender": "men",
+      "categorySlug": "high-top-sneakers",
+      "originalPrice": 3499,
+      "sellingPrice": 1899,
+      "discountPercentage": 45,
+      "badge": "Trending",
+      "rating": 4.7,
+      "reviewCount": 219,
+      "graphicType": "high-top",
+      "images": [
+        "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 820,
+      "dimensionsCm": {
+        "length": 33,
+        "width": 22,
+        "height": 14
+      },
+      "specifications": {
+        "Sole Material": "Durable Vulcanized Rubber Cupsole",
+        "Upper Material": "Padded Vegan Leather & Suede Overlays",
+        "Ankle Support": "High-Top Padded Collar",
+        "Insole": "Anti-Odor Cushion Insole",
+        "Origin": "Proudly Assembled in India",
+        "Ideal For": "Streetwear, Casual Nights, Weekend"
+      },
+      "variants": [
+        {
+          "id": "v-2-1",
+          "sku": "APNA-HT-02-BWO-UK7",
+          "size": "UK 7",
+          "colorName": "Black / White / Fire Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 14
+        },
+        {
+          "id": "v-2-2",
+          "sku": "APNA-HT-02-BWO-UK8",
+          "size": "UK 8",
+          "colorName": "Black / White / Fire Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 22
+        },
+        {
+          "id": "v-2-3",
+          "sku": "APNA-HT-02-BWO-UK9",
+          "size": "UK 9",
+          "colorName": "Black / White / Fire Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-2-4",
+          "sku": "APNA-HT-02-BWO-UK10",
+          "size": "UK 10",
+          "colorName": "Black / White / Fire Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 9
+        }
+      ],
+      "isActive": true,
+      "isFeatured": true,
+      "returnEligible": true,
+      "createdAt": "2026-03-05T10:00:00Z"
+    },
+    {
+      "id": "prod-3",
+      "sku": "APNA-RN-03",
+      "name": "Apna Aero Run V2 Performance",
+      "slug": "apna-aero-run-v2-performance",
+      "brand": "APNA SHOES",
+      "description": "Designed for high cadence and road endurance. Ultra-lightweight aeroflux foam yields 68% energy return on every stride. Seamless jacquard mesh keeps feet cool even in humid Indian summers.",
+      "gender": "unisex",
+      "categorySlug": "running-shoes",
+      "originalPrice": 2999,
+      "sellingPrice": 1599,
+      "discountPercentage": 46,
+      "badge": "New Drop",
+      "rating": 4.9,
+      "reviewCount": 180,
+      "graphicType": "aero-runner",
+      "images": [
+        "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 590,
+      "dimensionsCm": {
+        "length": 31,
+        "width": 20,
+        "height": 11
+      },
+      "specifications": {
+        "Sole Material": "Aeroflux Energy Rebound EVA",
+        "Upper Material": "Seamless 3D Jacquard Knit",
+        "Heel Drop": "8 mm Road Drop",
+        "Weight": "Only 295g per shoe",
+        "Ideal For": "5K/10K Runs, Gym, Treadmill, Fast Walking"
+      },
+      "variants": [
+        {
+          "id": "v-3-1",
+          "sku": "APNA-RN-03-ORG-UK6",
+          "size": "UK 6",
+          "colorName": "Apex Black / Solar Flare",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 16
+        },
+        {
+          "id": "v-3-2",
+          "sku": "APNA-RN-03-ORG-UK7",
+          "size": "UK 7",
+          "colorName": "Apex Black / Solar Flare",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 28
+        },
+        {
+          "id": "v-3-3",
+          "sku": "APNA-RN-03-ORG-UK8",
+          "size": "UK 8",
+          "colorName": "Apex Black / Solar Flare",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 32
+        },
+        {
+          "id": "v-3-4",
+          "sku": "APNA-RN-03-ORG-UK9",
+          "size": "UK 9",
+          "colorName": "Apex Black / Solar Flare",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-3-5",
+          "sku": "APNA-RN-03-ORG-UK10",
+          "size": "UK 10",
+          "colorName": "Apex Black / Solar Flare",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 8
+        }
+      ],
+      "isActive": true,
+      "isFeatured": true,
+      "returnEligible": true,
+      "createdAt": "2026-03-10T10:00:00Z"
+    },
+    {
+      "id": "prod-4",
+      "sku": "APNA-WN-04",
+      "name": "Apna Metro Low Women Kicks",
+      "slug": "apna-metro-low-women-kicks",
+      "brand": "APNA SHOES",
+      "description": "Chic, clean silhouette built for all-day campus and office wear. Crisp chalk-white vegan leather paired with delicate peach-orange accents and pillowy arch support.",
+      "gender": "women",
+      "categorySlug": "womens-sneakers",
+      "originalPrice": 2499,
+      "sellingPrice": 1299,
+      "discountPercentage": 48,
+      "badge": "Bestseller",
+      "rating": 4.8,
+      "reviewCount": 264,
+      "graphicType": "retro-dunk",
+      "images": [
+        "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 610,
+      "dimensionsCm": {
+        "length": 30,
+        "width": 19,
+        "height": 11
+      },
+      "specifications": {
+        "Sole Material": "Lightweight Flexible TPR Sole",
+        "Upper Material": "Soft Touch Vegan Leather",
+        "Lining": "Breathable Sweat-Wicking Textile",
+        "Insole": "Ergonomic Arch Support Cushion",
+        "Ideal For": "College, Cafe Hangouts, Daily Office"
+      },
+      "variants": [
+        {
+          "id": "v-4-1",
+          "sku": "APNA-WN-04-WHT-UK4",
+          "size": "UK 4",
+          "colorName": "Chalk White / Soft Amber",
+          "colorHex": "#FB923C",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-4-2",
+          "sku": "APNA-WN-04-WHT-UK5",
+          "size": "UK 5",
+          "colorName": "Chalk White / Soft Amber",
+          "colorHex": "#FB923C",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-4-3",
+          "sku": "APNA-WN-04-WHT-UK6",
+          "size": "UK 6",
+          "colorName": "Chalk White / Soft Amber",
+          "colorHex": "#FB923C",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-4-4",
+          "sku": "APNA-WN-04-WHT-UK7",
+          "size": "UK 7",
+          "colorName": "Chalk White / Soft Amber",
+          "colorHex": "#FB923C",
+          "stockQuantity": 20
+        }
+      ],
+      "isActive": true,
+      "isFeatured": true,
+      "returnEligible": true,
+      "createdAt": "2026-03-12T10:00:00Z"
+    },
+    {
+      "id": "prod-5",
+      "sku": "APNA-CK-05",
+      "name": "Apna Urban Hype Chunky Sneaker",
+      "slug": "apna-urban-hype-chunky-sneaker",
+      "brand": "APNA SHOES",
+      "description": "Oversized statement sole with futuristic architectural geometry. Gives an instant 1.8-inch height elevation while retaining featherweight bounce and anti-skid grip.",
+      "gender": "unisex",
+      "categorySlug": "casual-sneakers",
+      "originalPrice": 3299,
+      "sellingPrice": 1799,
+      "discountPercentage": 45,
+      "badge": "Hot Deal",
+      "rating": 4.6,
+      "reviewCount": 156,
+      "graphicType": "street-chunky",
+      "images": [
+        "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 840,
+      "dimensionsCm": {
+        "length": 33,
+        "width": 22,
+        "height": 13
+      },
+      "specifications": {
+        "Sole Material": "Multi-Tiered Chunky Phylon + Rubber Pads",
+        "Upper Material": "Ripstop Mesh, Nubuck Overlays",
+        "Sole Height": "4.5 cm / 1.8 inch",
+        "Closure": "Speed-Lace Elastic System",
+        "Ideal For": "Street Fashion, Concerts, Hype Styling"
+      },
+      "variants": [
+        {
+          "id": "v-5-1",
+          "sku": "APNA-CK-05-BLK-UK7",
+          "size": "UK 7",
+          "colorName": "Stealth Black / Lava Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 14
+        },
+        {
+          "id": "v-5-2",
+          "sku": "APNA-CK-05-BLK-UK8",
+          "size": "UK 8",
+          "colorName": "Stealth Black / Lava Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 22
+        },
+        {
+          "id": "v-5-3",
+          "sku": "APNA-CK-05-BLK-UK9",
+          "size": "UK 9",
+          "colorName": "Stealth Black / Lava Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-5-4",
+          "sku": "APNA-CK-05-BLK-UK10",
+          "size": "UK 10",
+          "colorName": "Stealth Black / Lava Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 7
+        }
+      ],
+      "isActive": true,
+      "isFeatured": true,
+      "returnEligible": true,
+      "createdAt": "2026-03-15T10:00:00Z"
+    },
+    {
+      "id": "prod-6",
+      "sku": "APNA-KD-06",
+      "name": "Apna Junior Bolt Kids Shoes",
+      "slug": "apna-junior-bolt-kids-shoes",
+      "brand": "APNA SHOES",
+      "description": "Engineered specifically for active Indian kids. High-abrasion rubber bumper guards protect toes during playground games, with an easy-lock Velcro strap for quick on-and-off.",
+      "gender": "kids",
+      "categorySlug": "kids-shoes",
+      "originalPrice": 1999,
+      "sellingPrice": 999,
+      "discountPercentage": 50,
+      "badge": "Bestseller",
+      "rating": 4.9,
+      "reviewCount": 198,
+      "graphicType": "junior-bolt",
+      "images": [
+        "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 420,
+      "dimensionsCm": {
+        "length": 26,
+        "width": 17,
+        "height": 10
+      },
+      "specifications": {
+        "Sole Material": "Shock Absorbing Anti-Slip Honeycomb Rubber",
+        "Upper Material": "Washable Ballistic Mesh with Reinforced Toe Cap",
+        "Closure": "Secure Double-Strap Hook-and-Loop (Velcro)",
+        "Weight": "Ultra-light 190g per shoe",
+        "Ideal For": "School, Playground, Running, Sports Day"
+      },
+      "variants": [
+        {
+          "id": "v-6-1",
+          "sku": "APNA-KD-06-ORG-UK1",
+          "size": "UK 1",
+          "colorName": "Solar Orange / Midnight Navy",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-6-2",
+          "sku": "APNA-KD-06-ORG-UK2",
+          "size": "UK 2",
+          "colorName": "Solar Orange / Midnight Navy",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 22
+        },
+        {
+          "id": "v-6-3",
+          "sku": "APNA-KD-06-ORG-UK3",
+          "size": "UK 3",
+          "colorName": "Solar Orange / Midnight Navy",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 24
+        },
+        {
+          "id": "v-6-4",
+          "sku": "APNA-KD-06-ORG-UK4",
+          "size": "UK 4",
+          "colorName": "Solar Orange / Midnight Navy",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 15
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-03-18T10:00:00Z"
+    },
+    {
+      "id": "prod-7",
+      "sku": "APNA-VP-07",
+      "name": "Apna Velocity Pro Carbon Sprinter",
+      "slug": "apna-velocity-pro-carbon-sprinter",
+      "brand": "APNA SHOES",
+      "description": "For athletes and fitness freaks who demand lightning speed. Embedded TPU propulsion plate delivers springy rebound with every push-off. Built for outdoor tracks and tarmac.",
+      "gender": "men",
+      "categorySlug": "running-shoes",
+      "originalPrice": 3599,
+      "sellingPrice": 1999,
+      "discountPercentage": 44,
+      "badge": "Trending",
+      "rating": 4.8,
+      "reviewCount": 112,
+      "graphicType": "velocity-pro",
+      "images": [
+        "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 640,
+      "dimensionsCm": {
+        "length": 32,
+        "width": 21,
+        "height": 12
+      },
+      "specifications": {
+        "Sole Material": "Dual-Layer Nitro-Infused Foam + TPU Speed Plate",
+        "Upper Material": "Micro-Perforated Monomesh",
+        "Traction": "Zoned Carbon Rubber Grip",
+        "Ideal For": "Speed Training, Marathons, Outdoor Sprinting"
+      },
+      "variants": [
+        {
+          "id": "v-7-1",
+          "sku": "APNA-VP-07-BLK-UK7",
+          "size": "UK 7",
+          "colorName": "Carbon Black / Neon Blaze",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 12
+        },
+        {
+          "id": "v-7-2",
+          "sku": "APNA-VP-07-BLK-UK8",
+          "size": "UK 8",
+          "colorName": "Carbon Black / Neon Blaze",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 19
+        },
+        {
+          "id": "v-7-3",
+          "sku": "APNA-VP-07-BLK-UK9",
+          "size": "UK 9",
+          "colorName": "Carbon Black / Neon Blaze",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 15
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-03-20T10:00:00Z"
+    },
+    {
+      "id": "prod-8",
+      "sku": "APNA-FL-08",
+      "name": "Apna Flex Walk Comfort Slip-On",
+      "slug": "apna-flex-walk-comfort-slip-on",
+      "brand": "APNA SHOES",
+      "description": "Zero laces, maximum freedom. High-stretch knit collar slips on like a sock and hugs the foot without pinching. Designed for daily morning walks and long work shifts.",
+      "gender": "unisex",
+      "categorySlug": "walking-shoes",
+      "originalPrice": 2299,
+      "sellingPrice": 1199,
+      "discountPercentage": 47,
+      "badge": "Bestseller",
+      "rating": 4.7,
+      "reviewCount": 310,
+      "graphicType": "flex-slipon",
+      "images": [
+        "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 520,
+      "dimensionsCm": {
+        "length": 31,
+        "width": 20,
+        "height": 11
+      },
+      "specifications": {
+        "Sole Material": "Ultra-Flexible Grooved EVA Injected Sole",
+        "Upper Material": "4-Way Stretch Breathable Knit",
+        "Insole": "High-Density Ortho Memory Cushion",
+        "Ideal For": "Daily 10k Steps, Seniors, Nurses, Commuting"
+      },
+      "variants": [
+        {
+          "id": "v-8-1",
+          "sku": "APNA-FL-08-GRY-UK6",
+          "size": "UK 6",
+          "colorName": "Heather Grey / Vivid Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-8-2",
+          "sku": "APNA-FL-08-GRY-UK7",
+          "size": "UK 7",
+          "colorName": "Heather Grey / Vivid Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 28
+        },
+        {
+          "id": "v-8-3",
+          "sku": "APNA-FL-08-GRY-UK8",
+          "size": "UK 8",
+          "colorName": "Heather Grey / Vivid Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 34
+        },
+        {
+          "id": "v-8-4",
+          "sku": "APNA-FL-08-GRY-UK9",
+          "size": "UK 9",
+          "colorName": "Heather Grey / Vivid Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 22
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-03-22T10:00:00Z"
+    },
+    {
+      "id": "prod-9",
+      "sku": "APNA-CP-09",
+      "name": "Apna Campus Pulse Low Sneaker",
+      "slug": "apna-campus-pulse-low-sneaker",
+      "brand": "APNA SHOES",
+      "description": "College staple. Simple, indestructible, and styled to pair with every pair of denims, chinos, or cargo pants. Treated with water-resistant surface coating.",
+      "gender": "men",
+      "categorySlug": "casual-sneakers",
+      "originalPrice": 2399,
+      "sellingPrice": 1249,
+      "discountPercentage": 48,
+      "badge": "Hot Deal",
+      "rating": 4.6,
+      "reviewCount": 144,
+      "graphicType": "campus-pulse",
+      "images": [
+        "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 670,
+      "dimensionsCm": {
+        "length": 32,
+        "width": 20,
+        "height": 12
+      },
+      "specifications": {
+        "Sole Material": "Anti-Skid Flat Vulcanized Rubber",
+        "Upper Material": "High-Grade Synthetic Leather & Canvas",
+        "Insole": "Cushioned Arch Insert",
+        "Ideal For": "College, Everyday Wear, Casual Friday"
+      },
+      "variants": [
+        {
+          "id": "v-9-1",
+          "sku": "APNA-CP-09-WHT-UK7",
+          "size": "UK 7",
+          "colorName": "Pure White / Black Stripe",
+          "colorHex": "#18181B",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-9-2",
+          "sku": "APNA-CP-09-WHT-UK8",
+          "size": "UK 8",
+          "colorName": "Pure White / Black Stripe",
+          "colorHex": "#18181B",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-9-3",
+          "sku": "APNA-CP-09-WHT-UK9",
+          "size": "UK 9",
+          "colorName": "Pure White / Black Stripe",
+          "colorHex": "#18181B",
+          "stockQuantity": 18
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-03-25T10:00:00Z"
+    },
+    {
+      "id": "prod-10",
+      "sku": "APNA-CR-15",
+      "name": "Apna Cyber Runner Alpha",
+      "slug": "apna-cyber-runner-alpha",
+      "brand": "APNA SHOES",
+      "description": "Futuristic geometric cage overlay with responsive air-pocket heel unit. Delivers bold runway presence with cloud-like bounce.",
+      "gender": "men",
+      "categorySlug": "mens-sneakers",
+      "originalPrice": 3499,
+      "sellingPrice": 1899,
+      "discountPercentage": 45,
+      "badge": "Trending",
+      "rating": 4.8,
+      "reviewCount": 114,
+      "graphicType": "street-chunky",
+      "images": [
+        "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 790,
+      "dimensionsCm": {
+        "length": 33,
+        "width": 22,
+        "height": 13
+      },
+      "specifications": {
+        "Sole Material": "TPU Cage & Cushion EVA",
+        "Upper Material": "Engineered Monomesh",
+        "Design": "Architectural Sole"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-CR15-1",
+          "sku": "APNA-CR15-UK6",
+          "size": "UK 6",
+          "colorName": "Glacier Grey / Fiery Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 14
+        },
+        {
+          "id": "v-APNA-CR15-2",
+          "sku": "APNA-CR15-UK7",
+          "size": "UK 7",
+          "colorName": "Glacier Grey / Fiery Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 19
+        },
+        {
+          "id": "v-APNA-CR15-3",
+          "sku": "APNA-CR15-UK8",
+          "size": "UK 8",
+          "colorName": "Glacier Grey / Fiery Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 24
+        },
+        {
+          "id": "v-APNA-CR15-4",
+          "sku": "APNA-CR15-UK9",
+          "size": "UK 9",
+          "colorName": "Glacier Grey / Fiery Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 14
+        },
+        {
+          "id": "v-APNA-CR15-5",
+          "sku": "APNA-CR15-UK10",
+          "size": "UK 10",
+          "colorName": "Glacier Grey / Fiery Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 19
+        },
+        {
+          "id": "v-APNA-CR15-6",
+          "sku": "APNA-CR15-UK11",
+          "size": "UK 11",
+          "colorName": "Glacier Grey / Fiery Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 24
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-03T10:00:00Z"
+    },
+    {
+      "id": "prod-11",
+      "sku": "APNA-WN-04",
+      "name": "Apna Metro Low Women Kicks",
+      "slug": "apna-metro-low-women-kicks",
+      "brand": "APNA SHOES",
+      "description": "Chic, clean silhouette built for all-day campus and office wear. Crisp chalk-white vegan leather paired with delicate peach-orange accents.",
+      "gender": "women",
+      "categorySlug": "womens-sneakers",
+      "originalPrice": 2499,
+      "sellingPrice": 1299,
+      "discountPercentage": 48,
+      "badge": "Bestseller",
+      "rating": 4.8,
+      "reviewCount": 264,
+      "graphicType": "retro-dunk",
+      "images": [
+        "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 610,
+      "dimensionsCm": {
+        "length": 30,
+        "width": 19,
+        "height": 11
+      },
+      "specifications": {
+        "Sole Material": "Flexible TPR Sole",
+        "Upper Material": "Soft Touch Vegan Leather",
+        "Lining": "Sweat-Wicking Textile"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-WN04-1",
+          "sku": "APNA-WN04-UK6",
+          "size": "UK 6",
+          "colorName": "Chalk White / Soft Amber",
+          "colorHex": "#FB923C",
+          "stockQuantity": 24
+        },
+        {
+          "id": "v-APNA-WN04-2",
+          "sku": "APNA-WN04-UK7",
+          "size": "UK 7",
+          "colorName": "Chalk White / Soft Amber",
+          "colorHex": "#FB923C",
+          "stockQuantity": 29
+        },
+        {
+          "id": "v-APNA-WN04-3",
+          "sku": "APNA-WN04-UK8",
+          "size": "UK 8",
+          "colorName": "Chalk White / Soft Amber",
+          "colorHex": "#FB923C",
+          "stockQuantity": 34
+        },
+        {
+          "id": "v-APNA-WN04-4",
+          "sku": "APNA-WN04-UK9",
+          "size": "UK 9",
+          "colorName": "Chalk White / Soft Amber",
+          "colorHex": "#FB923C",
+          "stockQuantity": 24
+        },
+        {
+          "id": "v-APNA-WN04-5",
+          "sku": "APNA-WN04-UK10",
+          "size": "UK 10",
+          "colorName": "Chalk White / Soft Amber",
+          "colorHex": "#FB923C",
+          "stockQuantity": 29
+        },
+        {
+          "id": "v-APNA-WN04-6",
+          "sku": "APNA-WN04-UK11",
+          "size": "UK 11",
+          "colorName": "Chalk White / Soft Amber",
+          "colorHex": "#FB923C",
+          "stockQuantity": 34
+        }
+      ],
+      "isActive": true,
+      "isFeatured": true,
+      "returnEligible": true,
+      "createdAt": "2026-03-12T10:00:00Z"
+    },
+    {
+      "id": "prod-12",
+      "sku": "APNA-PB-16",
+      "name": "Apna Pastel Breeze Casual Sneaker",
+      "slug": "apna-pastel-breeze-casual-sneaker",
+      "brand": "APNA SHOES",
+      "description": "Gentle pastel blush and cream palette on pillowy foam footbed. Featherlight construction prevents tired legs during weekend shopping.",
+      "gender": "women",
+      "categorySlug": "womens-sneakers",
+      "originalPrice": 2599,
+      "sellingPrice": 1349,
+      "discountPercentage": 48,
+      "badge": "Trending",
+      "rating": 4.7,
+      "reviewCount": 142,
+      "graphicType": "retro-dunk",
+      "images": [
+        "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 520,
+      "dimensionsCm": {
+        "length": 29,
+        "width": 18,
+        "height": 10
+      },
+      "specifications": {
+        "Sole Material": "Cushioned EVA Foam",
+        "Upper Material": "Soft Microfiber & Suede",
+        "Weight": "260g per shoe"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-PB16-1",
+          "sku": "APNA-PB16-UK6",
+          "size": "UK 6",
+          "colorName": "Blush Cream / Amber",
+          "colorHex": "#FDBA74",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-APNA-PB16-2",
+          "sku": "APNA-PB16-UK7",
+          "size": "UK 7",
+          "colorName": "Blush Cream / Amber",
+          "colorHex": "#FDBA74",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-APNA-PB16-3",
+          "sku": "APNA-PB16-UK8",
+          "size": "UK 8",
+          "colorName": "Blush Cream / Amber",
+          "colorHex": "#FDBA74",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-APNA-PB16-4",
+          "sku": "APNA-PB16-UK9",
+          "size": "UK 9",
+          "colorName": "Blush Cream / Amber",
+          "colorHex": "#FDBA74",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-APNA-PB16-5",
+          "sku": "APNA-PB16-UK10",
+          "size": "UK 10",
+          "colorName": "Blush Cream / Amber",
+          "colorHex": "#FDBA74",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-APNA-PB16-6",
+          "sku": "APNA-PB16-UK11",
+          "size": "UK 11",
+          "colorName": "Blush Cream / Amber",
+          "colorHex": "#FDBA74",
+          "stockQuantity": 30
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-01T10:00:00Z"
+    },
+    {
+      "id": "prod-13",
+      "sku": "APNA-CW-17",
+      "name": "Apna Cloud Walk Women Slip-On",
+      "slug": "apna-cloud-walk-women-slip-on",
+      "brand": "APNA SHOES",
+      "description": "Laceless slip-on designed for working women and students. Breathable stretch-mesh upper with high-density orthotic memory foam.",
+      "gender": "women",
+      "categorySlug": "walking-shoes",
+      "originalPrice": 2199,
+      "sellingPrice": 1149,
+      "discountPercentage": 47,
+      "badge": "Bestseller",
+      "rating": 4.9,
+      "reviewCount": 380,
+      "graphicType": "flex-slipon",
+      "images": [
+        "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 480,
+      "dimensionsCm": {
+        "length": 29,
+        "width": 18,
+        "height": 10
+      },
+      "specifications": {
+        "Sole Material": "Ultra-Light Grooved EVA",
+        "Upper Material": "Breathable 4-Way Stretch Knit",
+        "Insole": "Ortho Memory Foam"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-CW17-1",
+          "sku": "APNA-CW17-UK6",
+          "size": "UK 6",
+          "colorName": "Slate Charcoal / Peach",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 26
+        },
+        {
+          "id": "v-APNA-CW17-2",
+          "sku": "APNA-CW17-UK7",
+          "size": "UK 7",
+          "colorName": "Slate Charcoal / Peach",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 31
+        },
+        {
+          "id": "v-APNA-CW17-3",
+          "sku": "APNA-CW17-UK8",
+          "size": "UK 8",
+          "colorName": "Slate Charcoal / Peach",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 36
+        },
+        {
+          "id": "v-APNA-CW17-4",
+          "sku": "APNA-CW17-UK9",
+          "size": "UK 9",
+          "colorName": "Slate Charcoal / Peach",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 26
+        },
+        {
+          "id": "v-APNA-CW17-5",
+          "sku": "APNA-CW17-UK10",
+          "size": "UK 10",
+          "colorName": "Slate Charcoal / Peach",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 31
+        },
+        {
+          "id": "v-APNA-CW17-6",
+          "sku": "APNA-CW17-UK11",
+          "size": "UK 11",
+          "colorName": "Slate Charcoal / Peach",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 36
+        }
+      ],
+      "isActive": true,
+      "isFeatured": true,
+      "returnEligible": true,
+      "createdAt": "2026-03-22T10:00:00Z"
+    },
+    {
+      "id": "prod-14",
+      "sku": "APNA-RG-18",
+      "name": "Apna Rose Gold Retro Platform",
+      "slug": "apna-rose-gold-retro-platform",
+      "brand": "APNA SHOES",
+      "description": "Elevated 1.5-inch platform sole with shimmering metallic heel accent. Adds height and casual glamour to dresses and denim jeans.",
+      "gender": "women",
+      "categorySlug": "womens-sneakers",
+      "originalPrice": 2999,
+      "sellingPrice": 1599,
+      "discountPercentage": 46,
+      "badge": "New Drop",
+      "rating": 4.7,
+      "reviewCount": 76,
+      "graphicType": "street-chunky",
+      "images": [
+        "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 690,
+      "dimensionsCm": {
+        "length": 30,
+        "width": 20,
+        "height": 12
+      },
+      "specifications": {
+        "Sole Material": "Lightweight Platform Rubber",
+        "Upper Material": "Premium Synthetic Leather",
+        "Platform Height": "3.8 cm"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-RG18-1",
+          "sku": "APNA-RG18-UK6",
+          "size": "UK 6",
+          "colorName": "Ivory White / Rose Gold",
+          "colorHex": "#F43F5E",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-APNA-RG18-2",
+          "sku": "APNA-RG18-UK7",
+          "size": "UK 7",
+          "colorName": "Ivory White / Rose Gold",
+          "colorHex": "#F43F5E",
+          "stockQuantity": 23
+        },
+        {
+          "id": "v-APNA-RG18-3",
+          "sku": "APNA-RG18-UK8",
+          "size": "UK 8",
+          "colorName": "Ivory White / Rose Gold",
+          "colorHex": "#F43F5E",
+          "stockQuantity": 28
+        },
+        {
+          "id": "v-APNA-RG18-4",
+          "sku": "APNA-RG18-UK9",
+          "size": "UK 9",
+          "colorName": "Ivory White / Rose Gold",
+          "colorHex": "#F43F5E",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-APNA-RG18-5",
+          "sku": "APNA-RG18-UK10",
+          "size": "UK 10",
+          "colorName": "Ivory White / Rose Gold",
+          "colorHex": "#F43F5E",
+          "stockQuantity": 23
+        },
+        {
+          "id": "v-APNA-RG18-6",
+          "sku": "APNA-RG18-UK11",
+          "size": "UK 11",
+          "colorName": "Ivory White / Rose Gold",
+          "colorHex": "#F43F5E",
+          "stockQuantity": 28
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-02T10:00:00Z"
+    },
+    {
+      "id": "prod-15",
+      "sku": "APNA-WR-19",
+      "name": "Apna Aero Sprint Women Runner",
+      "slug": "apna-aero-sprint-women-runner",
+      "brand": "APNA SHOES",
+      "description": "Women performance running shoe built on anatomical female foot lasts with narrower heel cup and wider toe box for natural splay.",
+      "gender": "women",
+      "categorySlug": "running-shoes",
+      "originalPrice": 2899,
+      "sellingPrice": 1499,
+      "discountPercentage": 48,
+      "rating": 4.8,
+      "reviewCount": 129,
+      "graphicType": "aero-runner",
+      "images": [
+        "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 510,
+      "dimensionsCm": {
+        "length": 30,
+        "width": 19,
+        "height": 11
+      },
+      "specifications": {
+        "Sole Material": "High Rebound Aeroflux Foam",
+        "Upper Material": "Jacquard Knit",
+        "Heel Drop": "8mm"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-WR19-1",
+          "sku": "APNA-WR19-UK6",
+          "size": "UK 6",
+          "colorName": "Onyx Black / Coral Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-APNA-WR19-2",
+          "sku": "APNA-WR19-UK7",
+          "size": "UK 7",
+          "colorName": "Onyx Black / Coral Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-APNA-WR19-3",
+          "sku": "APNA-WR19-UK8",
+          "size": "UK 8",
+          "colorName": "Onyx Black / Coral Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-APNA-WR19-4",
+          "sku": "APNA-WR19-UK9",
+          "size": "UK 9",
+          "colorName": "Onyx Black / Coral Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-APNA-WR19-5",
+          "sku": "APNA-WR19-UK10",
+          "size": "UK 10",
+          "colorName": "Onyx Black / Coral Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-APNA-WR19-6",
+          "sku": "APNA-WR19-UK11",
+          "size": "UK 11",
+          "colorName": "Onyx Black / Coral Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 30
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-03T10:00:00Z"
+    },
+    {
+      "id": "prod-16",
+      "sku": "APNA-CL-20",
+      "name": "Apna Canvas Low Chic Women",
+      "slug": "apna-canvas-low-chic-women",
+      "brand": "APNA SHOES",
+      "description": "Minimalist canvas lace-up with padded collar and cushioned insole. Perfect everyday companion for college classes and casual outings.",
+      "gender": "women",
+      "categorySlug": "casual-sneakers",
+      "originalPrice": 1899,
+      "sellingPrice": 949,
+      "discountPercentage": 50,
+      "badge": "Hot Deal",
+      "rating": 4.6,
+      "reviewCount": 210,
+      "graphicType": "campus-pulse",
+      "images": [
+        "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 510,
+      "dimensionsCm": {
+        "length": 29,
+        "width": 18,
+        "height": 10
+      },
+      "specifications": {
+        "Sole Material": "Flexible Vulcanized Sole",
+        "Upper Material": "Breathable Cotton Canvas",
+        "Closure": "Lace-Up"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-CL20-1",
+          "sku": "APNA-CL20-UK6",
+          "size": "UK 6",
+          "colorName": "Pastel Pink / White",
+          "colorHex": "#F472B6",
+          "stockQuantity": 28
+        },
+        {
+          "id": "v-APNA-CL20-2",
+          "sku": "APNA-CL20-UK7",
+          "size": "UK 7",
+          "colorName": "Pastel Pink / White",
+          "colorHex": "#F472B6",
+          "stockQuantity": 33
+        },
+        {
+          "id": "v-APNA-CL20-3",
+          "sku": "APNA-CL20-UK8",
+          "size": "UK 8",
+          "colorName": "Pastel Pink / White",
+          "colorHex": "#F472B6",
+          "stockQuantity": 38
+        },
+        {
+          "id": "v-APNA-CL20-4",
+          "sku": "APNA-CL20-UK9",
+          "size": "UK 9",
+          "colorName": "Pastel Pink / White",
+          "colorHex": "#F472B6",
+          "stockQuantity": 28
+        },
+        {
+          "id": "v-APNA-CL20-5",
+          "sku": "APNA-CL20-UK10",
+          "size": "UK 10",
+          "colorName": "Pastel Pink / White",
+          "colorHex": "#F472B6",
+          "stockQuantity": 33
+        },
+        {
+          "id": "v-APNA-CL20-6",
+          "sku": "APNA-CL20-UK11",
+          "size": "UK 11",
+          "colorName": "Pastel Pink / White",
+          "colorHex": "#F472B6",
+          "stockQuantity": 38
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-04T10:00:00Z"
+    },
+    {
+      "id": "prod-17",
+      "sku": "APNA-HTW-21",
+      "name": "Apna Retro Dunk High Women",
+      "slug": "apna-retro-dunk-high-women",
+      "brand": "APNA SHOES",
+      "description": "Streetwear high-top sneaker tailored for women. Padded ankle strap, contrast color stitching, and durable grip cupsole.",
+      "gender": "women",
+      "categorySlug": "high-top-sneakers",
+      "originalPrice": 3299,
+      "sellingPrice": 1699,
+      "discountPercentage": 48,
+      "rating": 4.8,
+      "reviewCount": 95,
+      "graphicType": "high-top",
+      "images": [
+        "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 720,
+      "dimensionsCm": {
+        "length": 31,
+        "width": 20,
+        "height": 13
+      },
+      "specifications": {
+        "Sole Material": "Rubber Cupsole",
+        "Upper Material": "Matte Vegan Leather",
+        "Collar": "Padded High-Top"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-HTW21-1",
+          "sku": "APNA-HTW21-UK6",
+          "size": "UK 6",
+          "colorName": "White / Charcoal / Sunset",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 16
+        },
+        {
+          "id": "v-APNA-HTW21-2",
+          "sku": "APNA-HTW21-UK7",
+          "size": "UK 7",
+          "colorName": "White / Charcoal / Sunset",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 21
+        },
+        {
+          "id": "v-APNA-HTW21-3",
+          "sku": "APNA-HTW21-UK8",
+          "size": "UK 8",
+          "colorName": "White / Charcoal / Sunset",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 26
+        },
+        {
+          "id": "v-APNA-HTW21-4",
+          "sku": "APNA-HTW21-UK9",
+          "size": "UK 9",
+          "colorName": "White / Charcoal / Sunset",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 16
+        },
+        {
+          "id": "v-APNA-HTW21-5",
+          "sku": "APNA-HTW21-UK10",
+          "size": "UK 10",
+          "colorName": "White / Charcoal / Sunset",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 21
+        },
+        {
+          "id": "v-APNA-HTW21-6",
+          "sku": "APNA-HTW21-UK11",
+          "size": "UK 11",
+          "colorName": "White / Charcoal / Sunset",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 26
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-05T10:00:00Z"
+    },
+    {
+      "id": "prod-18",
+      "sku": "APNA-NC-22",
+      "name": "Apna Nova Chunky Street Women",
+      "slug": "apna-nova-chunky-street-women",
+      "brand": "APNA SHOES",
+      "description": "Fashion-forward chunky sneaker featuring multi-layer ripple sole. Combines sporty vibes with retro 90s aesthetic.",
+      "gender": "women",
+      "categorySlug": "casual-sneakers",
+      "originalPrice": 3199,
+      "sellingPrice": 1649,
+      "discountPercentage": 48,
+      "badge": "Trending",
+      "rating": 4.7,
+      "reviewCount": 110,
+      "graphicType": "street-chunky",
+      "images": [
+        "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 710,
+      "dimensionsCm": {
+        "length": 30,
+        "width": 20,
+        "height": 12
+      },
+      "specifications": {
+        "Sole Material": "Multi-Tiered Phylon",
+        "Upper Material": "Mesh & Textured Overlays",
+        "Insole": "Cushioned Footbed"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-NC22-1",
+          "sku": "APNA-NC22-UK6",
+          "size": "UK 6",
+          "colorName": "Alabaster / Cream / Amber",
+          "colorHex": "#F59E0B",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-APNA-NC22-2",
+          "sku": "APNA-NC22-UK7",
+          "size": "UK 7",
+          "colorName": "Alabaster / Cream / Amber",
+          "colorHex": "#F59E0B",
+          "stockQuantity": 23
+        },
+        {
+          "id": "v-APNA-NC22-3",
+          "sku": "APNA-NC22-UK8",
+          "size": "UK 8",
+          "colorName": "Alabaster / Cream / Amber",
+          "colorHex": "#F59E0B",
+          "stockQuantity": 28
+        },
+        {
+          "id": "v-APNA-NC22-4",
+          "sku": "APNA-NC22-UK9",
+          "size": "UK 9",
+          "colorName": "Alabaster / Cream / Amber",
+          "colorHex": "#F59E0B",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-APNA-NC22-5",
+          "sku": "APNA-NC22-UK10",
+          "size": "UK 10",
+          "colorName": "Alabaster / Cream / Amber",
+          "colorHex": "#F59E0B",
+          "stockQuantity": 23
+        },
+        {
+          "id": "v-APNA-NC22-6",
+          "sku": "APNA-NC22-UK11",
+          "size": "UK 11",
+          "colorName": "Alabaster / Cream / Amber",
+          "colorHex": "#F59E0B",
+          "stockQuantity": 28
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-05T10:00:00Z"
+    },
+    {
+      "id": "prod-19",
+      "sku": "APNA-GL-23",
+      "name": "Apna Glide Lace-Free Women",
+      "slug": "apna-glide-lace-free-women",
+      "brand": "APNA SHOES",
+      "description": "Pull-on elastic collar with zero pressure points on bunions or high insteps. The easiest shoe you will ever put on.",
+      "gender": "women",
+      "categorySlug": "walking-shoes",
+      "originalPrice": 2299,
+      "sellingPrice": 1199,
+      "discountPercentage": 47,
+      "rating": 4.8,
+      "reviewCount": 178,
+      "graphicType": "flex-slipon",
+      "images": [
+        "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 470,
+      "dimensionsCm": {
+        "length": 29,
+        "width": 18,
+        "height": 10
+      },
+      "specifications": {
+        "Sole Material": "Flexible Grooved Phylon",
+        "Upper Material": "Stretch Jacquard Knit",
+        "Fit": "Relaxed Comfort Fit"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-GL23-1",
+          "sku": "APNA-GL23-UK6",
+          "size": "UK 6",
+          "colorName": "Heather Navy / Coral",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 24
+        },
+        {
+          "id": "v-APNA-GL23-2",
+          "sku": "APNA-GL23-UK7",
+          "size": "UK 7",
+          "colorName": "Heather Navy / Coral",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 29
+        },
+        {
+          "id": "v-APNA-GL23-3",
+          "sku": "APNA-GL23-UK8",
+          "size": "UK 8",
+          "colorName": "Heather Navy / Coral",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 34
+        },
+        {
+          "id": "v-APNA-GL23-4",
+          "sku": "APNA-GL23-UK9",
+          "size": "UK 9",
+          "colorName": "Heather Navy / Coral",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 24
+        },
+        {
+          "id": "v-APNA-GL23-5",
+          "sku": "APNA-GL23-UK10",
+          "size": "UK 10",
+          "colorName": "Heather Navy / Coral",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 29
+        },
+        {
+          "id": "v-APNA-GL23-6",
+          "sku": "APNA-GL23-UK11",
+          "size": "UK 11",
+          "colorName": "Heather Navy / Coral",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 34
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-06T10:00:00Z"
+    },
+    {
+      "id": "prod-20",
+      "sku": "APNA-ZW-24",
+      "name": "Apna Zenith Court Sneaker Women",
+      "slug": "apna-zenith-court-sneaker-women",
+      "brand": "APNA SHOES",
+      "description": "Crisp court silhouette with gold eyelet details and contrast heel tab. Clean aesthetic that goes seamlessly from office to party.",
+      "gender": "women",
+      "categorySlug": "womens-sneakers",
+      "originalPrice": 2699,
+      "sellingPrice": 1399,
+      "discountPercentage": 48,
+      "badge": "New Drop",
+      "rating": 4.7,
+      "reviewCount": 65,
+      "graphicType": "retro-dunk",
+      "images": [
+        "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 590,
+      "dimensionsCm": {
+        "length": 30,
+        "width": 19,
+        "height": 11
+      },
+      "specifications": {
+        "Sole Material": "Rubber Cupsole",
+        "Upper Material": "Synthetic Leather",
+        "Details": "Metallic Eyelets"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-ZW24-1",
+          "sku": "APNA-ZW24-UK6",
+          "size": "UK 6",
+          "colorName": "White / Champagne Accent",
+          "colorHex": "#D97706",
+          "stockQuantity": 22
+        },
+        {
+          "id": "v-APNA-ZW24-2",
+          "sku": "APNA-ZW24-UK7",
+          "size": "UK 7",
+          "colorName": "White / Champagne Accent",
+          "colorHex": "#D97706",
+          "stockQuantity": 27
+        },
+        {
+          "id": "v-APNA-ZW24-3",
+          "sku": "APNA-ZW24-UK8",
+          "size": "UK 8",
+          "colorName": "White / Champagne Accent",
+          "colorHex": "#D97706",
+          "stockQuantity": 32
+        },
+        {
+          "id": "v-APNA-ZW24-4",
+          "sku": "APNA-ZW24-UK9",
+          "size": "UK 9",
+          "colorName": "White / Champagne Accent",
+          "colorHex": "#D97706",
+          "stockQuantity": 22
+        },
+        {
+          "id": "v-APNA-ZW24-5",
+          "sku": "APNA-ZW24-UK10",
+          "size": "UK 10",
+          "colorName": "White / Champagne Accent",
+          "colorHex": "#D97706",
+          "stockQuantity": 27
+        },
+        {
+          "id": "v-APNA-ZW24-6",
+          "sku": "APNA-ZW24-UK11",
+          "size": "UK 11",
+          "colorName": "White / Champagne Accent",
+          "colorHex": "#D97706",
+          "stockQuantity": 32
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-06T10:00:00Z"
+    },
+    {
+      "id": "prod-21",
+      "sku": "APNA-RN-03",
+      "name": "Apna Aero Run V2 Performance",
+      "slug": "apna-aero-run-v2-performance",
+      "brand": "APNA SHOES",
+      "description": "Designed for high cadence and road endurance. Ultra-lightweight aeroflux foam yields 68% energy return on every stride.",
+      "gender": "unisex",
+      "categorySlug": "running-shoes",
+      "originalPrice": 2999,
+      "sellingPrice": 1599,
+      "discountPercentage": 46,
+      "badge": "New Drop",
+      "rating": 4.9,
+      "reviewCount": 180,
+      "graphicType": "aero-runner",
+      "images": [
+        "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 590,
+      "dimensionsCm": {
+        "length": 31,
+        "width": 20,
+        "height": 11
+      },
+      "specifications": {
+        "Sole Material": "Aeroflux Rebound EVA",
+        "Upper Material": "Seamless 3D Jacquard Knit",
+        "Heel Drop": "8mm Road Drop"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-RN03-1",
+          "sku": "APNA-RN03-UK6",
+          "size": "UK 6",
+          "colorName": "Apex Black / Solar Flare",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 28
+        },
+        {
+          "id": "v-APNA-RN03-2",
+          "sku": "APNA-RN03-UK7",
+          "size": "UK 7",
+          "colorName": "Apex Black / Solar Flare",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 33
+        },
+        {
+          "id": "v-APNA-RN03-3",
+          "sku": "APNA-RN03-UK8",
+          "size": "UK 8",
+          "colorName": "Apex Black / Solar Flare",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 38
+        },
+        {
+          "id": "v-APNA-RN03-4",
+          "sku": "APNA-RN03-UK9",
+          "size": "UK 9",
+          "colorName": "Apex Black / Solar Flare",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 28
+        },
+        {
+          "id": "v-APNA-RN03-5",
+          "sku": "APNA-RN03-UK10",
+          "size": "UK 10",
+          "colorName": "Apex Black / Solar Flare",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 33
+        },
+        {
+          "id": "v-APNA-RN03-6",
+          "sku": "APNA-RN03-UK11",
+          "size": "UK 11",
+          "colorName": "Apex Black / Solar Flare",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 38
+        }
+      ],
+      "isActive": true,
+      "isFeatured": true,
+      "returnEligible": true,
+      "createdAt": "2026-03-10T10:00:00Z"
+    },
+    {
+      "id": "prod-22",
+      "sku": "APNA-VP-07",
+      "name": "Apna Velocity Pro Carbon Sprinter",
+      "slug": "apna-velocity-pro-carbon-sprinter",
+      "brand": "APNA SHOES",
+      "description": "For athletes who demand lightning speed. Embedded TPU propulsion plate delivers springy rebound with every push-off.",
+      "gender": "men",
+      "categorySlug": "running-shoes",
+      "originalPrice": 3599,
+      "sellingPrice": 1999,
+      "discountPercentage": 44,
+      "badge": "Trending",
+      "rating": 4.8,
+      "reviewCount": 112,
+      "graphicType": "velocity-pro",
+      "images": [
+        "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 640,
+      "dimensionsCm": {
+        "length": 32,
+        "width": 21,
+        "height": 12
+      },
+      "specifications": {
+        "Sole Material": "Nitro Foam + TPU Speed Plate",
+        "Upper Material": "Monomesh",
+        "Traction": "Carbon Rubber"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-VP07-1",
+          "sku": "APNA-VP07-UK6",
+          "size": "UK 6",
+          "colorName": "Carbon Black / Neon Blaze",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-APNA-VP07-2",
+          "sku": "APNA-VP07-UK7",
+          "size": "UK 7",
+          "colorName": "Carbon Black / Neon Blaze",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 23
+        },
+        {
+          "id": "v-APNA-VP07-3",
+          "sku": "APNA-VP07-UK8",
+          "size": "UK 8",
+          "colorName": "Carbon Black / Neon Blaze",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 28
+        },
+        {
+          "id": "v-APNA-VP07-4",
+          "sku": "APNA-VP07-UK9",
+          "size": "UK 9",
+          "colorName": "Carbon Black / Neon Blaze",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-APNA-VP07-5",
+          "sku": "APNA-VP07-UK10",
+          "size": "UK 10",
+          "colorName": "Carbon Black / Neon Blaze",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 23
+        },
+        {
+          "id": "v-APNA-VP07-6",
+          "sku": "APNA-VP07-UK11",
+          "size": "UK 11",
+          "colorName": "Carbon Black / Neon Blaze",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 28
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-03-20T10:00:00Z"
+    },
+    {
+      "id": "prod-23",
+      "sku": "APNA-MR-25",
+      "name": "Apna Marathon Elite Distance Runner",
+      "slug": "apna-marathon-elite-distance-runner",
+      "brand": "APNA SHOES",
+      "description": "32mm stack height maximum cushion running shoe for half-marathons and daily long runs. Absorbs road vibrations effortlessly.",
+      "gender": "unisex",
+      "categorySlug": "running-shoes",
+      "originalPrice": 3499,
+      "sellingPrice": 1849,
+      "discountPercentage": 47,
+      "rating": 4.8,
+      "reviewCount": 140,
+      "graphicType": "aero-runner",
+      "images": [
+        "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 630,
+      "dimensionsCm": {
+        "length": 32,
+        "width": 20,
+        "height": 12
+      },
+      "specifications": {
+        "Sole Material": "High Stack Nitro Injected EVA",
+        "Upper Material": "Engineered Breathable Mesh",
+        "Stack Height": "32mm"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-MR25-1",
+          "sku": "APNA-MR25-UK6",
+          "size": "UK 6",
+          "colorName": "Storm Grey / Fire Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-APNA-MR25-2",
+          "sku": "APNA-MR25-UK7",
+          "size": "UK 7",
+          "colorName": "Storm Grey / Fire Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-APNA-MR25-3",
+          "sku": "APNA-MR25-UK8",
+          "size": "UK 8",
+          "colorName": "Storm Grey / Fire Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-APNA-MR25-4",
+          "sku": "APNA-MR25-UK9",
+          "size": "UK 9",
+          "colorName": "Storm Grey / Fire Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-APNA-MR25-5",
+          "sku": "APNA-MR25-UK10",
+          "size": "UK 10",
+          "colorName": "Storm Grey / Fire Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-APNA-MR25-6",
+          "sku": "APNA-MR25-UK11",
+          "size": "UK 11",
+          "colorName": "Storm Grey / Fire Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 30
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-07T10:00:00Z"
+    },
+    {
+      "id": "prod-24",
+      "sku": "APNA-TM-26",
+      "name": "Apna Trail Master Outdoor All-Terrain",
+      "slug": "apna-trail-master-outdoor-all-terrain",
+      "brand": "APNA SHOES",
+      "description": "Deep 4.5mm multi-directional rubber lugs conquer loose gravel, mud, and hiking trails across Western Ghats and Himalayas.",
+      "gender": "men",
+      "categorySlug": "sports-shoes",
+      "originalPrice": 3299,
+      "sellingPrice": 1749,
+      "discountPercentage": 46,
+      "badge": "Trending",
+      "rating": 4.9,
+      "reviewCount": 92,
+      "graphicType": "velocity-pro",
+      "images": [
+        "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 760,
+      "dimensionsCm": {
+        "length": 33,
+        "width": 21,
+        "height": 13
+      },
+      "specifications": {
+        "Sole Material": "Deep Lug Carbon Rubber",
+        "Upper Material": "Ripstop Ballistic Mesh",
+        "Toe Protection": "Reinforced Rubber Cap"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-TM26-1",
+          "sku": "APNA-TM26-UK6",
+          "size": "UK 6",
+          "colorName": "Tactical Olive / Black / Orange",
+          "colorHex": "#EA580C",
+          "stockQuantity": 16
+        },
+        {
+          "id": "v-APNA-TM26-2",
+          "sku": "APNA-TM26-UK7",
+          "size": "UK 7",
+          "colorName": "Tactical Olive / Black / Orange",
+          "colorHex": "#EA580C",
+          "stockQuantity": 21
+        },
+        {
+          "id": "v-APNA-TM26-3",
+          "sku": "APNA-TM26-UK8",
+          "size": "UK 8",
+          "colorName": "Tactical Olive / Black / Orange",
+          "colorHex": "#EA580C",
+          "stockQuantity": 26
+        },
+        {
+          "id": "v-APNA-TM26-4",
+          "sku": "APNA-TM26-UK9",
+          "size": "UK 9",
+          "colorName": "Tactical Olive / Black / Orange",
+          "colorHex": "#EA580C",
+          "stockQuantity": 16
+        },
+        {
+          "id": "v-APNA-TM26-5",
+          "sku": "APNA-TM26-UK10",
+          "size": "UK 10",
+          "colorName": "Tactical Olive / Black / Orange",
+          "colorHex": "#EA580C",
+          "stockQuantity": 21
+        },
+        {
+          "id": "v-APNA-TM26-6",
+          "sku": "APNA-TM26-UK11",
+          "size": "UK 11",
+          "colorName": "Tactical Olive / Black / Orange",
+          "colorHex": "#EA580C",
+          "stockQuantity": 26
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-07T10:00:00Z"
+    },
+    {
+      "id": "prod-25",
+      "sku": "APNA-PR-27",
+      "name": "Apna Pulse Road Daily Trainer",
+      "slug": "apna-pulse-road-daily-trainer",
+      "brand": "APNA SHOES",
+      "description": "Your reliable workhorse for 5km daily jogs, gym sessions, and evening treadmill intervals. Lightweight and flexible.",
+      "gender": "unisex",
+      "categorySlug": "running-shoes",
+      "originalPrice": 2699,
+      "sellingPrice": 1399,
+      "discountPercentage": 48,
+      "rating": 4.7,
+      "reviewCount": 220,
+      "graphicType": "aero-runner",
+      "images": [
+        "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 580,
+      "dimensionsCm": {
+        "length": 31,
+        "width": 20,
+        "height": 11
+      },
+      "specifications": {
+        "Sole Material": "Dual-Density Phylon",
+        "Upper Material": "Air Knit Mesh",
+        "Drop": "6mm"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-PR27-1",
+          "sku": "APNA-PR27-UK6",
+          "size": "UK 6",
+          "colorName": "Electric Blue / Solar Accent",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 24
+        },
+        {
+          "id": "v-APNA-PR27-2",
+          "sku": "APNA-PR27-UK7",
+          "size": "UK 7",
+          "colorName": "Electric Blue / Solar Accent",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 29
+        },
+        {
+          "id": "v-APNA-PR27-3",
+          "sku": "APNA-PR27-UK8",
+          "size": "UK 8",
+          "colorName": "Electric Blue / Solar Accent",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 34
+        },
+        {
+          "id": "v-APNA-PR27-4",
+          "sku": "APNA-PR27-UK9",
+          "size": "UK 9",
+          "colorName": "Electric Blue / Solar Accent",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 24
+        },
+        {
+          "id": "v-APNA-PR27-5",
+          "sku": "APNA-PR27-UK10",
+          "size": "UK 10",
+          "colorName": "Electric Blue / Solar Accent",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 29
+        },
+        {
+          "id": "v-APNA-PR27-6",
+          "sku": "APNA-PR27-UK11",
+          "size": "UK 11",
+          "colorName": "Electric Blue / Solar Accent",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 34
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-08T10:00:00Z"
+    },
+    {
+      "id": "prod-26",
+      "sku": "APNA-WS-28",
+      "name": "Apna Wind Sprint Lightweight Flat",
+      "slug": "apna-wind-sprint-lightweight-flat",
+      "brand": "APNA SHOES",
+      "description": "Featherlight 240g sprint shoe engineered for tempo workouts and 100m/400m track sprints with locked-in midfoot wrap.",
+      "gender": "men",
+      "categorySlug": "running-shoes",
+      "originalPrice": 2899,
+      "sellingPrice": 1499,
+      "discountPercentage": 48,
+      "badge": "New Drop",
+      "rating": 4.7,
+      "reviewCount": 78,
+      "graphicType": "velocity-pro",
+      "images": [
+        "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 480,
+      "dimensionsCm": {
+        "length": 31,
+        "width": 20,
+        "height": 10
+      },
+      "specifications": {
+        "Sole Material": "Segmented Rubber Outsole",
+        "Upper Material": "Ultralight Translucent Mesh",
+        "Weight": "240g per shoe"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-WS28-1",
+          "sku": "APNA-WS28-UK6",
+          "size": "UK 6",
+          "colorName": "Matte Black / Orange Racing Stripe",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-APNA-WS28-2",
+          "sku": "APNA-WS28-UK7",
+          "size": "UK 7",
+          "colorName": "Matte Black / Orange Racing Stripe",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 23
+        },
+        {
+          "id": "v-APNA-WS28-3",
+          "sku": "APNA-WS28-UK8",
+          "size": "UK 8",
+          "colorName": "Matte Black / Orange Racing Stripe",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 28
+        },
+        {
+          "id": "v-APNA-WS28-4",
+          "sku": "APNA-WS28-UK9",
+          "size": "UK 9",
+          "colorName": "Matte Black / Orange Racing Stripe",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-APNA-WS28-5",
+          "sku": "APNA-WS28-UK10",
+          "size": "UK 10",
+          "colorName": "Matte Black / Orange Racing Stripe",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 23
+        },
+        {
+          "id": "v-APNA-WS28-6",
+          "sku": "APNA-WS28-UK11",
+          "size": "UK 11",
+          "colorName": "Matte Black / Orange Racing Stripe",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 28
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-08T10:00:00Z"
+    },
+    {
+      "id": "prod-27",
+      "sku": "APNA-NB-29",
+      "name": "Apna Nitro Boost Road Runner",
+      "slug": "apna-nitro-boost-road-runner",
+      "brand": "APNA SHOES",
+      "description": "Supercritical nitrogen-infused foam midsole offers pillowy comfort with snappy toe-off. Built for runner recovery days.",
+      "gender": "unisex",
+      "categorySlug": "running-shoes",
+      "originalPrice": 3399,
+      "sellingPrice": 1799,
+      "discountPercentage": 47,
+      "rating": 4.8,
+      "reviewCount": 160,
+      "graphicType": "aero-runner",
+      "images": [
+        "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 610,
+      "dimensionsCm": {
+        "length": 32,
+        "width": 20,
+        "height": 12
+      },
+      "specifications": {
+        "Sole Material": "Nitrogen Infused Foam",
+        "Upper Material": "Engineered Jacquard",
+        "Cushion": "Max Softness"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-NB29-1",
+          "sku": "APNA-NB29-UK6",
+          "size": "UK 6",
+          "colorName": "Graphite Grey / Solar Pulse",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-APNA-NB29-2",
+          "sku": "APNA-NB29-UK7",
+          "size": "UK 7",
+          "colorName": "Graphite Grey / Solar Pulse",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-APNA-NB29-3",
+          "sku": "APNA-NB29-UK8",
+          "size": "UK 8",
+          "colorName": "Graphite Grey / Solar Pulse",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-APNA-NB29-4",
+          "sku": "APNA-NB29-UK9",
+          "size": "UK 9",
+          "colorName": "Graphite Grey / Solar Pulse",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-APNA-NB29-5",
+          "sku": "APNA-NB29-UK10",
+          "size": "UK 10",
+          "colorName": "Graphite Grey / Solar Pulse",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-APNA-NB29-6",
+          "sku": "APNA-NB29-UK11",
+          "size": "UK 11",
+          "colorName": "Graphite Grey / Solar Pulse",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 30
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-09T10:00:00Z"
+    },
+    {
+      "id": "prod-28",
+      "sku": "APNA-FX-30",
+      "name": "Apna Flex Trainer Gym Shoe",
+      "slug": "apna-flex-trainer-gym-shoe",
+      "brand": "APNA SHOES",
+      "description": "Flat, stable heel with zero-slip side wall wraps. Ideal for barbell squats, deadlifts, kettlebells, and HIIT workouts.",
+      "gender": "unisex",
+      "categorySlug": "sports-shoes",
+      "originalPrice": 2799,
+      "sellingPrice": 1449,
+      "discountPercentage": 48,
+      "badge": "Bestseller",
+      "rating": 4.9,
+      "reviewCount": 205,
+      "graphicType": "campus-pulse",
+      "images": [
+        "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 650,
+      "dimensionsCm": {
+        "length": 31,
+        "width": 21,
+        "height": 11
+      },
+      "specifications": {
+        "Sole Material": "Flat Non-Marking Rubber",
+        "Upper Material": "Abrasion Resistant Monomesh",
+        "Stability": "Lateral Side Guards"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-FX30-1",
+          "sku": "APNA-FX30-UK6",
+          "size": "UK 6",
+          "colorName": "Carbon Black / Iron Grey",
+          "colorHex": "#374151",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-APNA-FX30-2",
+          "sku": "APNA-FX30-UK7",
+          "size": "UK 7",
+          "colorName": "Carbon Black / Iron Grey",
+          "colorHex": "#374151",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-APNA-FX30-3",
+          "sku": "APNA-FX30-UK8",
+          "size": "UK 8",
+          "colorName": "Carbon Black / Iron Grey",
+          "colorHex": "#374151",
+          "stockQuantity": 35
+        },
+        {
+          "id": "v-APNA-FX30-4",
+          "sku": "APNA-FX30-UK9",
+          "size": "UK 9",
+          "colorName": "Carbon Black / Iron Grey",
+          "colorHex": "#374151",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-APNA-FX30-5",
+          "sku": "APNA-FX30-UK10",
+          "size": "UK 10",
+          "colorName": "Carbon Black / Iron Grey",
+          "colorHex": "#374151",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-APNA-FX30-6",
+          "sku": "APNA-FX30-UK11",
+          "size": "UK 11",
+          "colorName": "Carbon Black / Iron Grey",
+          "colorHex": "#374151",
+          "stockQuantity": 35
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-09T10:00:00Z"
+    },
+    {
+      "id": "prod-29",
+      "sku": "APNA-CK-31",
+      "name": "Apna Court King Badminton & Tennis",
+      "slug": "apna-court-king-badminton-tennis",
+      "brand": "APNA SHOES",
+      "description": "Natural gum rubber sole designed for indoor wooden and synthetic badminton, squash, and pickleball courts. Non-marking certified.",
+      "gender": "unisex",
+      "categorySlug": "sports-shoes",
+      "originalPrice": 2699,
+      "sellingPrice": 1399,
+      "discountPercentage": 48,
+      "rating": 4.8,
+      "reviewCount": 188,
+      "graphicType": "campus-pulse",
+      "images": [
+        "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 640,
+      "dimensionsCm": {
+        "length": 31,
+        "width": 20,
+        "height": 11
+      },
+      "specifications": {
+        "Sole Material": "100% Pure Gum Rubber (Non-Marking)",
+        "Upper Material": "Synthetic PU & Mesh",
+        "Court": "Indoor Wooden/Synthetic"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-CK31-1",
+          "sku": "APNA-CK31-UK6",
+          "size": "UK 6",
+          "colorName": "White / Royal Blue / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 22
+        },
+        {
+          "id": "v-APNA-CK31-2",
+          "sku": "APNA-CK31-UK7",
+          "size": "UK 7",
+          "colorName": "White / Royal Blue / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 27
+        },
+        {
+          "id": "v-APNA-CK31-3",
+          "sku": "APNA-CK31-UK8",
+          "size": "UK 8",
+          "colorName": "White / Royal Blue / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 32
+        },
+        {
+          "id": "v-APNA-CK31-4",
+          "sku": "APNA-CK31-UK9",
+          "size": "UK 9",
+          "colorName": "White / Royal Blue / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 22
+        },
+        {
+          "id": "v-APNA-CK31-5",
+          "sku": "APNA-CK31-UK10",
+          "size": "UK 10",
+          "colorName": "White / Royal Blue / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 27
+        },
+        {
+          "id": "v-APNA-CK31-6",
+          "sku": "APNA-CK31-UK11",
+          "size": "UK 11",
+          "colorName": "White / Royal Blue / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 32
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-10T10:00:00Z"
+    },
+    {
+      "id": "prod-30",
+      "sku": "APNA-CF-32",
+      "name": "Apna CrossFit Agility Pro",
+      "slug": "apna-crossfit-agility-pro",
+      "brand": "APNA SHOES",
+      "description": "Reinforced rope-grip medial arch protector and firm heel stabilizer designed for intense gym circuits and box jumps.",
+      "gender": "men",
+      "categorySlug": "sports-shoes",
+      "originalPrice": 2999,
+      "sellingPrice": 1549,
+      "discountPercentage": 48,
+      "rating": 4.7,
+      "reviewCount": 115,
+      "graphicType": "velocity-pro",
+      "images": [
+        "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 670,
+      "dimensionsCm": {
+        "length": 32,
+        "width": 20,
+        "height": 11
+      },
+      "specifications": {
+        "Sole Material": "High Density Rubber Pods",
+        "Upper Material": "Kevlar Thread Ripstop",
+        "Support": "Midfoot Rope Guard"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-CF32-1",
+          "sku": "APNA-CF32-UK6",
+          "size": "UK 6",
+          "colorName": "Military Camo Black / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-APNA-CF32-2",
+          "sku": "APNA-CF32-UK7",
+          "size": "UK 7",
+          "colorName": "Military Camo Black / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 23
+        },
+        {
+          "id": "v-APNA-CF32-3",
+          "sku": "APNA-CF32-UK8",
+          "size": "UK 8",
+          "colorName": "Military Camo Black / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 28
+        },
+        {
+          "id": "v-APNA-CF32-4",
+          "sku": "APNA-CF32-UK9",
+          "size": "UK 9",
+          "colorName": "Military Camo Black / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-APNA-CF32-5",
+          "sku": "APNA-CF32-UK10",
+          "size": "UK 10",
+          "colorName": "Military Camo Black / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 23
+        },
+        {
+          "id": "v-APNA-CF32-6",
+          "sku": "APNA-CF32-UK11",
+          "size": "UK 11",
+          "colorName": "Military Camo Black / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 28
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-10T10:00:00Z"
+    },
+    {
+      "id": "prod-31",
+      "sku": "APNA-KD-06",
+      "name": "Apna Junior Bolt Kids Shoes",
+      "slug": "apna-junior-bolt-kids-shoes",
+      "brand": "APNA SHOES",
+      "description": "Engineered specifically for active Indian kids. High-abrasion bumper guards protect toes during playground games, with an easy-lock Velcro strap.",
+      "gender": "kids",
+      "categorySlug": "kids-shoes",
+      "originalPrice": 1999,
+      "sellingPrice": 999,
+      "discountPercentage": 50,
+      "badge": "Bestseller",
+      "rating": 4.9,
+      "reviewCount": 198,
+      "graphicType": "junior-bolt",
+      "images": [
+        "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 420,
+      "dimensionsCm": {
+        "length": 26,
+        "width": 17,
+        "height": 10
+      },
+      "specifications": {
+        "Sole Material": "Anti-Slip Honeycomb Rubber",
+        "Upper Material": "Ballistic Washable Mesh",
+        "Closure": "Double Velcro Hook-and-Loop"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-KD06-1",
+          "sku": "APNA-KD06-UK1",
+          "size": "UK 1",
+          "colorName": "Solar Orange / Midnight Navy",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 24
+        },
+        {
+          "id": "v-APNA-KD06-2",
+          "sku": "APNA-KD06-UK2",
+          "size": "UK 2",
+          "colorName": "Solar Orange / Midnight Navy",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 29
+        },
+        {
+          "id": "v-APNA-KD06-3",
+          "sku": "APNA-KD06-UK3",
+          "size": "UK 3",
+          "colorName": "Solar Orange / Midnight Navy",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 34
+        },
+        {
+          "id": "v-APNA-KD06-4",
+          "sku": "APNA-KD06-UK4",
+          "size": "UK 4",
+          "colorName": "Solar Orange / Midnight Navy",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 24
+        },
+        {
+          "id": "v-APNA-KD06-5",
+          "sku": "APNA-KD06-UK5",
+          "size": "UK 5",
+          "colorName": "Solar Orange / Midnight Navy",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 29
+        }
+      ],
+      "isActive": true,
+      "isFeatured": true,
+      "returnEligible": true,
+      "createdAt": "2026-03-18T10:00:00Z"
+    },
+    {
+      "id": "prod-32",
+      "sku": "APNA-SB-33",
+      "name": "Apna Star Bounce Kids Sneaker",
+      "slug": "apna-star-bounce-kids-sneaker",
+      "brand": "APNA SHOES",
+      "description": "Ultra-cushioned bubbly bounce sole absorbs running shock during school breaks. Flexible sole bends 180 degrees without cracking.",
+      "gender": "kids",
+      "categorySlug": "kids-shoes",
+      "originalPrice": 1899,
+      "sellingPrice": 899,
+      "discountPercentage": 52,
+      "badge": "Hot Deal",
+      "rating": 4.8,
+      "reviewCount": 145,
+      "graphicType": "junior-bolt",
+      "images": [
+        "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 390,
+      "dimensionsCm": {
+        "length": 25,
+        "width": 16,
+        "height": 9
+      },
+      "specifications": {
+        "Sole Material": "Bubble EVA Foam",
+        "Upper Material": "Breathable Knit",
+        "Closure": "Single Velcro Strap"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-SB33-1",
+          "sku": "APNA-SB33-UK1",
+          "size": "UK 1",
+          "colorName": "Sky Blue / Fire Orange",
+          "colorHex": "#38BDF8",
+          "stockQuantity": 22
+        },
+        {
+          "id": "v-APNA-SB33-2",
+          "sku": "APNA-SB33-UK2",
+          "size": "UK 2",
+          "colorName": "Sky Blue / Fire Orange",
+          "colorHex": "#38BDF8",
+          "stockQuantity": 27
+        },
+        {
+          "id": "v-APNA-SB33-3",
+          "sku": "APNA-SB33-UK3",
+          "size": "UK 3",
+          "colorName": "Sky Blue / Fire Orange",
+          "colorHex": "#38BDF8",
+          "stockQuantity": 32
+        },
+        {
+          "id": "v-APNA-SB33-4",
+          "sku": "APNA-SB33-UK4",
+          "size": "UK 4",
+          "colorName": "Sky Blue / Fire Orange",
+          "colorHex": "#38BDF8",
+          "stockQuantity": 22
+        },
+        {
+          "id": "v-APNA-SB33-5",
+          "sku": "APNA-SB33-UK5",
+          "size": "UK 5",
+          "colorName": "Sky Blue / Fire Orange",
+          "colorHex": "#38BDF8",
+          "stockQuantity": 27
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-01T10:00:00Z"
+    },
+    {
+      "id": "prod-33",
+      "sku": "APNA-SA-34",
+      "name": "Apna School Ace All-White Uniform Shoes",
+      "slug": "apna-school-ace-all-white-uniform-shoes",
+      "brand": "APNA SHOES",
+      "description": "Durable, scuff-resistant pure white school shoe complying with Indian school dress codes. Easy to clean with damp cloth.",
+      "gender": "kids",
+      "categorySlug": "kids-shoes",
+      "originalPrice": 1699,
+      "sellingPrice": 799,
+      "discountPercentage": 53,
+      "badge": "Bestseller",
+      "rating": 4.9,
+      "reviewCount": 320,
+      "graphicType": "junior-bolt",
+      "images": [
+        "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 410,
+      "dimensionsCm": {
+        "length": 26,
+        "width": 17,
+        "height": 10
+      },
+      "specifications": {
+        "Sole Material": "Non-Marking White PVC Rubber",
+        "Upper Material": "Washable Faux Leather",
+        "Standard": "Indian School Uniform Compliant"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-SA34-1",
+          "sku": "APNA-SA34-UK1",
+          "size": "UK 1",
+          "colorName": "Pure Uniform White",
+          "colorHex": "#FFFFFF",
+          "stockQuantity": 35
+        },
+        {
+          "id": "v-APNA-SA34-2",
+          "sku": "APNA-SA34-UK2",
+          "size": "UK 2",
+          "colorName": "Pure Uniform White",
+          "colorHex": "#FFFFFF",
+          "stockQuantity": 40
+        },
+        {
+          "id": "v-APNA-SA34-3",
+          "sku": "APNA-SA34-UK3",
+          "size": "UK 3",
+          "colorName": "Pure Uniform White",
+          "colorHex": "#FFFFFF",
+          "stockQuantity": 45
+        },
+        {
+          "id": "v-APNA-SA34-4",
+          "sku": "APNA-SA34-UK4",
+          "size": "UK 4",
+          "colorName": "Pure Uniform White",
+          "colorHex": "#FFFFFF",
+          "stockQuantity": 35
+        },
+        {
+          "id": "v-APNA-SA34-5",
+          "sku": "APNA-SA34-UK5",
+          "size": "UK 5",
+          "colorName": "Pure Uniform White",
+          "colorHex": "#FFFFFF",
+          "stockQuantity": 40
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-02T10:00:00Z"
+    },
+    {
+      "id": "prod-34",
+      "sku": "APNA-DF-35",
+      "name": "Apna Dino Flex Lightup Kids Kicks",
+      "slug": "apna-dino-flex-lightup-kids-kicks",
+      "brand": "APNA SHOES",
+      "description": "Fun dinosaur tread pattern with rugged toe shield. Built to survive tree climbing, cycling, and park races.",
+      "gender": "kids",
+      "categorySlug": "kids-shoes",
+      "originalPrice": 1999,
+      "sellingPrice": 949,
+      "discountPercentage": 52,
+      "badge": "Trending",
+      "rating": 4.8,
+      "reviewCount": 110,
+      "graphicType": "junior-bolt",
+      "images": [
+        "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 430,
+      "dimensionsCm": {
+        "length": 26,
+        "width": 17,
+        "height": 10
+      },
+      "specifications": {
+        "Sole Material": "Tough Rubber Sole",
+        "Upper Material": "Reinforced Mesh",
+        "Closure": "Elastic Laces + Velcro"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-DF35-1",
+          "sku": "APNA-DF35-UK1",
+          "size": "UK 1",
+          "colorName": "Jungle Green / Vivid Orange",
+          "colorHex": "#22C55E",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-APNA-DF35-2",
+          "sku": "APNA-DF35-UK2",
+          "size": "UK 2",
+          "colorName": "Jungle Green / Vivid Orange",
+          "colorHex": "#22C55E",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-APNA-DF35-3",
+          "sku": "APNA-DF35-UK3",
+          "size": "UK 3",
+          "colorName": "Jungle Green / Vivid Orange",
+          "colorHex": "#22C55E",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-APNA-DF35-4",
+          "sku": "APNA-DF35-UK4",
+          "size": "UK 4",
+          "colorName": "Jungle Green / Vivid Orange",
+          "colorHex": "#22C55E",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-APNA-DF35-5",
+          "sku": "APNA-DF35-UK5",
+          "size": "UK 5",
+          "colorName": "Jungle Green / Vivid Orange",
+          "colorHex": "#22C55E",
+          "stockQuantity": 25
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-03T10:00:00Z"
+    },
+    {
+      "id": "prod-35",
+      "sku": "APNA-FR-36",
+      "name": "Apna Flash Runner Junior Sport",
+      "slug": "apna-flash-runner-junior-sport",
+      "brand": "APNA SHOES",
+      "description": "High-speed sporty sneaker for sports day, sprint races, and daily play. Memory insole cushions growing bones.",
+      "gender": "kids",
+      "categorySlug": "kids-shoes",
+      "originalPrice": 1899,
+      "sellingPrice": 899,
+      "discountPercentage": 52,
+      "rating": 4.7,
+      "reviewCount": 95,
+      "graphicType": "junior-bolt",
+      "images": [
+        "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 380,
+      "dimensionsCm": {
+        "length": 25,
+        "width": 16,
+        "height": 9
+      },
+      "specifications": {
+        "Sole Material": "Lightweight Phylon",
+        "Upper Material": "Mesh & Reflective Trim",
+        "Insole": "Child Memory Cushion"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-FR36-1",
+          "sku": "APNA-FR36-UK1",
+          "size": "UK 1",
+          "colorName": "Carbon / Flame Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 24
+        },
+        {
+          "id": "v-APNA-FR36-2",
+          "sku": "APNA-FR36-UK2",
+          "size": "UK 2",
+          "colorName": "Carbon / Flame Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 29
+        },
+        {
+          "id": "v-APNA-FR36-3",
+          "sku": "APNA-FR36-UK3",
+          "size": "UK 3",
+          "colorName": "Carbon / Flame Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 34
+        },
+        {
+          "id": "v-APNA-FR36-4",
+          "sku": "APNA-FR36-UK4",
+          "size": "UK 4",
+          "colorName": "Carbon / Flame Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 24
+        },
+        {
+          "id": "v-APNA-FR36-5",
+          "sku": "APNA-FR36-UK5",
+          "size": "UK 5",
+          "colorName": "Carbon / Flame Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 29
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-04T10:00:00Z"
+    },
+    {
+      "id": "prod-36",
+      "sku": "APNA-SP-37",
+      "name": "Apna Sparkle Glow Girls Sneaker",
+      "slug": "apna-sparkle-glow-girls-sneaker",
+      "brand": "APNA SHOES",
+      "description": "Glittery pastel details with comfy padded tongue. Girls love pairing with frock dresses, jeans, and party wear.",
+      "gender": "kids",
+      "categorySlug": "kids-shoes",
+      "originalPrice": 1899,
+      "sellingPrice": 899,
+      "discountPercentage": 52,
+      "badge": "New Drop",
+      "rating": 4.8,
+      "reviewCount": 88,
+      "graphicType": "junior-bolt",
+      "images": [
+        "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 370,
+      "dimensionsCm": {
+        "length": 25,
+        "width": 16,
+        "height": 9
+      },
+      "specifications": {
+        "Sole Material": "Non-Slip Soft EVA",
+        "Upper Material": "Glitter Infused Canvas",
+        "Fit": "Comfort Width"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-SP37-1",
+          "sku": "APNA-SP37-UK1",
+          "size": "UK 1",
+          "colorName": "Shimmer Pink / White",
+          "colorHex": "#F472B6",
+          "stockQuantity": 22
+        },
+        {
+          "id": "v-APNA-SP37-2",
+          "sku": "APNA-SP37-UK2",
+          "size": "UK 2",
+          "colorName": "Shimmer Pink / White",
+          "colorHex": "#F472B6",
+          "stockQuantity": 27
+        },
+        {
+          "id": "v-APNA-SP37-3",
+          "sku": "APNA-SP37-UK3",
+          "size": "UK 3",
+          "colorName": "Shimmer Pink / White",
+          "colorHex": "#F472B6",
+          "stockQuantity": 32
+        },
+        {
+          "id": "v-APNA-SP37-4",
+          "sku": "APNA-SP37-UK4",
+          "size": "UK 4",
+          "colorName": "Shimmer Pink / White",
+          "colorHex": "#F472B6",
+          "stockQuantity": 22
+        },
+        {
+          "id": "v-APNA-SP37-5",
+          "sku": "APNA-SP37-UK5",
+          "size": "UK 5",
+          "colorName": "Shimmer Pink / White",
+          "colorHex": "#F472B6",
+          "stockQuantity": 27
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-05T10:00:00Z"
+    },
+    {
+      "id": "prod-37",
+      "sku": "APNA-JC-38",
+      "name": "Apna Junior Court High-Top Kicks",
+      "slug": "apna-junior-court-high-top-kicks",
+      "brand": "APNA SHOES",
+      "description": "Ankle support basketball-style high-top for kids. Tough vulcanized sole protects during rough outdoor games.",
+      "gender": "kids",
+      "categorySlug": "kids-shoes",
+      "originalPrice": 2199,
+      "sellingPrice": 1049,
+      "discountPercentage": 52,
+      "rating": 4.7,
+      "reviewCount": 75,
+      "graphicType": "high-top",
+      "images": [
+        "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 460,
+      "dimensionsCm": {
+        "length": 26,
+        "width": 17,
+        "height": 11
+      },
+      "specifications": {
+        "Sole Material": "Rubber Cupsole",
+        "Upper Material": "Vegan Leather",
+        "Collar": "Padded High-Top"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-JC38-1",
+          "sku": "APNA-JC38-UK1",
+          "size": "UK 1",
+          "colorName": "Black / White / Red Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-APNA-JC38-2",
+          "sku": "APNA-JC38-UK2",
+          "size": "UK 2",
+          "colorName": "Black / White / Red Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 23
+        },
+        {
+          "id": "v-APNA-JC38-3",
+          "sku": "APNA-JC38-UK3",
+          "size": "UK 3",
+          "colorName": "Black / White / Red Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 28
+        },
+        {
+          "id": "v-APNA-JC38-4",
+          "sku": "APNA-JC38-UK4",
+          "size": "UK 4",
+          "colorName": "Black / White / Red Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-APNA-JC38-5",
+          "sku": "APNA-JC38-UK5",
+          "size": "UK 5",
+          "colorName": "Black / White / Red Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 23
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-06T10:00:00Z"
+    },
+    {
+      "id": "prod-38",
+      "sku": "APNA-SB-39",
+      "name": "Apna School Black All-Weather Uniform",
+      "slug": "apna-school-black-all-weather-uniform",
+      "brand": "APNA SHOES",
+      "description": "Water-resistant black school uniform shoe with easy Velcro strap. Built to handle monsoons and dusty playgrounds.",
+      "gender": "kids",
+      "categorySlug": "kids-shoes",
+      "originalPrice": 1699,
+      "sellingPrice": 799,
+      "discountPercentage": 53,
+      "badge": "Bestseller",
+      "rating": 4.9,
+      "reviewCount": 290,
+      "graphicType": "junior-bolt",
+      "images": [
+        "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 420,
+      "dimensionsCm": {
+        "length": 26,
+        "width": 17,
+        "height": 10
+      },
+      "specifications": {
+        "Sole Material": "Heavy Duty PVC",
+        "Upper Material": "Gloss Synthetic Leather",
+        "Usage": "Daily School Uniform"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-SB39-1",
+          "sku": "APNA-SB39-UK1",
+          "size": "UK 1",
+          "colorName": "Uniform Pitch Black",
+          "colorHex": "#18181B",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-APNA-SB39-2",
+          "sku": "APNA-SB39-UK2",
+          "size": "UK 2",
+          "colorName": "Uniform Pitch Black",
+          "colorHex": "#18181B",
+          "stockQuantity": 35
+        },
+        {
+          "id": "v-APNA-SB39-3",
+          "sku": "APNA-SB39-UK3",
+          "size": "UK 3",
+          "colorName": "Uniform Pitch Black",
+          "colorHex": "#18181B",
+          "stockQuantity": 40
+        },
+        {
+          "id": "v-APNA-SB39-4",
+          "sku": "APNA-SB39-UK4",
+          "size": "UK 4",
+          "colorName": "Uniform Pitch Black",
+          "colorHex": "#18181B",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-APNA-SB39-5",
+          "sku": "APNA-SB39-UK5",
+          "size": "UK 5",
+          "colorName": "Uniform Pitch Black",
+          "colorHex": "#18181B",
+          "stockQuantity": 35
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-07T10:00:00Z"
+    },
+    {
+      "id": "prod-39",
+      "sku": "APNA-CF-40",
+      "name": "Apna Cozy Fleece Winter Slip-On Kids",
+      "slug": "apna-cozy-fleece-winter-slip-on-kids",
+      "brand": "APNA SHOES",
+      "description": "Warm plush fleece lining keeps little feet toasty during cold mornings in Northern India. Anti-slip rubber sole.",
+      "gender": "kids",
+      "categorySlug": "kids-shoes",
+      "originalPrice": 1799,
+      "sellingPrice": 849,
+      "discountPercentage": 53,
+      "rating": 4.8,
+      "reviewCount": 65,
+      "graphicType": "junior-bolt",
+      "images": [
+        "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 360,
+      "dimensionsCm": {
+        "length": 25,
+        "width": 16,
+        "height": 9
+      },
+      "specifications": {
+        "Sole Material": "Flexible TPR",
+        "Upper Material": "Insulated Knit & Fleece",
+        "Lining": "Warm Sherpa"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-CF40-1",
+          "sku": "APNA-CF40-UK1",
+          "size": "UK 1",
+          "colorName": "Charcoal Grey / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-APNA-CF40-2",
+          "sku": "APNA-CF40-UK2",
+          "size": "UK 2",
+          "colorName": "Charcoal Grey / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-APNA-CF40-3",
+          "sku": "APNA-CF40-UK3",
+          "size": "UK 3",
+          "colorName": "Charcoal Grey / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-APNA-CF40-4",
+          "sku": "APNA-CF40-UK4",
+          "size": "UK 4",
+          "colorName": "Charcoal Grey / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-APNA-CF40-5",
+          "sku": "APNA-CF40-UK5",
+          "size": "UK 5",
+          "colorName": "Charcoal Grey / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 25
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-08T10:00:00Z"
+    },
+    {
+      "id": "prod-40",
+      "sku": "APNA-SL-41",
+      "name": "Apna Speed Lock Sprint Kids",
+      "slug": "apna-speed-lock-sprint-kids",
+      "brand": "APNA SHOES",
+      "description": "Rotary dial speed-lacing wire system: turn dial to tighten, pull to release. Zero untied laces ever again!",
+      "gender": "kids",
+      "categorySlug": "kids-shoes",
+      "originalPrice": 2299,
+      "sellingPrice": 1099,
+      "discountPercentage": 52,
+      "badge": "Trending",
+      "rating": 4.9,
+      "reviewCount": 140,
+      "graphicType": "junior-bolt",
+      "images": [
+        "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 410,
+      "dimensionsCm": {
+        "length": 26,
+        "width": 17,
+        "height": 10
+      },
+      "specifications": {
+        "Sole Material": "Shock-Gel Rubber",
+        "Upper Material": "3D Mesh",
+        "Closure": "Rotary Dial Wire Lace"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-SL41-1",
+          "sku": "APNA-SL41-UK1",
+          "size": "UK 1",
+          "colorName": "Cobalt Blue / Neon Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-APNA-SL41-2",
+          "sku": "APNA-SL41-UK2",
+          "size": "UK 2",
+          "colorName": "Cobalt Blue / Neon Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-APNA-SL41-3",
+          "sku": "APNA-SL41-UK3",
+          "size": "UK 3",
+          "colorName": "Cobalt Blue / Neon Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-APNA-SL41-4",
+          "sku": "APNA-SL41-UK4",
+          "size": "UK 4",
+          "colorName": "Cobalt Blue / Neon Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-APNA-SL41-5",
+          "sku": "APNA-SL41-UK5",
+          "size": "UK 5",
+          "colorName": "Cobalt Blue / Neon Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 25
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-09T10:00:00Z"
+    },
+    {
+      "id": "prod-41",
+      "sku": "APNA-FL-08",
+      "name": "Apna Flex Walk Comfort Slip-On",
+      "slug": "apna-flex-walk-comfort-slip-on",
+      "brand": "APNA SHOES",
+      "description": "Zero laces, maximum freedom. High-stretch knit collar slips on like a sock and hugs the foot without pinching.",
+      "gender": "unisex",
+      "categorySlug": "walking-shoes",
+      "originalPrice": 2299,
+      "sellingPrice": 1199,
+      "discountPercentage": 47,
+      "badge": "Bestseller",
+      "rating": 4.7,
+      "reviewCount": 310,
+      "graphicType": "flex-slipon",
+      "images": [
+        "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 520,
+      "dimensionsCm": {
+        "length": 31,
+        "width": 20,
+        "height": 11
+      },
+      "specifications": {
+        "Sole Material": "Ultra-Flexible Grooved EVA",
+        "Upper Material": "4-Way Stretch Knit",
+        "Insole": "Ortho Memory Cushion"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-FL08-1",
+          "sku": "APNA-FL08-UK6",
+          "size": "UK 6",
+          "colorName": "Heather Grey / Vivid Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-APNA-FL08-2",
+          "sku": "APNA-FL08-UK7",
+          "size": "UK 7",
+          "colorName": "Heather Grey / Vivid Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 35
+        },
+        {
+          "id": "v-APNA-FL08-3",
+          "sku": "APNA-FL08-UK8",
+          "size": "UK 8",
+          "colorName": "Heather Grey / Vivid Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 40
+        },
+        {
+          "id": "v-APNA-FL08-4",
+          "sku": "APNA-FL08-UK9",
+          "size": "UK 9",
+          "colorName": "Heather Grey / Vivid Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-APNA-FL08-5",
+          "sku": "APNA-FL08-UK10",
+          "size": "UK 10",
+          "colorName": "Heather Grey / Vivid Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 35
+        },
+        {
+          "id": "v-APNA-FL08-6",
+          "sku": "APNA-FL08-UK11",
+          "size": "UK 11",
+          "colorName": "Heather Grey / Vivid Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 40
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-03-22T10:00:00Z"
+    },
+    {
+      "id": "prod-42",
+      "sku": "APNA-OP-42",
+      "name": "Apna Ortho Step Pro Arch Support",
+      "slug": "apna-ortho-step-pro-arch-support",
+      "brand": "APNA SHOES",
+      "description": "Podiatrist-approved arch support system relieves plantar fasciitis and heel pain. Extra wide toe box prevents rubbing.",
+      "gender": "unisex",
+      "categorySlug": "walking-shoes",
+      "originalPrice": 2799,
+      "sellingPrice": 1399,
+      "discountPercentage": 50,
+      "badge": "Bestseller",
+      "rating": 4.9,
+      "reviewCount": 410,
+      "graphicType": "flex-slipon",
+      "images": [
+        "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 590,
+      "dimensionsCm": {
+        "length": 32,
+        "width": 21,
+        "height": 12
+      },
+      "specifications": {
+        "Sole Material": "Rocker Bottom EVA Sole",
+        "Insole": "Biomechanic Orthotic Insert",
+        "Medical": "Plantar Fasciitis Friendly"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-OP42-1",
+          "sku": "APNA-OP42-UK6",
+          "size": "UK 6",
+          "colorName": "Black / Charcoal Medical Grade",
+          "colorHex": "#1F2937",
+          "stockQuantity": 35
+        },
+        {
+          "id": "v-APNA-OP42-2",
+          "sku": "APNA-OP42-UK7",
+          "size": "UK 7",
+          "colorName": "Black / Charcoal Medical Grade",
+          "colorHex": "#1F2937",
+          "stockQuantity": 40
+        },
+        {
+          "id": "v-APNA-OP42-3",
+          "sku": "APNA-OP42-UK8",
+          "size": "UK 8",
+          "colorName": "Black / Charcoal Medical Grade",
+          "colorHex": "#1F2937",
+          "stockQuantity": 45
+        },
+        {
+          "id": "v-APNA-OP42-4",
+          "sku": "APNA-OP42-UK9",
+          "size": "UK 9",
+          "colorName": "Black / Charcoal Medical Grade",
+          "colorHex": "#1F2937",
+          "stockQuantity": 35
+        },
+        {
+          "id": "v-APNA-OP42-5",
+          "sku": "APNA-OP42-UK10",
+          "size": "UK 10",
+          "colorName": "Black / Charcoal Medical Grade",
+          "colorHex": "#1F2937",
+          "stockQuantity": 40
+        },
+        {
+          "id": "v-APNA-OP42-6",
+          "sku": "APNA-OP42-UK11",
+          "size": "UK 11",
+          "colorName": "Black / Charcoal Medical Grade",
+          "colorHex": "#1F2937",
+          "stockQuantity": 45
+        }
+      ],
+      "isActive": true,
+      "isFeatured": true,
+      "returnEligible": true,
+      "createdAt": "2026-04-01T10:00:00Z"
+    },
+    {
+      "id": "prod-43",
+      "sku": "APNA-10K-43",
+      "name": "Apna 10,000 Steps Daily Commuter",
+      "slug": "apna-10000-steps-daily-commuter",
+      "brand": "APNA SHOES",
+      "description": "Engineered specifically for walking 10,000 steps every day. Curved rocker sole rolls foot forward effortlessly.",
+      "gender": "unisex",
+      "categorySlug": "walking-shoes",
+      "originalPrice": 2499,
+      "sellingPrice": 1299,
+      "discountPercentage": 48,
+      "rating": 4.8,
+      "reviewCount": 230,
+      "graphicType": "aero-runner",
+      "images": [
+        "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 560,
+      "dimensionsCm": {
+        "length": 31,
+        "width": 20,
+        "height": 11
+      },
+      "specifications": {
+        "Sole Material": "Ergonomic Rocker Sole",
+        "Upper Material": "Air-Flow Mesh",
+        "Insole": "Double Layer Memory Foam"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-10K43-1",
+          "sku": "APNA-10K43-UK6",
+          "size": "UK 6",
+          "colorName": "Ash Grey / Solar Accent",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-APNA-10K43-2",
+          "sku": "APNA-10K43-UK7",
+          "size": "UK 7",
+          "colorName": "Ash Grey / Solar Accent",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-APNA-10K43-3",
+          "sku": "APNA-10K43-UK8",
+          "size": "UK 8",
+          "colorName": "Ash Grey / Solar Accent",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 35
+        },
+        {
+          "id": "v-APNA-10K43-4",
+          "sku": "APNA-10K43-UK9",
+          "size": "UK 9",
+          "colorName": "Ash Grey / Solar Accent",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-APNA-10K43-5",
+          "sku": "APNA-10K43-UK10",
+          "size": "UK 10",
+          "colorName": "Ash Grey / Solar Accent",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-APNA-10K43-6",
+          "sku": "APNA-10K43-UK11",
+          "size": "UK 11",
+          "colorName": "Ash Grey / Solar Accent",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 35
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-02T10:00:00Z"
+    },
+    {
+      "id": "prod-44",
+      "sku": "APNA-GW-44",
+      "name": "Apna Gentle Walk Senior Citizen Slip-On",
+      "slug": "apna-gentle-walk-senior-citizen-slip-on",
+      "brand": "APNA SHOES",
+      "description": "High-grip anti-skid rubber sole prevents slips on wet bathroom tiles and marble floors. Super soft padded tongue and wide fit.",
+      "gender": "unisex",
+      "categorySlug": "walking-shoes",
+      "originalPrice": 2299,
+      "sellingPrice": 1149,
+      "discountPercentage": 50,
+      "badge": "Bestseller",
+      "rating": 4.9,
+      "reviewCount": 350,
+      "graphicType": "flex-slipon",
+      "images": [
+        "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 510,
+      "dimensionsCm": {
+        "length": 31,
+        "width": 21,
+        "height": 11
+      },
+      "specifications": {
+        "Sole Material": "Wet-Grip Siped Rubber",
+        "Upper Material": "Stretch Lycra & Mesh",
+        "Target": "Seniors & Diabetic Foot Care"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-GW44-1",
+          "sku": "APNA-GW44-UK6",
+          "size": "UK 6",
+          "colorName": "Dark Navy / Slate",
+          "colorHex": "#1E293B",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-APNA-GW44-2",
+          "sku": "APNA-GW44-UK7",
+          "size": "UK 7",
+          "colorName": "Dark Navy / Slate",
+          "colorHex": "#1E293B",
+          "stockQuantity": 35
+        },
+        {
+          "id": "v-APNA-GW44-3",
+          "sku": "APNA-GW44-UK8",
+          "size": "UK 8",
+          "colorName": "Dark Navy / Slate",
+          "colorHex": "#1E293B",
+          "stockQuantity": 40
+        },
+        {
+          "id": "v-APNA-GW44-4",
+          "sku": "APNA-GW44-UK9",
+          "size": "UK 9",
+          "colorName": "Dark Navy / Slate",
+          "colorHex": "#1E293B",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-APNA-GW44-5",
+          "sku": "APNA-GW44-UK10",
+          "size": "UK 10",
+          "colorName": "Dark Navy / Slate",
+          "colorHex": "#1E293B",
+          "stockQuantity": 35
+        },
+        {
+          "id": "v-APNA-GW44-6",
+          "sku": "APNA-GW44-UK11",
+          "size": "UK 11",
+          "colorName": "Dark Navy / Slate",
+          "colorHex": "#1E293B",
+          "stockQuantity": 40
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-03T10:00:00Z"
+    },
+    {
+      "id": "prod-45",
+      "sku": "APNA-AC-45",
+      "name": "Apna All-Day Air Cushion Walking Kicks",
+      "slug": "apna-all-day-air-cushion-walking-kicks",
+      "brand": "APNA SHOES",
+      "description": "Visible air chamber in heel unit provides springy softness with every pavement step. Ideal for retail staff and nurses.",
+      "gender": "unisex",
+      "categorySlug": "walking-shoes",
+      "originalPrice": 2699,
+      "sellingPrice": 1399,
+      "discountPercentage": 48,
+      "badge": "Trending",
+      "rating": 4.7,
+      "reviewCount": 160,
+      "graphicType": "air-glide",
+      "images": [
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1514989940743-460b4b35b2b2?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 620,
+      "dimensionsCm": {
+        "length": 32,
+        "width": 20,
+        "height": 12
+      },
+      "specifications": {
+        "Sole Material": "Air Pocket Cushion EVA",
+        "Upper Material": "3D Engineered Mesh",
+        "Heel Unit": "Impact Air Pod"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-AC45-1",
+          "sku": "APNA-AC45-UK6",
+          "size": "UK 6",
+          "colorName": "Pitch Black / Ember Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 22
+        },
+        {
+          "id": "v-APNA-AC45-2",
+          "sku": "APNA-AC45-UK7",
+          "size": "UK 7",
+          "colorName": "Pitch Black / Ember Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 27
+        },
+        {
+          "id": "v-APNA-AC45-3",
+          "sku": "APNA-AC45-UK8",
+          "size": "UK 8",
+          "colorName": "Pitch Black / Ember Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 32
+        },
+        {
+          "id": "v-APNA-AC45-4",
+          "sku": "APNA-AC45-UK9",
+          "size": "UK 9",
+          "colorName": "Pitch Black / Ember Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 22
+        },
+        {
+          "id": "v-APNA-AC45-5",
+          "sku": "APNA-AC45-UK10",
+          "size": "UK 10",
+          "colorName": "Pitch Black / Ember Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 27
+        },
+        {
+          "id": "v-APNA-AC45-6",
+          "sku": "APNA-AC45-UK11",
+          "size": "UK 11",
+          "colorName": "Pitch Black / Ember Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 32
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-04T10:00:00Z"
+    },
+    {
+      "id": "prod-46",
+      "sku": "APNA-BW-46",
+      "name": "Apna Breeze Walk Ultra Breathable",
+      "slug": "apna-breeze-walk-ultra-breathable",
+      "brand": "APNA SHOES",
+      "description": "Perforated knit airflow matrix expels heat rapidly in 40°C Indian summers. Keeps feet dry and odor-free.",
+      "gender": "unisex",
+      "categorySlug": "walking-shoes",
+      "originalPrice": 2199,
+      "sellingPrice": 1099,
+      "discountPercentage": 50,
+      "rating": 4.6,
+      "reviewCount": 195,
+      "graphicType": "flex-slipon",
+      "images": [
+        "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 490,
+      "dimensionsCm": {
+        "length": 30,
+        "width": 19,
+        "height": 11
+      },
+      "specifications": {
+        "Sole Material": "Ventilated EVA Sole",
+        "Upper Material": "Cool-Mesh Jacquard",
+        "Odor Control": "Anti-Bacterial Insole"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-BW46-1",
+          "sku": "APNA-BW46-UK6",
+          "size": "UK 6",
+          "colorName": "Light Steel / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 24
+        },
+        {
+          "id": "v-APNA-BW46-2",
+          "sku": "APNA-BW46-UK7",
+          "size": "UK 7",
+          "colorName": "Light Steel / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 29
+        },
+        {
+          "id": "v-APNA-BW46-3",
+          "sku": "APNA-BW46-UK8",
+          "size": "UK 8",
+          "colorName": "Light Steel / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 34
+        },
+        {
+          "id": "v-APNA-BW46-4",
+          "sku": "APNA-BW46-UK9",
+          "size": "UK 9",
+          "colorName": "Light Steel / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 24
+        },
+        {
+          "id": "v-APNA-BW46-5",
+          "sku": "APNA-BW46-UK10",
+          "size": "UK 10",
+          "colorName": "Light Steel / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 29
+        },
+        {
+          "id": "v-APNA-BW46-6",
+          "sku": "APNA-BW46-UK11",
+          "size": "UK 11",
+          "colorName": "Light Steel / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 34
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-05T10:00:00Z"
+    },
+    {
+      "id": "prod-47",
+      "sku": "APNA-UB-47",
+      "name": "Apna Urban Chelsea Sneaker-Boot",
+      "slug": "apna-urban-chelsea-sneaker-boot",
+      "brand": "APNA SHOES",
+      "description": "Hybrid ankle boot on sneaker cupsole. Elastic side gores for easy slip-on with rugged all-weather synthetic leather.",
+      "gender": "men",
+      "categorySlug": "casual-sneakers",
+      "originalPrice": 3499,
+      "sellingPrice": 1899,
+      "discountPercentage": 45,
+      "badge": "Trending",
+      "rating": 4.8,
+      "reviewCount": 88,
+      "graphicType": "high-top",
+      "images": [
+        "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 830,
+      "dimensionsCm": {
+        "length": 33,
+        "width": 22,
+        "height": 14
+      },
+      "specifications": {
+        "Sole Material": "Tough Lug Rubber Cupsole",
+        "Upper Material": "Oil-Treated Synthetic Leather",
+        "Style": "Chelsea Sneaker"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-UB47-1",
+          "sku": "APNA-UB47-UK6",
+          "size": "UK 6",
+          "colorName": "Rustic Tan Brown / Black",
+          "colorHex": "#78350F",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-APNA-UB47-2",
+          "sku": "APNA-UB47-UK7",
+          "size": "UK 7",
+          "colorName": "Rustic Tan Brown / Black",
+          "colorHex": "#78350F",
+          "stockQuantity": 23
+        },
+        {
+          "id": "v-APNA-UB47-3",
+          "sku": "APNA-UB47-UK8",
+          "size": "UK 8",
+          "colorName": "Rustic Tan Brown / Black",
+          "colorHex": "#78350F",
+          "stockQuantity": 28
+        },
+        {
+          "id": "v-APNA-UB47-4",
+          "sku": "APNA-UB47-UK9",
+          "size": "UK 9",
+          "colorName": "Rustic Tan Brown / Black",
+          "colorHex": "#78350F",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-APNA-UB47-5",
+          "sku": "APNA-UB47-UK10",
+          "size": "UK 10",
+          "colorName": "Rustic Tan Brown / Black",
+          "colorHex": "#78350F",
+          "stockQuantity": 23
+        },
+        {
+          "id": "v-APNA-UB47-6",
+          "sku": "APNA-UB47-UK11",
+          "size": "UK 11",
+          "colorName": "Rustic Tan Brown / Black",
+          "colorHex": "#78350F",
+          "stockQuantity": 28
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-06T10:00:00Z"
+    },
+    {
+      "id": "prod-48",
+      "sku": "APNA-CS-48",
+      "name": "Apna Classic Slip-On Skate Kicks",
+      "slug": "apna-classic-slip-on-skate-kicks",
+      "brand": "APNA SHOES",
+      "description": "Iconic checkerboard and solid street slip-on. Padded collars, elastic side accents, and signature waffle outsoles.",
+      "gender": "unisex",
+      "categorySlug": "casual-sneakers",
+      "originalPrice": 2299,
+      "sellingPrice": 1199,
+      "discountPercentage": 47,
+      "rating": 4.7,
+      "reviewCount": 220,
+      "graphicType": "campus-pulse",
+      "images": [
+        "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 640,
+      "dimensionsCm": {
+        "length": 31,
+        "width": 20,
+        "height": 11
+      },
+      "specifications": {
+        "Sole Material": "Waffle Gum Rubber",
+        "Upper Material": "10oz Canvas",
+        "Fit": "Classic Skate"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-CS48-1",
+          "sku": "APNA-CS48-UK6",
+          "size": "UK 6",
+          "colorName": "Black & White Checker / Orange Tag",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 24
+        },
+        {
+          "id": "v-APNA-CS48-2",
+          "sku": "APNA-CS48-UK7",
+          "size": "UK 7",
+          "colorName": "Black & White Checker / Orange Tag",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 29
+        },
+        {
+          "id": "v-APNA-CS48-3",
+          "sku": "APNA-CS48-UK8",
+          "size": "UK 8",
+          "colorName": "Black & White Checker / Orange Tag",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 34
+        },
+        {
+          "id": "v-APNA-CS48-4",
+          "sku": "APNA-CS48-UK9",
+          "size": "UK 9",
+          "colorName": "Black & White Checker / Orange Tag",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 24
+        },
+        {
+          "id": "v-APNA-CS48-5",
+          "sku": "APNA-CS48-UK10",
+          "size": "UK 10",
+          "colorName": "Black & White Checker / Orange Tag",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 29
+        },
+        {
+          "id": "v-APNA-CS48-6",
+          "sku": "APNA-CS48-UK11",
+          "size": "UK 11",
+          "colorName": "Black & White Checker / Orange Tag",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 34
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-07T10:00:00Z"
+    },
+    {
+      "id": "prod-49",
+      "sku": "APNA-RL-49",
+      "name": "Apna Royal Loafer Hybrid Sneaker",
+      "slug": "apna-royal-loafer-hybrid-sneaker",
+      "brand": "APNA SHOES",
+      "description": "Smart casual footwear matching kurtas, blazers, and chinos. Penny loafer moc toe upper mounted on athletic sneaker sole.",
+      "gender": "men",
+      "categorySlug": "casual-sneakers",
+      "originalPrice": 2999,
+      "sellingPrice": 1549,
+      "discountPercentage": 48,
+      "badge": "New Drop",
+      "rating": 4.8,
+      "reviewCount": 104,
+      "graphicType": "retro-dunk",
+      "images": [
+        "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 700,
+      "dimensionsCm": {
+        "length": 32,
+        "width": 20,
+        "height": 12
+      },
+      "specifications": {
+        "Sole Material": "Sneaker Midsole Rubber",
+        "Upper Material": "Burnished Faux Leather",
+        "Style": "Hybrid Penny Loafer"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-RL49-1",
+          "sku": "APNA-RL49-UK6",
+          "size": "UK 6",
+          "colorName": "Deep Walnut Brown",
+          "colorHex": "#451A03",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-APNA-RL49-2",
+          "sku": "APNA-RL49-UK7",
+          "size": "UK 7",
+          "colorName": "Deep Walnut Brown",
+          "colorHex": "#451A03",
+          "stockQuantity": 23
+        },
+        {
+          "id": "v-APNA-RL49-3",
+          "sku": "APNA-RL49-UK8",
+          "size": "UK 8",
+          "colorName": "Deep Walnut Brown",
+          "colorHex": "#451A03",
+          "stockQuantity": 28
+        },
+        {
+          "id": "v-APNA-RL49-4",
+          "sku": "APNA-RL49-UK9",
+          "size": "UK 9",
+          "colorName": "Deep Walnut Brown",
+          "colorHex": "#451A03",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-APNA-RL49-5",
+          "sku": "APNA-RL49-UK10",
+          "size": "UK 10",
+          "colorName": "Deep Walnut Brown",
+          "colorHex": "#451A03",
+          "stockQuantity": 23
+        },
+        {
+          "id": "v-APNA-RL49-6",
+          "sku": "APNA-RL49-UK11",
+          "size": "UK 11",
+          "colorName": "Deep Walnut Brown",
+          "colorHex": "#451A03",
+          "stockQuantity": 28
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-08T10:00:00Z"
+    },
+    {
+      "id": "prod-50",
+      "sku": "APNA-ET-50",
+      "name": "Apna Eco Tread Recycled Sneaker",
+      "slug": "apna-eco-tread-recycled-sneaker",
+      "brand": "APNA SHOES",
+      "description": "Eco-conscious design made with 40% recycled ocean plastic yarn and sugarcane-based EVA foam sole. Sustainable style.",
+      "gender": "unisex",
+      "categorySlug": "mens-sneakers",
+      "originalPrice": 2899,
+      "sellingPrice": 1499,
+      "discountPercentage": 48,
+      "badge": "Trending",
+      "rating": 4.8,
+      "reviewCount": 132,
+      "graphicType": "air-glide",
+      "images": [
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1514989940743-460b4b35b2b2?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 590,
+      "dimensionsCm": {
+        "length": 31,
+        "width": 20,
+        "height": 11
+      },
+      "specifications": {
+        "Sole Material": "Sugarcane Bio-EVA",
+        "Upper Material": "Recycled PET Yarn",
+        "Eco": "Low Carbon Footprint"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-ET50-1",
+          "sku": "APNA-ET50-UK6",
+          "size": "UK 6",
+          "colorName": "Eco Sage Green / Solar Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-APNA-ET50-2",
+          "sku": "APNA-ET50-UK7",
+          "size": "UK 7",
+          "colorName": "Eco Sage Green / Solar Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-APNA-ET50-3",
+          "sku": "APNA-ET50-UK8",
+          "size": "UK 8",
+          "colorName": "Eco Sage Green / Solar Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 30
+        },
+        {
+          "id": "v-APNA-ET50-4",
+          "sku": "APNA-ET50-UK9",
+          "size": "UK 9",
+          "colorName": "Eco Sage Green / Solar Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-APNA-ET50-5",
+          "sku": "APNA-ET50-UK10",
+          "size": "UK 10",
+          "colorName": "Eco Sage Green / Solar Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-APNA-ET50-6",
+          "sku": "APNA-ET50-UK11",
+          "size": "UK 11",
+          "colorName": "Eco Sage Green / Solar Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 30
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-09T10:00:00Z"
+    },
+    {
+      "id": "prod-51",
+      "sku": "APNA-BH-51",
+      "name": "Apna Basketball High Dunk Pro",
+      "slug": "apna-basketball-high-dunk-pro",
+      "brand": "APNA SHOES",
+      "description": "Heavy padded heel cup with lockdown lacing. High sidewall torsion plate engineered for aggressive court cuts and leaps.",
+      "gender": "men",
+      "categorySlug": "high-top-sneakers",
+      "originalPrice": 3699,
+      "sellingPrice": 1999,
+      "discountPercentage": 46,
+      "badge": "Hot Deal",
+      "rating": 4.9,
+      "reviewCount": 144,
+      "graphicType": "high-top",
+      "images": [
+        "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 850,
+      "dimensionsCm": {
+        "length": 33,
+        "width": 22,
+        "height": 14
+      },
+      "specifications": {
+        "Sole Material": "Herringbone Grip Rubber",
+        "Upper Material": "Engineered Leather & Mesh",
+        "Court Type": "Indoor & Outdoor Tarmac"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-BH51-1",
+          "sku": "APNA-BH51-UK6",
+          "size": "UK 6",
+          "colorName": "Black / Red / Orange Court",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-APNA-BH51-2",
+          "sku": "APNA-BH51-UK7",
+          "size": "UK 7",
+          "colorName": "Black / Red / Orange Court",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 23
+        },
+        {
+          "id": "v-APNA-BH51-3",
+          "sku": "APNA-BH51-UK8",
+          "size": "UK 8",
+          "colorName": "Black / Red / Orange Court",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 28
+        },
+        {
+          "id": "v-APNA-BH51-4",
+          "sku": "APNA-BH51-UK9",
+          "size": "UK 9",
+          "colorName": "Black / Red / Orange Court",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 18
+        },
+        {
+          "id": "v-APNA-BH51-5",
+          "sku": "APNA-BH51-UK10",
+          "size": "UK 10",
+          "colorName": "Black / Red / Orange Court",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 23
+        },
+        {
+          "id": "v-APNA-BH51-6",
+          "sku": "APNA-BH51-UK11",
+          "size": "UK 11",
+          "colorName": "Black / Red / Orange Court",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 28
+        }
+      ],
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-04-10T10:00:00Z"
+    },
+    {
+      "id": "prod-52",
+      "sku": "APNA-XG-52",
+      "name": "Apna X-Glide Extreme Edition",
+      "slug": "apna-x-glide-extreme-edition",
+      "brand": "APNA SHOES",
+      "description": "Collector limited-run edition with dual air pods, speed laces, and luminous orange wave accents. The pinnacle of Apna Streetwear.",
+      "gender": "men",
+      "categorySlug": "mens-sneakers",
+      "originalPrice": 3899,
+      "sellingPrice": 2099,
+      "discountPercentage": 46,
+      "badge": "Trending",
+      "rating": 4.9,
+      "reviewCount": 98,
+      "graphicType": "air-glide",
+      "images": [
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1514989940743-460b4b35b2b2?auto=format&fit=crop&w=800&q=80"
+      ],
+      "weightGrams": 720,
+      "dimensionsCm": {
+        "length": 33,
+        "width": 21,
+        "height": 13
+      },
+      "specifications": {
+        "Sole Material": "Dual Air Chamber EVA",
+        "Upper Material": "Ripstop Matrix Monomesh",
+        "Edition": "Limited Batch 2026"
+      },
+      "variants": [
+        {
+          "id": "v-APNA-XG52-1",
+          "sku": "APNA-XG52-UK6",
+          "size": "UK 6",
+          "colorName": "Stealth Carbon / Fire Wave",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 15
+        },
+        {
+          "id": "v-APNA-XG52-2",
+          "sku": "APNA-XG52-UK7",
+          "size": "UK 7",
+          "colorName": "Stealth Carbon / Fire Wave",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-APNA-XG52-3",
+          "sku": "APNA-XG52-UK8",
+          "size": "UK 8",
+          "colorName": "Stealth Carbon / Fire Wave",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-APNA-XG52-4",
+          "sku": "APNA-XG52-UK9",
+          "size": "UK 9",
+          "colorName": "Stealth Carbon / Fire Wave",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 15
+        },
+        {
+          "id": "v-APNA-XG52-5",
+          "sku": "APNA-XG52-UK10",
+          "size": "UK 10",
+          "colorName": "Stealth Carbon / Fire Wave",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-APNA-XG52-6",
+          "sku": "APNA-XG52-UK11",
+          "size": "UK 11",
+          "colorName": "Stealth Carbon / Fire Wave",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 25
+        }
+      ],
+      "isActive": true,
+      "isFeatured": true,
+      "returnEligible": true,
+      "createdAt": "2026-04-11T10:00:00Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-1",
+      "slug": "mens-sneakers",
+      "name": "Men's Sneakers",
+      "description": "Streetwear, athletic, and everyday casual kicks engineered for comfort.",
+      "displayOrder": 1,
+      "showOnHome": true,
+      "isActive": true
+    },
+    {
+      "id": "cat-2",
+      "slug": "womens-sneakers",
+      "name": "Women's Sneakers",
+      "description": "Lightweight, versatile silhouettes designed for effortless modern styling.",
+      "displayOrder": 2,
+      "showOnHome": true,
+      "isActive": true
+    },
+    {
+      "id": "cat-3",
+      "slug": "running-shoes",
+      "name": "Running & Training",
+      "description": "High-cushion responsive soles for marathons, sprints, and morning jogs.",
+      "displayOrder": 3,
+      "showOnHome": true,
+      "isActive": true
+    },
+    {
+      "id": "cat-4",
+      "slug": "casual-sneakers",
+      "name": "Casual Street Kicks",
+      "description": "Clean minimalist profiles perfect for college, work, and weekend chill.",
+      "displayOrder": 4,
+      "showOnHome": true,
+      "isActive": true
+    },
+    {
+      "id": "cat-5",
+      "slug": "high-top-sneakers",
+      "name": "High-Top Sneakers",
+      "description": "Bold ankle support and authentic retro basketball aesthetic.",
+      "displayOrder": 5,
+      "showOnHome": true,
+      "isActive": true
+    },
+    {
+      "id": "cat-6",
+      "slug": "kids-shoes",
+      "name": "Kids' Active Footwear",
+      "description": "Durable, scuff-resistant sneakers with extra bounce for energetic feet.",
+      "displayOrder": 6,
+      "showOnHome": true,
+      "isActive": true
+    },
+    {
+      "id": "cat-7",
+      "slug": "walking-shoes",
+      "name": "Walking & Comfort",
+      "description": "Cloud-foam insoles and ergonomic arch support for 10,000+ steps daily.",
+      "displayOrder": 7,
+      "showOnHome": false,
+      "isActive": true
+    }
+  ],
+  "orders": [
+    {
+      "customerName": "Super Admin",
+      "customerEmail": "admin@apnashoes.in",
+      "customerPhone": "+91 98765 00000",
+      "shippingAddress": {
+        "id": "addr-1791745467120",
+        "name": "Super Admin",
+        "phone": "+91 98765 00000",
+        "email": "admin@apnashoes.in",
+        "flatHouse": "Flat 402, Tower B, Green Meadows",
+        "streetLocality": "Sector 62",
+        "landmark": "Near Fortis Hospital",
+        "city": "Noida",
+        "state": "Uttar Pradesh",
+        "pincode": "201301",
+        "country": "India",
+        "addressType": "home",
+        "deliveryInstructions": "Leave package with security gate if unavailable"
+      },
+      "billingAddress": {
+        "id": "addr-1791745467120",
+        "name": "Super Admin",
+        "phone": "+91 98765 00000",
+        "email": "admin@apnashoes.in",
+        "flatHouse": "Flat 402, Tower B, Green Meadows",
+        "streetLocality": "Sector 62",
+        "landmark": "Near Fortis Hospital",
+        "city": "Noida",
+        "state": "Uttar Pradesh",
+        "pincode": "201301",
+        "country": "India",
+        "addressType": "home",
+        "deliveryInstructions": "Leave package with security gate if unavailable"
+      },
+      "items": [
+        {
+          "id": "prod-1-UK 8-Chalk White / Charcoal",
+          "productId": "prod-1",
+          "productName": "Apna Air Glide 01 Sneaker",
+          "productSlug": "apna-air-glide-01-sneaker",
+          "brand": "APNA SHOES",
+          "variantId": "v-1-5",
+          "size": "UK 8",
+          "color": "Chalk White / Charcoal",
+          "colorHex": "#18181B",
+          "price": 1499,
+          "originalPrice": 2799,
+          "quantity": 1,
+          "graphicType": "air-glide",
+          "stockAvailable": 15,
+          "unitPrice": 1499,
+          "totalPrice": 1499,
+          "sku": "APNA-AG-01"
+        },
+        {
+          "id": "prod-1-UK 8-Jet Black / Solar Orange",
+          "productId": "prod-1",
+          "productName": "Apna Air Glide 01 Sneaker",
+          "productSlug": "apna-air-glide-01-sneaker",
+          "brand": "APNA SHOES",
+          "variantId": "v-1-2",
+          "size": "UK 8",
+          "color": "Jet Black / Solar Orange",
+          "colorHex": "#FF5A1F",
+          "price": 1499,
+          "originalPrice": 2799,
+          "quantity": 1,
+          "graphicType": "air-glide",
+          "stockAvailable": 38,
+          "unitPrice": 1499,
+          "totalPrice": 1499,
+          "sku": "APNA-AG-01"
+        }
+      ],
+      "subtotal": 2998,
+      "discountAmount": 299.8,
+      "couponCode": "APNA10",
+      "taxAmount": 411.59,
+      "shippingFee": 0,
+      "totalAmount": 2698.2,
+      "paymentMethod": "razorpay",
+      "paymentStatus": "paid",
+      "orderStatus": "order_placed",
+      "razorpayOrderId": "order_05047a14823c2b2f",
+      "razorpayPaymentId": "pay_mud4tgbi",
+      "id": "ord-1791745469175",
+      "orderNumber": "APNA-2026-3547",
+      "createdAt": "2026-10-11T19:04:29.175Z",
+      "updatedAt": "2026-10-11T19:04:29.175Z"
+    },
+    {
+      "customerName": "Rahul Sharma",
+      "customerEmail": "rahul.sharma@example.com",
+      "customerPhone": "+91 98112 34567",
+      "shippingAddress": {
+        "id": "addr-1791742293244",
+        "name": "Rahul Sharma",
+        "phone": "+91 98112 34567",
+        "email": "rahul.sharma@example.com",
+        "flatHouse": "Flat 402, Tower B, Green Meadows",
+        "streetLocality": "Sector 62",
+        "landmark": "Near Fortis Hospital",
+        "city": "Noida",
+        "state": "Uttar Pradesh",
+        "pincode": "201301",
+        "country": "India",
+        "addressType": "home",
+        "deliveryInstructions": "Leave package with security gate if unavailable"
+      },
+      "billingAddress": {
+        "id": "addr-1791742293244",
+        "name": "Rahul Sharma",
+        "phone": "+91 98112 34567",
+        "email": "rahul.sharma@example.com",
+        "flatHouse": "Flat 402, Tower B, Green Meadows",
+        "streetLocality": "Sector 62",
+        "landmark": "Near Fortis Hospital",
+        "city": "Noida",
+        "state": "Uttar Pradesh",
+        "pincode": "201301",
+        "country": "India",
+        "addressType": "home",
+        "deliveryInstructions": "Leave package with security gate if unavailable"
+      },
+      "items": [
+        {
+          "id": "prod-1-UK 8-Chalk White / Charcoal",
+          "productId": "prod-1",
+          "productName": "Apna Air Glide 01 Sneaker",
+          "productSlug": "apna-air-glide-01-sneaker",
+          "brand": "APNA SHOES",
+          "variantId": "v-1-5",
+          "size": "UK 8",
+          "color": "Chalk White / Charcoal",
+          "colorHex": "#18181B",
+          "price": 1499,
+          "originalPrice": 2799,
+          "quantity": 1,
+          "graphicType": "air-glide",
+          "stockAvailable": 15,
+          "unitPrice": 1499,
+          "totalPrice": 1499,
+          "sku": "APNA-AG-01"
+        }
+      ],
+      "subtotal": 1499,
+      "discountAmount": 200,
+      "couponCode": "FIRSTPAIR",
+      "taxAmount": 198.15,
+      "shippingFee": 0,
+      "totalAmount": 1299,
+      "paymentMethod": "razorpay",
+      "paymentStatus": "paid",
+      "orderStatus": "delivered",
+      "razorpayOrderId": "order_965515e32a98e4b5",
+      "razorpayPaymentId": "pay_7mu1jc52",
+      "id": "ord-1791742290614",
+      "orderNumber": "APNA-2026-4532",
+      "createdAt": "2026-10-11T18:11:30.614Z",
+      "updatedAt": "2026-10-11T18:56:14.507Z",
+      "shipment": {
+        "id": "ship-1791742381283",
+        "orderId": "ord-1791742290614",
+        "courierName": "Shiprocket — Delhivery Air",
+        "shipmentId": "SR-SHI-381283",
+        "awbCode": "43458730986",
+        "status": "delivered",
+        "trackingUrl": "https://shiprocket.co/tracking/43458730986",
+        "pickupScheduledAt": "2026-10-12T06:13:01.283Z",
+        "estimatedDelivery": "2026-10-14T18:13:01.283Z",
+        "events": [
+          {
+            "id": "ev-1791744974507",
+            "statusCode": "DL",
+            "statusTitle": "Delivered",
+            "location": "Noida Delivery Hub",
+            "timestamp": "2026-10-11T18:56:14.507Z",
+            "description": "Package delivered to recipient. 7-day return window started."
+          },
+          {
+            "id": "ev-1791742381283",
+            "statusCode": "MF",
+            "statusTitle": "Manifest Generated",
+            "location": "Apna Shoes Warehouse Noida",
+            "timestamp": "2026-10-11T18:13:01.283Z",
+            "description": "Shipment booked with Shiprocket — Delhivery Air. AWB: 43458730986"
+          }
+        ],
+        "actualDelivery": "2026-10-11T18:56:14.507Z"
+      },
+      "deliveredAt": "2026-10-11T18:56:14.507Z",
+      "returnDeadline": "2026-10-18T18:56:14.507Z"
+    },
+    {
+      "id": "ord-101",
+      "orderNumber": "APNA-2026-7842",
+      "customerName": "Rahul Sharma",
+      "customerEmail": "rahul.sharma@example.com",
+      "customerPhone": "+91 98112 34567",
+      "shippingAddress": {
+        "id": "addr-1",
+        "name": "Rahul Sharma",
+        "phone": "+91 98112 34567",
+        "flatHouse": "Flat 402, Tower B, Green Meadows",
+        "streetLocality": "Sector 62",
+        "landmark": "Near Fortis Hospital",
+        "city": "Noida",
+        "state": "Uttar Pradesh",
+        "pincode": "201301",
+        "country": "India",
+        "addressType": "home"
+      },
+      "billingAddress": {
+        "id": "addr-1",
+        "name": "Rahul Sharma",
+        "phone": "+91 98112 34567",
+        "flatHouse": "Flat 402, Tower B, Green Meadows",
+        "streetLocality": "Sector 62",
+        "city": "Noida",
+        "state": "Uttar Pradesh",
+        "pincode": "201301",
+        "country": "India",
+        "addressType": "home"
+      },
+      "items": [
+        {
+          "id": "oi-1",
+          "productId": "prod-1",
+          "variantId": "v-1-2",
+          "productName": "Apna Air Glide 01 Sneaker",
+          "sku": "APNA-AG-01-BLK-UK8",
+          "size": "UK 8",
+          "color": "Jet Black / Solar Orange",
+          "unitPrice": 1499,
+          "quantity": 1,
+          "totalPrice": 1499,
+          "graphicType": "air-glide"
+        }
+      ],
+      "subtotal": 1499,
+      "discountAmount": 149.9,
+      "couponCode": "APNA10",
+      "taxAmount": 242.84,
+      "shippingFee": 0,
+      "totalAmount": 1349.1,
+      "paymentMethod": "razorpay",
+      "paymentStatus": "paid",
+      "orderStatus": "order_placed",
+      "razorpayOrderId": "order_Nxd894210",
+      "razorpayPaymentId": "pay_Nxd8949982",
+      "deliveredAt": "2026-03-27T14:30:00Z",
+      "returnDeadline": "2026-04-03T23:59:59Z",
+      "shipment": {
+        "id": "ship-101",
+        "orderId": "ord-101",
+        "courierName": "Shiprocket — Delhivery Air",
+        "shipmentId": "SR-DEL-9842109",
+        "awbCode": "784290123491",
+        "status": "delivered",
+        "trackingUrl": "https://shiprocket.co/tracking/784290123491",
+        "estimatedDelivery": "2026-03-27T18:00:00Z",
+        "actualDelivery": "2026-03-27T14:30:00Z",
+        "events": [
+          {
+            "id": "ev-1",
+            "statusCode": "DL",
+            "statusTitle": "Delivered",
+            "location": "Noida Sector 62 Hub",
+            "timestamp": "2026-03-27T14:30:00Z",
+            "description": "Package handed over to customer (Signature verified)"
+          },
+          {
+            "id": "ev-2",
+            "statusCode": "OFD",
+            "statusTitle": "Out for Delivery",
+            "location": "Noida Delivery Center",
+            "timestamp": "2026-03-27T08:15:00Z",
+            "description": "Shipment is out with courier executive Amit Kumar (+91 98110 00000)"
+          },
+          {
+            "id": "ev-3",
+            "statusCode": "IT",
+            "statusTitle": "In Transit",
+            "location": "Delhi Main Hub",
+            "timestamp": "2026-03-26T21:40:00Z",
+            "description": "Bag arrived at Delhi sort facility"
+          },
+          {
+            "id": "ev-4",
+            "statusCode": "PU",
+            "statusTitle": "Picked Up",
+            "location": "Apna Shoes Warehouse Noida",
+            "timestamp": "2026-03-25T16:00:00Z",
+            "description": "Shipment collected from vendor warehouse"
+          }
+        ]
+      },
+      "createdAt": "2026-03-25T11:20:00Z",
+      "updatedAt": "2026-10-11T18:56:03.923Z"
+    },
+    {
+      "id": "ord-102",
+      "orderNumber": "APNA-2026-8914",
+      "customerName": "Priya Iyer",
+      "customerEmail": "priya.iyer@example.com",
+      "customerPhone": "+91 98450 12345",
+      "shippingAddress": {
+        "id": "addr-2",
+        "name": "Priya Iyer",
+        "phone": "+91 98450 12345",
+        "flatHouse": "Apartment 12A, Sobha Windfall",
+        "streetLocality": "Koramangala 4th Block",
+        "landmark": "Opposite Sony World Signal",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "pincode": "560034",
+        "country": "India",
+        "addressType": "home"
+      },
+      "billingAddress": {
+        "id": "addr-2",
+        "name": "Priya Iyer",
+        "phone": "+91 98450 12345",
+        "flatHouse": "Apartment 12A, Sobha Windfall",
+        "streetLocality": "Koramangala 4th Block",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "pincode": "560034",
+        "country": "India",
+        "addressType": "home"
+      },
+      "items": [
+        {
+          "id": "oi-2",
+          "productId": "prod-4",
+          "variantId": "v-4-3",
+          "productName": "Apna Metro Low Women Kicks",
+          "sku": "APNA-WN-04-WHT-UK6",
+          "size": "UK 6",
+          "color": "Chalk White / Soft Amber",
+          "unitPrice": 1299,
+          "quantity": 1,
+          "totalPrice": 1299,
+          "graphicType": "retro-dunk"
+        }
+      ],
+      "subtotal": 1299,
+      "discountAmount": 0,
+      "taxAmount": 233.82,
+      "shippingFee": 0,
+      "totalAmount": 1299,
+      "paymentMethod": "cod",
+      "paymentStatus": "pending",
+      "orderStatus": "confirmed",
+      "shipment": {
+        "id": "ship-102",
+        "orderId": "ord-102",
+        "courierName": "Shiprocket — BlueDart Express",
+        "shipmentId": "SR-BLU-452109",
+        "awbCode": "39482109521",
+        "status": "in_transit",
+        "trackingUrl": "https://shiprocket.co/tracking/39482109521",
+        "estimatedDelivery": "2026-03-31T18:00:00Z",
+        "events": [
+          {
+            "id": "ev-201",
+            "statusCode": "IT",
+            "statusTitle": "In Transit",
+            "location": "Bengaluru Air Cargo Sorting Hub",
+            "timestamp": "2026-03-29T23:10:00Z",
+            "description": "Package arrived at destination sorting hub"
+          },
+          {
+            "id": "ev-202",
+            "statusCode": "PU",
+            "statusTitle": "Dispatched from Warehouse",
+            "location": "Apna Shoes Warehouse Noida",
+            "timestamp": "2026-03-28T18:30:00Z",
+            "description": "Handed over to BlueDart express logistics"
+          }
+        ]
+      },
+      "createdAt": "2026-03-28T14:15:00Z",
+      "updatedAt": "2026-10-11T18:55:57.314Z"
+    }
+  ],
+  "returns": [
+    {
+      "id": "ret-101",
+      "orderId": "ord-101",
+      "orderNumber": "APNA-2026-7842",
+      "customerName": "Rahul Sharma",
+      "customerEmail": "rahul.sharma@example.com",
+      "customerPhone": "+91 98112 34567",
+      "reason": "wrong_size",
+      "reasonDetails": "Shoe is slightly snug on the toe box. Requesting size UK 9 instead of UK 8.",
+      "status": "pickup_scheduled",
+      "returnDeadline": "2026-04-03T23:59:59Z",
+      "pickupDate": "2026-03-31T11:00:00Z",
+      "refundAmount": 1349.1,
+      "adminNotes": "Size replacement approved; courier pickup assigned via Shiprocket reverse logistics.",
+      "createdAt": "2026-03-28T16:00:00Z",
+      "updatedAt": "2026-03-29T09:30:00Z"
+    }
+  ],
+  "coupons": [
+    {
+      "code": "APNA10",
+      "description": "10% instant discount on orders above ₹1,299",
+      "discountType": "percentage",
+      "discountValue": 10,
+      "minOrderValue": 1299,
+      "maxDiscount": 400,
+      "isActive": true
+    },
+    {
+      "code": "FIRSTPAIR",
+      "description": "Flat ₹200 OFF on your first Apna Shoes order",
+      "discountType": "flat",
+      "discountValue": 200,
+      "minOrderValue": 1499,
+      "isActive": true
+    },
+    {
+      "code": "FESTIVE200",
+      "description": "Festive season treat: Flat ₹200 discount",
+      "discountType": "flat",
+      "discountValue": 200,
+      "minOrderValue": 1800,
+      "isActive": true
+    }
+  ],
+  "cmsConfig": {
+    "storeName": "APNA SHOES",
+    "tagline": "Har Kadam, Apna Style.",
+    "logoText": "APNA SHOES",
+    "announcementText": "⚡ FREE Express Shipping across India on orders above ₹999 | 7-Day Hassle-Free Returns Guaranteed",
+    "brandPrimaryColor": "#d83e18",
+    "brandDarkColor": "#0F0F11",
+    "heroHeadline": "Har Kadam, Apna Style.",
+    "heroSubheadline": "Engineered for India’s streets. Premium sneakers, high-performance running kicks, and everyday silhouettes made affordable without cutting corners.",
+    "heroCtaText": "Shop New Drops",
+    "heroBadge": "Drop 2026 Live · Pan-India Delivery",
+    "promoBannerTitle": "GET FLAT ₹200 OFF ON YOUR FIRST PAIR",
+    "promoBannerSubtitle": "Use coupon code FIRSTPAIR at checkout. Free shipping & COD available.",
+    "contactEmail": "care@apnashoes.in",
+    "contactPhone": "+91 9540900503",
+    "contactAddress": "Apna Shoes Logistics & Warehouse, Plot 42, Sector 63, Noida, NCR Delhi 201301",
+    "whatsappNumber": "09540900503",
+    "gstNumber": "",
+    "freeShippingThreshold": 999,
+    "defaultShippingFee": 99,
+    "aboutContent": "APNA SHOES was founded with a singular conviction: every Indian deserves sneakers that turn heads, feel like walking on clouds, and cost a fraction of imported hype-brands.\n\nFrom Delhi’s bustling metro stations to Bengaluru’s tech hubs and Mumbai’s sea-breeze promenades, we build footwear tailored to Indian foot shapes, climate conditions, and high-intensity daily commutes. Every pair is rigorously tested for durability, cushioning, and grip.\n\nHar kadam, apna style — because style belongs to everyone.",
+    "faqList": [
+      {
+        "question": "What is Apna Shoes’ 7-Day Return & Refund Policy?",
+        "answer": "We provide a 100% hassle-free 7-calendar-day return window starting the day your order is marked Delivered. If the shoe doesn’t fit, looks different, or has any stitching defect, request a return from \"My Orders\" or the \"Return Requests\" page. Our courier partner will pick it up from your doorstep at no cost and your refund will be credited in 3–5 working days."
+      },
+      {
+        "question": "Is Cash on Delivery (COD) supported across India?",
+        "answer": "Yes! Cash on Delivery is available across 19,000+ Indian PIN codes. You can pay cash or scan the courier’s UPI QR code at the time of doorstep delivery."
+      },
+      {
+        "question": "How do I choose the correct shoe size?",
+        "answer": "All Apna Shoes are sized using standard Indian / UK sizing (UK 6 to UK 11). If you normally wear UK 8 in Indian footwear, select UK 8. For wide feet, we recommend choosing one size up for maximum comfort."
+      },
+      {
+        "question": "How long does shipping take?",
+        "answer": "Metro cities (Delhi NCR, Mumbai, Bengaluru, Chennai, Hyderabad, Kolkata) receive orders in 2 to 3 business days. Non-metro cities and tier-2/tier-3 towns receive delivery within 3 to 5 business days via Shiprocket, Delhivery, and BlueDart."
+      },
+      {
+        "question": "Are online payments secure?",
+        "answer": "All online transactions are powered by Razorpay using bank-grade 256-bit encryption. We support UPI (Google Pay, PhonePe, Paytm), Credit/Debit cards (Visa, Mastercard, RuPay), and Net Banking. We never store your card details."
+      }
+    ],
+    "returnPolicyContent": "At APNA SHOES, we stand firmly behind the quality of our craftsmanship.\n\n7-DAY RETURN WINDOW:\nYou have 7 calendar days from the exact delivery timestamp recorded by our courier partner to request a return or size exchange.\n\nCONDITIONS FOR RETURN:\n- Footwear must be unworn and in original condition with tags and original box intact.\n- Items damaged due to rough outdoor usage after delivery are not eligible.\n- Defective or wrong items are replaced or refunded with zero deduction.\n\nDOORSTEP PICKUP & REFUNDS:\nOnce your return request is approved by our team, our courier partner will arrive for reverse pickup within 24 to 48 hours. After pickup inspection, your refund is initiated immediately to your original payment method (or bank UPI for COD orders).",
+    "shippingPolicyContent": "SHIPPING CHARGES:\n- FREE Shipping on all orders of ₹999 or above.\n- Orders below ₹999 incur a standard shipping charge of ₹99.\n\nDISPATCH & TRACKING:\nAll orders placed before 3:00 PM IST are dispatched on the same business day from our automated central warehouse. Once shipped, you will receive an SMS and WhatsApp update containing your live Shiprocket Airway Bill (AWB) tracking number.",
+    "privacyPolicyContent": "APNA SHOES respects your personal privacy. We comply strictly with the Information Technology Act, 2000 and Digital Personal Data Protection guidelines.\n\nWe collect your name, phone number, shipping address, and email solely to process your orders, generate courier airway bills, and send shipment tracking updates. We never sell or lease your personal information to third parties.",
+    "termsContent": "By purchasing from APNA SHOES, you agree to our standard terms of sale. Prices are inclusive of 18% GST (Goods and Services Tax). We reserve the right to verify COD orders via automated OTP or phone confirmation before warehouse fulfillment.",
+    "lastUpdated": "2026-10-11T18:58:24.021Z",
+    "heroBanners": [
+      {
+        "id": "banner-1",
+        "headline": "Har Kadam, Apna Style — Indian Streetwear Drop",
+        "subheadline": "Designed for comfort, engineered for endurance. Over 50+ fresh sneakers, cushioned soles & breathable mesh.",
+        "offerBadge": "FLAT 40% OFF",
+        "badge": "LIMITED DROP 2026",
+        "imageUrl": "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=800&q=80",
+        "ctaText": "Explore New Drops limited",
+        "ctaLink": "mens",
+        "textColor": "#ffffff",
+        "accentColor": "#0000ff"
+      },
+      {
+        "id": "banner-2",
+        "headline": "High-Top Street Legends — Buy 1 Get 1 Free",
+        "subheadline": "Ankle support with vulcanized rubber grip. Perfect for skateboarding, campus, and night outs.",
+        "offerBadge": "BUY 1 GET 1 FREE",
+        "badge": "STREET EDITION",
+        "imageUrl": "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=1400&q=80",
+        "ctaText": "Claim BOGO Offer",
+        "ctaLink": "high-top-sneakers",
+        "textColor": "#ffffff",
+        "accentColor": "#F59E0B"
+      },
+      {
+        "id": "banner-3",
+        "headline": "Aero Boost Runners — Flat ₹300 OFF First Order",
+        "subheadline": "Super-lightweight breathable knit with responsive EVA bounce. Crush your 5K and marathon goals.",
+        "offerBadge": "FLAT ₹300 OFF",
+        "badge": "TOP RATED 4.9★",
+        "imageUrl": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1400&q=80",
+        "ctaText": "Shop Running Gear",
+        "ctaLink": "running-shoes",
+        "textColor": "#ffffff",
+        "accentColor": "#10B981"
+      },
+      {
+        "id": "banner-4",
+        "headline": "Pastel Chic & Minimalist Low-Tops for Women",
+        "subheadline": "Subtle tones, cloud memory foam insoles, and day-long wearability. Pairs with every outfit.",
+        "offerBadge": "SAVE ₹500 BUNDLE",
+        "badge": "WOMEN BESTSELLER",
+        "imageUrl": "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=1400&q=80",
+        "ctaText": "Shop Women Collection",
+        "ctaLink": "womens",
+        "textColor": "#ffffff",
+        "accentColor": "#EC4899"
+      },
+      {
+        "id": "banner-5",
+        "headline": "Junior Champions — High-Grip Active Kicks",
+        "subheadline": "Reinforced toe caps, slip-resistant traction, and vibrant dynamic colorways built for recess play.",
+        "offerBadge": "EXTRA 20% OFF",
+        "badge": "KIDS FAVORITE",
+        "imageUrl": "https://images.unsplash.com/photo-1514989940723-e8e51635b782?auto=format&fit=crop&w=1400&q=80",
+        "ctaText": "Shop Kids Shoes",
+        "ctaLink": "kids",
+        "textColor": "#ffffff",
+        "accentColor": "#3B82F6"
+      }
+    ]
+  },
+  "flipkartMappings": [
+    {
+      "id": "fk-1",
+      "internalSku": "APNA-AG-01-BLK-UK8",
+      "productName": "Apna Air Glide 01 Sneaker (UK 8)",
+      "flipkartFsn": "SHOEZX948210984",
+      "flipkartListingId": "LST_APNA_AG01_UK8",
+      "stockSync": true,
+      "internalStock": 38,
+      "flipkartStock": 38,
+      "lastSyncedAt": "2026-10-11T18:13:41.902Z",
+      "status": "synced"
+    },
+    {
+      "id": "fk-2",
+      "internalSku": "APNA-HT-02-BWO-UK8",
+      "productName": "Apna Retro Dunk High-Top (UK 8)",
+      "flipkartFsn": "SHOEZX849102391",
+      "flipkartListingId": "LST_APNA_HT02_UK8",
+      "stockSync": true,
+      "internalStock": 22,
+      "flipkartStock": 22,
+      "lastSyncedAt": "2026-10-11T18:13:41.902Z",
+      "status": "synced"
+    },
+    {
+      "id": "fk-3",
+      "internalSku": "APNA-RN-03-ORG-UK8",
+      "productName": "Apna Aero Run V2 (UK 8)",
+      "flipkartFsn": "SHOEZX738192049",
+      "flipkartListingId": "LST_APNA_RN03_UK8",
+      "stockSync": true,
+      "internalStock": 32,
+      "flipkartStock": 32,
+      "lastSyncedAt": "2026-10-11T18:13:41.902Z",
+      "status": "synced"
+    }
+  ],
+  "addresses": {},
+  "integrations": {
+    "razorpay": {
+      "enabled": true,
+      "mode": "sandbox",
+      "keyId": "rzp_test_apnashoes2026",
+      "hasSecret": false
+    },
+    "shiprocket": {
+      "enabled": true,
+      "mode": "sandbox",
+      "email": "logistics@apnashoes.in",
+      "tokenActive": true
+    },
+    "flipkart": {
+      "connected": true,
+      "sellerId": "APNA_SHOES_RETAIL_IN",
+      "totalMappedSkus": 3
+    },
+    "googleMaps": {
+      "configured": false
+    }
+  },
+  "auditLogs": [
+    {
+      "id": "audit-1791745469175",
+      "timestamp": "2026-10-11T19:04:29.175Z",
+      "actor": "SYSTEM",
+      "action": "ORDER_CREATED",
+      "details": {
+        "orderNumber": "APNA-2026-3547",
+        "total": 2698.2
+      }
+    },
+    {
+      "id": "audit-1791745104021",
+      "timestamp": "2026-10-11T18:58:24.021Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_WEBSITE_CONFIG",
+      "details": {
+        "updatedFields": [
+          "storeName",
+          "tagline",
+          "logoText",
+          "announcementText",
+          "brandPrimaryColor",
+          "brandDarkColor",
+          "heroHeadline",
+          "heroSubheadline",
+          "heroCtaText",
+          "heroBadge",
+          "promoBannerTitle",
+          "promoBannerSubtitle",
+          "contactEmail",
+          "contactPhone",
+          "contactAddress",
+          "whatsappNumber",
+          "gstNumber",
+          "freeShippingThreshold",
+          "defaultShippingFee",
+          "aboutContent",
+          "faqList",
+          "returnPolicyContent",
+          "shippingPolicyContent",
+          "privacyPolicyContent",
+          "termsContent",
+          "lastUpdated",
+          "heroBanners"
+        ]
+      }
+    },
+    {
+      "id": "audit-1791745103326",
+      "timestamp": "2026-10-11T18:58:23.326Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_WEBSITE_CONFIG",
+      "details": {
+        "updatedFields": [
+          "storeName",
+          "tagline",
+          "logoText",
+          "announcementText",
+          "brandPrimaryColor",
+          "brandDarkColor",
+          "heroHeadline",
+          "heroSubheadline",
+          "heroCtaText",
+          "heroBadge",
+          "promoBannerTitle",
+          "promoBannerSubtitle",
+          "contactEmail",
+          "contactPhone",
+          "contactAddress",
+          "whatsappNumber",
+          "gstNumber",
+          "freeShippingThreshold",
+          "defaultShippingFee",
+          "aboutContent",
+          "faqList",
+          "returnPolicyContent",
+          "shippingPolicyContent",
+          "privacyPolicyContent",
+          "termsContent",
+          "lastUpdated",
+          "heroBanners"
+        ]
+      }
+    },
+    {
+      "id": "audit-1791745101563",
+      "timestamp": "2026-10-11T18:58:21.563Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_WEBSITE_CONFIG",
+      "details": {
+        "updatedFields": [
+          "storeName",
+          "tagline",
+          "logoText",
+          "announcementText",
+          "brandPrimaryColor",
+          "brandDarkColor",
+          "heroHeadline",
+          "heroSubheadline",
+          "heroCtaText",
+          "heroBadge",
+          "promoBannerTitle",
+          "promoBannerSubtitle",
+          "contactEmail",
+          "contactPhone",
+          "contactAddress",
+          "whatsappNumber",
+          "gstNumber",
+          "freeShippingThreshold",
+          "defaultShippingFee",
+          "aboutContent",
+          "faqList",
+          "returnPolicyContent",
+          "shippingPolicyContent",
+          "privacyPolicyContent",
+          "termsContent",
+          "lastUpdated",
+          "heroBanners"
+        ]
+      }
+    },
+    {
+      "id": "audit-1791744974514",
+      "timestamp": "2026-10-11T18:56:14.514Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_ORDER_STATUS",
+      "details": {
+        "orderNumber": "APNA-2026-4532",
+        "status": "delivered"
+      }
+    },
+    {
+      "id": "audit-1791744963923",
+      "timestamp": "2026-10-11T18:56:03.923Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_ORDER_STATUS",
+      "details": {
+        "orderNumber": "APNA-2026-7842",
+        "status": "order_placed"
+      }
+    },
+    {
+      "id": "audit-1791744957314",
+      "timestamp": "2026-10-11T18:55:57.314Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_ORDER_STATUS",
+      "details": {
+        "orderNumber": "APNA-2026-8914",
+        "status": "confirmed"
+      }
+    },
+    {
+      "id": "audit-1791744000842",
+      "timestamp": "2026-10-11T18:40:00.842Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_WEBSITE_CONFIG",
+      "details": {
+        "updatedFields": [
+          "storeName",
+          "tagline",
+          "logoText",
+          "announcementText",
+          "brandPrimaryColor",
+          "brandDarkColor",
+          "heroHeadline",
+          "heroSubheadline",
+          "heroCtaText",
+          "heroBadge",
+          "promoBannerTitle",
+          "promoBannerSubtitle",
+          "contactEmail",
+          "contactPhone",
+          "contactAddress",
+          "whatsappNumber",
+          "gstNumber",
+          "freeShippingThreshold",
+          "defaultShippingFee",
+          "aboutContent",
+          "faqList",
+          "returnPolicyContent",
+          "shippingPolicyContent",
+          "privacyPolicyContent",
+          "termsContent",
+          "lastUpdated"
+        ]
+      }
+    },
+    {
+      "id": "audit-1791742421902",
+      "timestamp": "2026-10-11T18:13:41.902Z",
+      "actor": "SYSTEM",
+      "action": "FLIPKART_STOCK_SYNC",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "audit-1791742381283",
+      "timestamp": "2026-10-11T18:13:01.283Z",
+      "actor": "ADMIN",
+      "action": "SHIPMENT_CREATED",
+      "details": {
+        "orderNumber": "APNA-2026-4532",
+        "awbCode": "43458730986"
+      }
+    },
+    {
+      "id": "audit-1791742379234",
+      "timestamp": "2026-10-11T18:12:59.234Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_ORDER_STATUS",
+      "details": {
+        "orderNumber": "APNA-2026-4532",
+        "status": "confirmed"
+      }
+    },
+    {
+      "id": "audit-1791742290614",
+      "timestamp": "2026-10-11T18:11:30.614Z",
+      "actor": "SYSTEM",
+      "action": "ORDER_CREATED",
+      "details": {
+        "orderNumber": "APNA-2026-4532",
+        "total": 1299
+      }
+    },
+    {
+      "id": "audit-1791742202973",
+      "timestamp": "2026-10-11T18:10:02.973Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_PRODUCT",
+      "details": {
+        "id": "prod-1",
+        "name": "Apna Air Glide 01 Sneaker"
+      }
+    },
+    {
+      "id": "audit-1791742133225",
+      "timestamp": "2026-10-11T18:08:53.225Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_PRODUCT",
+      "details": {
+        "id": "prod-1",
+        "name": "Apna Air Glide 01 Sneaker"
+      }
+    },
+    {
+      "id": "audit-1791741195791",
+      "timestamp": "2026-10-11T17:53:15.791Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_WEBSITE_CONFIG",
+      "details": {
+        "updatedFields": [
+          "storeName",
+          "tagline",
+          "logoText",
+          "announcementText",
+          "brandPrimaryColor",
+          "brandDarkColor",
+          "heroHeadline",
+          "heroSubheadline",
+          "heroCtaText",
+          "heroBadge",
+          "promoBannerTitle",
+          "promoBannerSubtitle",
+          "contactEmail",
+          "contactPhone",
+          "contactAddress",
+          "whatsappNumber",
+          "gstNumber",
+          "freeShippingThreshold",
+          "defaultShippingFee",
+          "aboutContent",
+          "faqList",
+          "returnPolicyContent",
+          "shippingPolicyContent",
+          "privacyPolicyContent",
+          "termsContent",
+          "lastUpdated"
+        ]
+      }
+    },
+    {
+      "id": "audit-1791741154225",
+      "timestamp": "2026-10-11T17:52:34.225Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_WEBSITE_CONFIG",
+      "details": {
+        "updatedFields": [
+          "storeName",
+          "tagline",
+          "logoText",
+          "announcementText",
+          "brandPrimaryColor",
+          "brandDarkColor",
+          "heroHeadline",
+          "heroSubheadline",
+          "heroCtaText",
+          "heroBadge",
+          "promoBannerTitle",
+          "promoBannerSubtitle",
+          "contactEmail",
+          "contactPhone",
+          "contactAddress",
+          "whatsappNumber",
+          "gstNumber",
+          "freeShippingThreshold",
+          "defaultShippingFee",
+          "aboutContent",
+          "faqList",
+          "returnPolicyContent",
+          "shippingPolicyContent",
+          "privacyPolicyContent",
+          "termsContent",
+          "lastUpdated"
+        ]
+      }
+    },
+    {
+      "id": "audit-1791741042346",
+      "timestamp": "2026-10-11T17:50:42.346Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_ORDER_STATUS",
+      "details": {
+        "orderNumber": "APNA-2026-7842",
+        "status": "refunded"
+      }
+    },
+    {
+      "id": "audit-1791740990246",
+      "timestamp": "2026-10-11T17:49:50.246Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_WEBSITE_CONFIG",
+      "details": {
+        "updatedFields": [
+          "storeName",
+          "tagline",
+          "logoText",
+          "announcementText",
+          "brandPrimaryColor",
+          "brandDarkColor",
+          "heroHeadline",
+          "heroSubheadline",
+          "heroCtaText",
+          "heroBadge",
+          "promoBannerTitle",
+          "promoBannerSubtitle",
+          "contactEmail",
+          "contactPhone",
+          "contactAddress",
+          "whatsappNumber",
+          "gstNumber",
+          "freeShippingThreshold",
+          "defaultShippingFee",
+          "aboutContent",
+          "faqList",
+          "returnPolicyContent",
+          "shippingPolicyContent",
+          "privacyPolicyContent",
+          "termsContent",
+          "lastUpdated"
+        ]
+      }
+    },
+    {
+      "id": "audit-1791740966321",
+      "timestamp": "2026-10-11T17:49:26.321Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_WEBSITE_CONFIG",
+      "details": {
+        "updatedFields": [
+          "storeName",
+          "tagline",
+          "logoText",
+          "announcementText",
+          "brandPrimaryColor",
+          "brandDarkColor",
+          "heroHeadline",
+          "heroSubheadline",
+          "heroCtaText",
+          "heroBadge",
+          "promoBannerTitle",
+          "promoBannerSubtitle",
+          "contactEmail",
+          "contactPhone",
+          "contactAddress",
+          "whatsappNumber",
+          "gstNumber",
+          "freeShippingThreshold",
+          "defaultShippingFee",
+          "aboutContent",
+          "faqList",
+          "returnPolicyContent",
+          "shippingPolicyContent",
+          "privacyPolicyContent",
+          "termsContent",
+          "lastUpdated"
+        ]
+      }
+    },
+    {
+      "id": "audit-1791740962255",
+      "timestamp": "2026-10-11T17:49:22.255Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_WEBSITE_CONFIG",
+      "details": {
+        "updatedFields": [
+          "storeName",
+          "tagline",
+          "logoText",
+          "announcementText",
+          "brandPrimaryColor",
+          "brandDarkColor",
+          "heroHeadline",
+          "heroSubheadline",
+          "heroCtaText",
+          "heroBadge",
+          "promoBannerTitle",
+          "promoBannerSubtitle",
+          "contactEmail",
+          "contactPhone",
+          "contactAddress",
+          "whatsappNumber",
+          "gstNumber",
+          "freeShippingThreshold",
+          "defaultShippingFee",
+          "aboutContent",
+          "faqList",
+          "returnPolicyContent",
+          "shippingPolicyContent",
+          "privacyPolicyContent",
+          "termsContent",
+          "lastUpdated"
+        ]
+      }
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif-1791745469175",
+      "timestamp": "2026-10-11T19:04:29.175Z",
+      "channel": "whatsapp",
+      "recipient": "+91 98765 00000",
+      "title": "Order Placed: APNA-2026-3547",
+      "message": "Namaste Super Admin! Your order APNA-2026-3547 for APNA SHOES is placed successfully. Total: ₹2698.2. We are packing your fresh sneakers!"
+    },
+    {
+      "id": "notif-1791744974514",
+      "timestamp": "2026-10-11T18:56:14.514Z",
+      "channel": "whatsapp",
+      "recipient": "+91 98112 34567",
+      "title": "Order Delivered: APNA-2026-4532",
+      "message": "Your APNA SHOES order APNA-2026-4532 is delivered! Step in style. Your 7-day return/size-exchange window is open until 18/10/2026."
+    },
+    {
+      "id": "notif-1791742381283",
+      "timestamp": "2026-10-11T18:13:01.283Z",
+      "channel": "whatsapp",
+      "recipient": "+91 98112 34567",
+      "title": "Order Dispatched: APNA-2026-4532",
+      "message": "Your APNA SHOES order APNA-2026-4532 has shipped via Shiprocket — Delhivery Air! Tracking AWB: 43458730986. Track here: https://shiprocket.co/tracking/43458730986"
+    },
+    {
+      "id": "notif-1791742290614",
+      "timestamp": "2026-10-11T18:11:30.614Z",
+      "channel": "whatsapp",
+      "recipient": "+91 98112 34567",
+      "title": "Order Placed: APNA-2026-4532",
+      "message": "Namaste Rahul Sharma! Your order APNA-2026-4532 for APNA SHOES is placed successfully. Total: ₹1299. We are packing your fresh sneakers!"
+    }
+  ],
+  "deletedProductIds": []
+}
