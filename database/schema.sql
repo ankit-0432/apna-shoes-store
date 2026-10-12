@@ -301,12 +301,22 @@ CREATE TABLE IF NOT EXISTS notification_logs (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- 16. NEWSLETTER SUBSCRIBERS
+CREATE TABLE IF NOT EXISTS subscribers (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    source VARCHAR(100) DEFAULT 'footer_newsletter',
+    status VARCHAR(50) DEFAULT 'active',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- ROW LEVEL SECURITY POLICIES (RLS)
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE addresses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE returns ENABLE ROW LEVEL SECURITY;
 ALTER TABLE wishlist_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE subscribers ENABLE ROW LEVEL SECURITY;
 
 -- Profiles: user reads and updates their own
 CREATE POLICY profiles_user_policy ON profiles
@@ -327,5 +337,13 @@ CREATE POLICY products_public_read ON products FOR SELECT USING (true);
 ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
 CREATE POLICY categories_public_read ON categories FOR SELECT USING (true);
 
+ALTER TABLE coupons ENABLE ROW LEVEL SECURITY;
+CREATE POLICY coupons_public_read ON coupons FOR SELECT USING (true);
+
 ALTER TABLE website_content ENABLE ROW LEVEL SECURITY;
 CREATE POLICY content_public_read ON website_content FOR SELECT USING (true);
+
+-- Subscribers: Allow public signup and admin read
+CREATE POLICY subscribers_insert_policy ON subscribers FOR INSERT WITH CHECK (true);
+CREATE POLICY subscribers_select_policy ON subscribers FOR SELECT USING (true);
+

@@ -93,7 +93,7 @@ export const HomePage: React.FC<HomePageProps> = ({ products, onSelectProduct, o
 
   // Get active banners from CMS config, or fallback to default 5
   const banners: HeroBanner[] = (config.heroBanners && config.heroBanners.length > 0)
-    ? config.heroBanners.filter(b => b.isActive)
+    ? config.heroBanners.filter(b => b.isActive !== false)
     : DEFAULT_BANNERS;
 
   const totalSlides = banners.length > 0 ? banners.length : 1;

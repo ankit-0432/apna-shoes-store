@@ -302,4 +302,47 @@ export const api = {
     const json = await res.json();
     return json.data || [];
   },
+
+  async subscribeNewsletter(email: string, source: string = 'footer_newsletter') {
+    const res = await fetch(`${API_BASE}/newsletter/subscribe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, source }),
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Failed to subscribe');
+    return json;
+  },
+
+  async getNewsletterSubscribers() {
+    const res = await fetch(`${API_BASE}/newsletter/subscribers`);
+    const json = await res.json();
+    return json.data || [];
+  },
+
+  // SUPABASE CLOUD DATABASE
+  async getSupabaseStatus() {
+    const res = await fetch(`${API_BASE}/supabase/status`);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Failed to fetch Supabase status');
+    return json.data;
+  },
+
+  async syncSupabase() {
+    const res = await fetch(`${API_BASE}/supabase/sync`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Failed to sync Supabase');
+    return json;
+  },
+
+  async getSupabaseSchema(): Promise<string> {
+    const res = await fetch(`${API_BASE}/supabase/schema`);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Failed to load schema');
+    return json.data;
+  },
 };
+

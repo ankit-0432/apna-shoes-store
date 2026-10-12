@@ -5,8 +5,10 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { createServer as createViteServer } from 'vite';
 import { DB } from './server/db.js';
+import { getSupabaseStatus, syncStoreToSupabase, getSqlSchema } from './server/supabase.js';
 
 dotenv.config();
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -546,6 +548,68 @@ async function startServer() {
       res.status(500).json({ success: false, error: e.message });
     }
   });
+
+  // --- NEWSLETTER SUBSCRIBERS ---
+  app.post('/api/newsletter/subscribe', (req: Request, res: Response) => {
+    try {
+      const { email, source } = req.body;
+      const result = DB.addSubscriber(email, source);
+      res.json({
+        success: true,
+        data: result.subscriber,
+        alreadySubscribed: result.alreadySubscribed,
+        message: result.alreadySubscribed
+          ? 'You are already subscribed to APNA SHOES drops!'
+          : 'Welcome to APNA SHOES VIP Club! ₹200 coupon code FIRSTPAIR is ready.',
+      });
+    } catch (e: any) {
+      res.status(400).json({ success: false, error: e.message });
+    }
+  });
+
+  app.get('/api/newsletter/subscribers', (_req: Request, res: Response) => {
+    try {
+      res.json({ success: true, data: DB.getSubscribers() });
+    } catch (e: any) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+
+  // --- SUPABASE CLOUD DATABASE ---
+  app.get('/api/supabase/status', async (_req: Request, res: Response) => {
+    try {
+      const status = await getSupabaseStatus();
+      res.json({ success: true, data: status });
+    } catch (e: any) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+
+  app.post('/api/supabase/sync', async (_req: Request, res: Response) => {
+    try {
+      const rawData = DB.getRawStoreData();
+      const syncResult = await syncStoreToSupabase(rawData);
+      res.json({
+        success: syncResult.success,
+        data: syncResult,
+        message: syncResult.success
+          ? `Successfully synchronized local store data to Supabase! (${syncResult.synced.products} products, ${syncResult.synced.categories} categories, ${syncResult.synced.orders} orders)`
+          : `Sync completed with errors: ${syncResult.errors.join(', ')}`,
+      });
+    } catch (e: any) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+
+  app.get('/api/supabase/schema', (_req: Request, res: Response) => {
+    try {
+      const schemaSql = getSqlSchema();
+      res.json({ success: true, data: schemaSql });
+    } catch (e: any) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+
 
   // ==========================================
   // VITE OR STATIC FRONTEND SERVING

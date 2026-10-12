@@ -4813,7 +4813,8 @@
         "ctaText": "Explore New Drops limited",
         "ctaLink": "mens",
         "textColor": "#ffffff",
-        "accentColor": "#0000ff"
+        "accentColor": "#0000ff",
+        "isActive": true
       },
       {
         "id": "banner-2",
@@ -4825,7 +4826,8 @@
         "ctaText": "Claim BOGO Offer",
         "ctaLink": "high-top-sneakers",
         "textColor": "#ffffff",
-        "accentColor": "#F59E0B"
+        "accentColor": "#F59E0B",
+        "isActive": true
       },
       {
         "id": "banner-3",
@@ -4837,7 +4839,8 @@
         "ctaText": "Shop Running Gear",
         "ctaLink": "running-shoes",
         "textColor": "#ffffff",
-        "accentColor": "#10B981"
+        "accentColor": "#10B981",
+        "isActive": true
       },
       {
         "id": "banner-4",
@@ -4849,7 +4852,8 @@
         "ctaText": "Shop Women Collection",
         "ctaLink": "womens",
         "textColor": "#ffffff",
-        "accentColor": "#EC4899"
+        "accentColor": "#EC4899",
+        "isActive": true
       },
       {
         "id": "banner-5",
@@ -4861,7 +4865,8 @@
         "ctaText": "Shop Kids Shoes",
         "ctaLink": "kids",
         "textColor": "#ffffff",
-        "accentColor": "#3B82F6"
+        "accentColor": "#3B82F6",
+        "isActive": true
       }
     ]
   },

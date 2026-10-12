@@ -1,6 +1,7 @@
-import React from 'react';
-import { Truck, RotateCcw, ShieldCheck, CreditCard, Mail, Phone, MapPin } from 'lucide-react';
+import React, { useState } from 'react';
+import { Truck, RotateCcw, ShieldCheck, CreditCard, Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useStoreConfig } from '../../context/StoreConfigContext.js';
+import { api } from '../../services/api.js';
 
 interface FooterProps {
   onNavigate: (view: string, param?: string) => void;
@@ -8,6 +9,41 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
   const { config } = useStoreConfig();
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [newsletterStatus, setNewsletterStatus] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsletterEmail.trim() || !newsletterEmail.includes('@')) {
+      setNewsletterStatus({
+        type: 'error',
+        message: 'Please enter a valid email address.',
+      });
+      return;
+    }
+
+    setSubmitting(true);
+    setNewsletterStatus(null);
+    try {
+      const res = await api.subscribeNewsletter(newsletterEmail.trim());
+      setNewsletterStatus({
+        type: 'success',
+        message: res.message || 'Subscribed! Check your inbox for ₹200 off coupon code FIRSTPAIR.',
+      });
+      setNewsletterEmail('');
+    } catch (err: any) {
+      setNewsletterStatus({
+        type: 'error',
+        message: err.message || 'Subscription failed. Please try again.',
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <footer className="bg-zinc-950 text-zinc-300 border-t border-zinc-900 mt-20">
@@ -51,6 +87,64 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <div>
               <h4 className="text-sm font-semibold text-white">100% Genuine Craftsmanship</h4>
               <p className="text-xs text-zinc-400 mt-0.5">Dual-density cushioning & durable traction for Indian roads.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Newsletter VIP Signup Banner */}
+      <div className="border-b border-zinc-800 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6 bg-zinc-900/80 border border-zinc-800 p-6 sm:p-8 rounded-2xl">
+            <div className="space-y-1 text-center lg:text-left max-w-xl">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[11px] font-bold uppercase tracking-wider mb-2">
+                <span>👟 VIP SNEAKERHEAD CLUB</span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black text-white font-display">
+                Get ₹200 OFF on Your First Footwear Order
+              </h3>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Subscribe for early access to limited sneaker drops, flash sales, and exclusive promo codes. No spam ever.
+              </p>
+            </div>
+
+            <div className="w-full lg:w-auto shrink-0">
+              <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-2.5 w-full sm:w-[420px]">
+                <div className="relative flex-1">
+                  <Mail className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <input
+                    type="email"
+                    value={newsletterEmail}
+                    onChange={(e) => setNewsletterEmail(e.target.value)}
+                    placeholder="Enter your email address..."
+                    required
+                    className="w-full pl-10 pr-4 py-3 bg-zinc-950 border border-zinc-700 rounded-xl text-xs text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="px-6 py-3 bg-orange-600 hover:bg-orange-500 active:scale-95 disabled:opacity-50 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-orange-600/20 shrink-0"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>{submitting ? 'Subscribing...' : 'Claim ₹200'}</span>
+                </button>
+              </form>
+
+              {newsletterStatus && (
+                <div
+                  className={`mt-2.5 text-xs flex items-center gap-1.5 ${
+                    newsletterStatus.type === 'success' ? 'text-emerald-400' : 'text-red-400'
+                  }`}
+                >
+                  {newsletterStatus.type === 'success' ? (
+                    <CheckCircle2 className="w-4 h-4 shrink-0" />
+                  ) : (
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                  )}
+                  <span>{newsletterStatus.message}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

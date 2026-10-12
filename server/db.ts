@@ -22,6 +22,7 @@ import {
   initialReturns,
   initialFlipkartMappings,
 } from './seedData.js';
+import { syncSubscriberToSupabase, syncOrderToSupabase } from './supabase.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,9 +38,9 @@ interface DatabaseStore {
   cmsConfig: StoreCMSConfig;
   flipkartMappings: FlipkartMapping[];
   addresses: Record<string, Address[]>; // userId -> addresses
-  integrations: IntegrationStatus;
   auditLogs: Array<{ id: string; timestamp: string; actor: string; action: string; details: any }>;
   notifications: Array<{ id: string; timestamp: string; channel: string; recipient: string; title: string; message: string }>;
+  subscribers?: Array<{ id: string; email: string; subscribedAt: string; source: string }>;
   deletedProductIds?: string[];
 }
 
@@ -102,6 +103,7 @@ function initDb() {
       if (!db.addresses) db.addresses = {};
       if (!db.auditLogs) db.auditLogs = [];
       if (!db.notifications) db.notifications = [];
+      if (!db.subscribers) db.subscribers = [];
       if (!db.integrations) {
         db.integrations = {
           razorpay: {
@@ -384,6 +386,7 @@ export const DB = {
 
     DB.logAudit('SYSTEM', 'ORDER_CREATED', { orderNumber, total: newOrder.totalAmount });
     saveDb();
+    syncOrderToSupabase(newOrder).catch(() => {});
     return newOrder;
   },
 
@@ -714,4 +717,44 @@ export const DB = {
   getAuditLogs() {
     return db.auditLogs;
   },
+
+  // NEWSLETTER SUBSCRIBERS
+  getSubscribers() {
+    return db.subscribers || [];
+  },
+
+  addSubscriber(email: string, source: string = 'footer_newsletter') {
+    const cleanEmail = email.toLowerCase().trim();
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+      throw new Error('Please provide a valid email address.');
+    }
+    if (!db.subscribers) db.subscribers = [];
+    const exists = db.subscribers.find(s => s.email === cleanEmail);
+    if (exists) {
+      return { success: true, alreadySubscribed: true, subscriber: exists };
+    }
+    const newSub = {
+      id: `sub-${Date.now()}`,
+      email: cleanEmail,
+      subscribedAt: new Date().toISOString(),
+      source,
+    };
+    db.subscribers.unshift(newSub);
+    DB.logAudit('USER', 'NEWSLETTER_SUBSCRIBE', { email: cleanEmail });
+    saveDb();
+    syncSubscriberToSupabase(cleanEmail, source).catch(() => {});
+    return { success: true, alreadySubscribed: false, subscriber: newSub };
+  },
+
+  getRawStoreData() {
+    return {
+      products: db.products || [],
+      categories: db.categories || [],
+      coupons: db.coupons || [],
+      orders: db.orders || [],
+      subscribers: db.subscribers || [],
+      cmsConfig: db.cmsConfig,
+    };
+  },
 };
+
