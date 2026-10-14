@@ -93,8 +93,12 @@ export async function sendFirebasePhoneOtp(
     console.log('[Firebase Auth] Verification SMS sent to', e164);
     return confirmationResult;
   } catch (error: any) {
-    console.error('[Firebase Auth] signInWithPhoneNumber error:', error);
     await resetRecaptcha();
+    if (error?.code === 'auth/billing-not-enabled') {
+      console.warn('[Firebase Auth] Project is on Spark (free) plan. Real SMS requires Blaze billing or Firebase test numbers.');
+    } else {
+      console.warn('[Firebase Auth] signInWithPhoneNumber notice:', error?.message || error);
+    }
     throw error;
   }
 }

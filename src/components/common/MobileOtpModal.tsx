@@ -47,6 +47,7 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
   const [demoCodeHint, setDemoCodeHint] = useState<string | null>('1234');
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   const [isFirebasePhoneActive, setIsFirebasePhoneActive] = useState(false);
+  const [isSparkPlanNotice, setIsSparkPlanNotice] = useState(false);
   const [timer, setTimer] = useState(30);
 
   useEffect(() => {
@@ -56,6 +57,7 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
       setOtpCode('');
       setConfirmationResult(null);
       setIsFirebasePhoneActive(false);
+      setIsSparkPlanNotice(false);
       setTimer(30);
     }
   }, [isOpen]);
@@ -92,12 +94,15 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
         const confirmation = await sendFirebasePhoneOtp(clean, verifier);
         setConfirmationResult(confirmation);
         setIsFirebasePhoneActive(true);
+        setIsSparkPlanNotice(false);
         setDemoCodeHint(null);
         setStep('otp');
         setTimer(60);
       } catch (fbErr: any) {
-        console.warn('[Firebase Auth] SMS dispatch exception, fallback to server simulation:', fbErr);
         await resetRecaptcha();
+        if (fbErr?.code === 'auth/billing-not-enabled') {
+          setIsSparkPlanNotice(true);
+        }
         const res = await api.sendOtp(clean);
         if (res.demoOtp) {
           setDemoCodeHint(res.demoOtp);
@@ -315,6 +320,18 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
                   </button>
                 </div>
 
+                {isSparkPlanNotice && (
+                  <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-900 leading-snug space-y-1">
+                    <div className="font-bold flex items-center gap-1.5 text-amber-950">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                      <span>Firebase Spark Plan Notice</span>
+                    </div>
+                    <p className="text-[10.5px] text-amber-800">
+                      Real telco SMS in Firebase requires the Blaze (pay-as-you-go) plan or Firebase test numbers. We generated your instant verification code below so you can proceed smoothly!
+                    </p>
+                  </div>
+                )}
+
                 {isFirebasePhoneActive ? (
                   <p className="text-[11px] text-emerald-800">
                     Firebase Phone Auth SMS dispatched via invisible reCAPTCHA. Please check your phone for the 6-digit verification code.
@@ -330,7 +347,7 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
                     <button
                       type="button"
                       onClick={() => setOtpCode(demoCodeHint || '1234')}
-                      className="text-[11px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded shadow-2xs border border-emerald-300 hover:bg-emerald-100 transition-colors"
+                      className="text-[11px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded shadow-2xs border border-emerald-300 hover:bg-emerald-100 transition-colors cursor-pointer"
                     >
                       Auto-Fill OTP
                     </button>
