@@ -15,6 +15,7 @@ import { useCart } from '../context/CartContext.js';
 import { useAuth } from '../context/AuthContext.js';
 import { useStoreConfig } from '../context/StoreConfigContext.js';
 import { api } from '../services/api.js';
+import { syncOrderToFirestore } from '../services/firebaseSync.js';
 import { Order, Address } from '../types/store.js';
 
 interface CheckoutPageProps {
@@ -178,6 +179,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onOrderSuccess, onNa
       });
 
       clearCart();
+      syncOrderToFirestore(createdOrder).catch(() => {});
       onOrderSuccess(createdOrder);
     } catch (err: any) {
       setErrorMessage(err.message || 'Payment processing failed. Please try again.');

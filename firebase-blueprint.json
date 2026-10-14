@@ -1,0 +1,61 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Footwear sneaker product in the catalog",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "brand": { "type": "string" },
+        "sellingPrice": { "type": "number" },
+        "originalPrice": { "type": "number" },
+        "categorySlug": { "type": "string" }
+      },
+      "required": ["id", "name", "sellingPrice"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Footwear order placed by a customer",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderNumber": { "type": "string" },
+        "customerName": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "totalAmount": { "type": "number" },
+        "orderStatus": { "type": "string" },
+        "paymentStatus": { "type": "string" }
+      },
+      "required": ["id", "orderNumber", "customerPhone", "totalAmount", "orderStatus"]
+    },
+    "ReturnRequest": {
+      "title": "ReturnRequest",
+      "description": "Customer 7-day return or size exchange request",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderId": { "type": "string" },
+        "orderNumber": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "reason": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "orderId", "customerPhone", "status"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Public catalog footwear items"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Customer orders with status and tracking"
+    },
+    "/returns/{returnId}": {
+      "schema": "ReturnRequest",
+      "description": "7-day return and exchange requests"
+    }
+  }
+}

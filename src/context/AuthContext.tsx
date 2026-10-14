@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types/store.js';
+import { onAuthObserver, firebaseSignOut } from '../services/firebaseAuth.js';
 
 interface AuthContextType {
   user: User | null;
@@ -54,6 +55,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.removeItem('apna_user');
     }
   }, [user]);
+
+  // Synchronize with Firebase Auth state
+  useEffect(() => {
+    const unsub = onAuthObserver((firebaseUser) => {
+      if (firebaseUser && firebaseUser.phoneNumber) {
+        const clean = firebaseUser.phoneNumber.replace(/\D/g, '');
+        setUser((prev) => {
+          if (prev && (prev.phone === firebaseUser.phoneNumber || prev.id === firebaseUser.uid)) {
+            return prev;
+          }
+          return {
+            id: firebaseUser.uid,
+            phone: firebaseUser.phoneNumber || '',
+            name: firebaseUser.displayName || prev?.name || `Customer (${clean.slice(-4) || 'Shopper'})`,
+            email: firebaseUser.email || prev?.email || `${clean}@apnashoes.in`,
+            role: 'customer',
+          };
+        });
+      }
+    });
+    return () => unsub();
+  }, []);
 
   const openLoginModal = (redirectAfter?: string, reasonMessage?: string) => {
     setRedirectAfterLogin(redirectAfter || null);
@@ -130,6 +153,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
+    firebaseSignOut().catch(() => {});
     setUser(null);
   };
 

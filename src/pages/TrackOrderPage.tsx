@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Truck, CheckCircle2, Clock, MapPin, Package, ArrowRight, RotateCcw, Copy, Check, ExternalLink, RefreshCw, Share2 } from 'lucide-react';
+import { Search, Truck, CheckCircle2, Clock, MapPin, Package, ArrowRight, RotateCcw, Copy, Check, ExternalLink, RefreshCw, Share2, Radio } from 'lucide-react';
 import { api } from '../services/api.js';
+import { subscribeToLiveOrder, syncOrderToFirestore } from '../services/firebaseSync.js';
 import { Order, ShipmentEvent } from '../types/store.js';
 
 interface TrackOrderPageProps {
@@ -15,6 +16,8 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({ initialOrderNumb
   const [error, setError] = useState<string | null>(null);
   const [awbCopied, setAwbCopied] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [isLiveStreamActive, setIsLiveStreamActive] = useState(false);
+  const [lastLiveUpdateAt, setLastLiveUpdateAt] = useState<string | null>(null);
 
   const fetchOrderTracking = async (q: string) => {
     if (!q.trim()) return;
@@ -24,6 +27,7 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({ initialOrderNumb
       // Try search by order ID or AWB
       const res = await api.getOrder(q.trim());
       setOrder(res);
+      syncOrderToFirestore(res).catch(() => {});
     } catch (e: any) {
       // Try search across orders list
       try {
@@ -34,6 +38,7 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({ initialOrderNumb
         );
         if (found) {
           setOrder(found);
+          syncOrderToFirestore(found).catch(() => {});
         } else {
           setError('Order or AWB number not found. Please check your order details.');
         }
@@ -51,6 +56,7 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({ initialOrderNumb
     try {
       const refreshed = await api.getOrder(order.id);
       setOrder(refreshed);
+      syncOrderToFirestore(refreshed).catch(() => {});
     } catch (err) {
       console.error(err);
     } finally {
@@ -65,6 +71,36 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({ initialOrderNumb
       fetchOrderTracking('APNA-2026-7842');
     }
   }, [initialOrderNumber]);
+
+  // Real-time Firestore onSnapshot listener for live order updates
+  useEffect(() => {
+    if (!order?.id && !order?.orderNumber) return;
+
+    // Listen to real-time changes by document ID
+    const unsubDoc = subscribeToLiveOrder(order.id, (liveOrder) => {
+      setOrder(liveOrder);
+      setIsLiveStreamActive(true);
+      setLastLiveUpdateAt(
+        new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      );
+    });
+
+    // Also listen by order number
+    const unsubNum = subscribeToLiveOrder(order.orderNumber, (liveOrder) => {
+      setOrder(liveOrder);
+      setIsLiveStreamActive(true);
+      setLastLiveUpdateAt(
+        new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      );
+    });
+
+    setIsLiveStreamActive(true);
+
+    return () => {
+      unsubDoc();
+      unsubNum();
+    };
+  }, [order?.id, order?.orderNumber]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -144,6 +180,19 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({ initialOrderNumb
                 <span className="text-xs font-semibold text-zinc-500">
                   Order Code: <strong className="text-zinc-900 font-mono">{order.orderNumber}</strong>
                 </span>
+                {isLiveStreamActive && (
+                  <>
+                    <span>·</span>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10.5px] font-bold shadow-2xs">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 -ml-3" />
+                      <span>Live Firestore Stream</span>
+                      {lastLiveUpdateAt && (
+                        <span className="text-emerald-700/80 font-normal">({lastLiveUpdateAt})</span>
+                      )}
+                    </span>
+                  </>
+                )}
               </div>
               <h2 className="text-xl font-black text-zinc-950 mt-1 font-display flex items-center gap-2">
                 <span>Shipment for {order.customerName}</span>

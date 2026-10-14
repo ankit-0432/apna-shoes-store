@@ -37,6 +37,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { api } from '../../services/api.js';
+import { syncOrderToFirestore, syncReturnToFirestore } from '../../services/firebaseSync.js';
 import { useAuth } from '../../context/AuthContext.js';
 import { useStoreConfig } from '../../context/StoreConfigContext.js';
 import { Product, Order, ReturnRequest, StoreCMSConfig, FlipkartMapping, HeroBanner } from '../../types/store.js';
@@ -391,10 +392,12 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigateHome }) => {
   // Handle Order Status Update
   const handleUpdateOrderStatus = async (orderId: string, status: string) => {
     try {
-      await api.updateOrderStatus(orderId, status);
+      const updated = await api.updateOrderStatus(orderId, status);
+      syncOrderToFirestore(updated).catch(() => {});
+      showFeedback(`Order ${updated.orderNumber} updated to ${status.replace(/_/g, ' ').toUpperCase()}`);
       fetchAdminData();
     } catch (err: any) {
-      alert(err.message || 'Status update failed');
+      showFeedback(err.message || 'Status update failed', 'error');
     }
   };
 
@@ -472,6 +475,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigateHome }) => {
         awbInputEstDelivery ? new Date(awbInputEstDelivery).toISOString() : undefined
       );
       showFeedback(`AWB ${awbInputCode.trim()} confirmed for Order ${confirmAwbModalOrder.orderNumber}!`, 'success');
+      syncOrderToFirestore(updatedOrder).catch(() => {});
       setConfirmAwbModalOrder(null);
       // Automatically open the Share AWB dialog so admin can share it immediately!
       setShareAwbModalOrder(updatedOrder);
@@ -2169,6 +2173,36 @@ APNA-WN-SAMPLE,"Apna Metro Low Women",womens-sneakers,women,1299,2199,41%,20,"Tr
                   <p className="text-xs text-zinc-500">
                     Automated airway bill (AWB) generation, Delhivery / BlueDart routing, and real-time reverse pickup for 7-day returns.
                   </p>
+                </div>
+
+                {/* Firebase Cloud Connection Card */}
+                <div className="bg-white p-6 rounded-2xl border border-zinc-200 shadow-xs space-y-4 md:col-span-2">
+                  <div className="flex justify-between items-center pb-2 border-b border-zinc-100">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <h3 className="text-sm font-bold text-zinc-900">Google Firebase Cloud Database & Analytics</h3>
+                    </div>
+                    <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">
+                      CONNECTED & LIVE
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-500">
+                    Your store is wired to Google Firebase project <code className="bg-zinc-100 px-1 py-0.5 rounded text-orange-600 font-bold">apna-shoes9540</code> with Firestore, Authentication, and Google Analytics.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200">
+                      <span className="text-[10.5px] text-zinc-500 font-semibold block">Project ID</span>
+                      <strong className="text-zinc-900 font-mono text-[11px]">apna-shoes9540</strong>
+                    </div>
+                    <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200">
+                      <span className="text-[10.5px] text-zinc-500 font-semibold block">Auth Domain</span>
+                      <strong className="text-zinc-900 font-mono text-[11px]">apna-shoes9540.firebaseapp.com</strong>
+                    </div>
+                    <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200">
+                      <span className="text-[10.5px] text-zinc-500 font-semibold block">Measurement ID</span>
+                      <strong className="text-zinc-900 font-mono text-[11px]">G-DDTDS30N0S</strong>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

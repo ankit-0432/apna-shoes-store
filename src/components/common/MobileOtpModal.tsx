@@ -13,6 +13,13 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.js';
 import { api } from '../../services/api.js';
+import {
+  setupRecaptcha,
+  sendFirebasePhoneOtp,
+  confirmFirebasePhoneOtp,
+  resetRecaptcha,
+} from '../../services/firebaseAuth.js';
+import { ConfirmationResult } from 'firebase/auth';
 
 interface MobileOtpModalProps {
   isOpen: boolean;
@@ -38,6 +45,8 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [demoCodeHint, setDemoCodeHint] = useState<string | null>('1234');
+  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+  const [isFirebasePhoneActive, setIsFirebasePhoneActive] = useState(false);
   const [timer, setTimer] = useState(30);
 
   useEffect(() => {
@@ -45,6 +54,8 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
       setStep('phone');
       setError(null);
       setOtpCode('');
+      setConfirmationResult(null);
+      setIsFirebasePhoneActive(false);
       setTimer(30);
     }
   }, [isOpen]);
@@ -71,14 +82,32 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
     setIsSending(true);
 
     try {
-      const res = await api.sendOtp(clean);
-      if (res.demoOtp) {
-        setDemoCodeHint(res.demoOtp);
-      } else {
-        setDemoCodeHint('1234');
+      // 1. Initialize Firebase Invisible reCAPTCHA on the submit button
+      const verifier = setupRecaptcha('sign-in-button', 'invisible', () => {
+        console.log('[Firebase Auth] Invisible reCAPTCHA solved');
+      });
+
+      // 2. Try sending SMS via Firebase Phone Auth
+      try {
+        const confirmation = await sendFirebasePhoneOtp(clean, verifier);
+        setConfirmationResult(confirmation);
+        setIsFirebasePhoneActive(true);
+        setDemoCodeHint(null);
+        setStep('otp');
+        setTimer(60);
+      } catch (fbErr: any) {
+        console.warn('[Firebase Auth] SMS dispatch exception, fallback to server simulation:', fbErr);
+        await resetRecaptcha();
+        const res = await api.sendOtp(clean);
+        if (res.demoOtp) {
+          setDemoCodeHint(res.demoOtp);
+        } else {
+          setDemoCodeHint('1234');
+        }
+        setIsFirebasePhoneActive(false);
+        setStep('otp');
+        setTimer(30);
       }
-      setStep('otp');
-      setTimer(30);
     } catch (err: any) {
       setError(err.message || 'Failed to send OTP. Please try again.');
     } finally {
@@ -89,13 +118,29 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
   const handleVerifyOtp = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!otpCode.trim()) {
-      setError('Please enter the 4-digit OTP code');
+      setError('Please enter the verification code');
       return;
     }
 
     setIsVerifying(true);
     setError(null);
 
+    // If real Firebase Phone Confirmation session is active, verify with Firebase
+    if (confirmationResult) {
+      try {
+        const fbUser = await confirmFirebasePhoneOtp(otpCode.trim(), confirmationResult);
+        loginWithPhone(fbUser.phoneNumber || phoneNumber, customerName, customerEmail);
+        onClose();
+        if (onSuccess) {
+          onSuccess(redirectAfterLogin);
+        }
+        return;
+      } catch (fbErr: any) {
+        console.warn('[Firebase Auth] Firebase OTP confirmation error:', fbErr);
+      }
+    }
+
+    // Fallback to server verification
     try {
       const verifiedUser = await api.verifyOtp(
         phoneNumber,
@@ -110,7 +155,7 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
         onSuccess(redirectAfterLogin);
       }
     } catch (err: any) {
-      setError(err.message || 'Incorrect OTP code. Enter 1234 or the demo code.');
+      setError(err.message || 'Incorrect verification code. Please check SMS.');
     } finally {
       setIsVerifying(false);
     }
@@ -197,14 +242,15 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
 
               <button
                 type="button"
+                id="sign-in-button"
                 onClick={() => handleSendOtp()}
                 disabled={isSending || phoneNumber.replace(/\D/g, '').length < 10}
-                className="w-full py-3.5 px-4 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-3.5 px-4 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isSending ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Sending OTP...</span>
+                    <span>Verifying with reCAPTCHA & Sending SMS...</span>
                   </>
                 ) : (
                   <>
@@ -213,6 +259,9 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
                   </>
                 )}
               </button>
+
+              {/* Firebase reCAPTCHA Invisible/Widget container */}
+              <div id="recaptcha-container" className="flex justify-center my-1" />
 
               {/* Demo Fast-Login Pills for Testing */}
               <div className="pt-3 border-t border-zinc-100 space-y-2">
@@ -223,7 +272,7 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
                   <button
                     type="button"
                     onClick={handleQuickNewCustomer}
-                    className="p-2.5 rounded-xl border border-dashed border-zinc-300 hover:border-orange-400 hover:bg-orange-50/50 text-left transition-colors"
+                    className="p-2.5 rounded-xl border border-dashed border-zinc-300 hover:border-orange-400 hover:bg-orange-50/50 text-left transition-colors cursor-pointer"
                   >
                     <span className="text-xs font-bold text-zinc-900 block flex items-center gap-1">
                       <Sparkles className="w-3.5 h-3.5 text-orange-600" />
@@ -235,7 +284,7 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
                   <button
                     type="button"
                     onClick={handleQuickDemoCustomer}
-                    className="p-2.5 rounded-xl border border-dashed border-zinc-300 hover:border-blue-400 hover:bg-blue-50/50 text-left transition-colors"
+                    className="p-2.5 rounded-xl border border-dashed border-zinc-300 hover:border-blue-400 hover:bg-blue-50/50 text-left transition-colors cursor-pointer"
                   >
                     <span className="text-xs font-bold text-zinc-900 block flex items-center gap-1">
                       <User className="w-3.5 h-3.5 text-blue-600" />
@@ -248,48 +297,59 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
             </div>
           ) : (
             <form onSubmit={handleVerifyOtp} className="space-y-4">
-              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs space-y-1">
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-emerald-900">
-                    OTP sent to {phoneNumber}
+                  <span className="font-semibold text-emerald-900 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>SMS sent to {phoneNumber}</span>
                   </span>
                   <button
                     type="button"
-                    onClick={() => setStep('phone')}
+                    onClick={() => {
+                      resetRecaptcha().catch(() => {});
+                      setStep('phone');
+                    }}
                     className="text-[11px] font-bold text-emerald-700 hover:underline"
                   >
                     Change
                   </button>
                 </div>
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-[11px] text-emerald-800">
-                    Verification Code:{' '}
-                    <strong className="font-mono bg-emerald-200 text-emerald-950 px-1.5 py-0.5 rounded">
-                      {demoCodeHint || '1234'}
-                    </strong>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setOtpCode(demoCodeHint || '1234')}
-                    className="text-[11px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded shadow-2xs border border-emerald-300 hover:bg-emerald-100 transition-colors"
-                  >
-                    Auto-Fill OTP
-                  </button>
-                </div>
+
+                {isFirebasePhoneActive ? (
+                  <p className="text-[11px] text-emerald-800">
+                    Firebase Phone Auth SMS dispatched via invisible reCAPTCHA. Please check your phone for the 6-digit verification code.
+                  </p>
+                ) : (
+                  <div className="flex items-center justify-between pt-1 border-t border-emerald-200">
+                    <span className="text-[11px] text-emerald-800">
+                      Verification Code:{' '}
+                      <strong className="font-mono bg-emerald-200 text-emerald-950 px-1.5 py-0.5 rounded">
+                        {demoCodeHint || '1234'}
+                      </strong>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setOtpCode(demoCodeHint || '1234')}
+                      className="text-[11px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded shadow-2xs border border-emerald-300 hover:bg-emerald-100 transition-colors"
+                    >
+                      Auto-Fill OTP
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-zinc-800 mb-1.5">
-                  Enter 4-Digit OTP Code
+                  Enter Verification Code (OTP)
                 </label>
                 <input
                   type="text"
                   maxLength={6}
-                  placeholder="e.g. 1234"
+                  placeholder={isFirebasePhoneActive ? "6-digit SMS code" : "e.g. 1234"}
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                   autoFocus
-                  className="w-full text-center tracking-[0.5em] text-xl font-mono font-bold py-3 px-4 bg-zinc-50 border border-zinc-300 rounded-xl text-zinc-950 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white"
+                  className="w-full text-center tracking-[0.4em] text-xl font-mono font-bold py-3 px-4 bg-zinc-50 border border-zinc-300 rounded-xl text-zinc-950 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white"
                 />
               </div>
 

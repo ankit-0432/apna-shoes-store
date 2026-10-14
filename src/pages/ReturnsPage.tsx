@@ -15,6 +15,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { api } from '../services/api.js';
+import { syncReturnToFirestore } from '../services/firebaseSync.js';
 import { useAuth } from '../context/AuthContext.js';
 import { ReturnRequest, Order, OrderItem } from '../types/store.js';
 
@@ -152,7 +153,7 @@ export const ReturnsPage: React.FC<ReturnsPageProps> = ({ onNavigate, initialOrd
       }));
 
     try {
-      await api.createReturn({
+      const createdReturn = await api.createReturn({
         orderId: currentOrder.id,
         reason,
         reasonDetails: details.trim(),
@@ -171,6 +172,8 @@ export const ReturnsPage: React.FC<ReturnsPageProps> = ({ onNavigate, initialOrd
             : undefined,
         pickupAddress: `${currentOrder.shippingAddress.flatHouse}, ${currentOrder.shippingAddress.streetLocality}, ${currentOrder.shippingAddress.city} - ${currentOrder.shippingAddress.pincode}`,
       });
+
+      syncReturnToFirestore(createdReturn).catch(() => {});
 
       setMessage({
         type: 'success',

@@ -17,13 +17,13 @@ export const AdminSecretModal: React.FC<AdminSecretModalProps> = ({ isOpen, onCl
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Accepts apna123 or admin or demo
-    if (passcode.trim() === 'apna123' || passcode.trim().toLowerCase() === 'admin' || passcode.trim() === '123456') {
+    // Admin password configured to 147258
+    if (passcode.trim() === '147258') {
       loginAsDemoAdmin();
       onSuccess();
       onClose();
     } else {
-      setError('Invalid admin passcode. Access denied.');
+      setError('Invalid admin passcode. Access denied. Please enter 147258.');
     }
   };
 
@@ -60,7 +60,7 @@ export const AdminSecretModal: React.FC<AdminSecretModalProps> = ({ isOpen, onCl
           <div>
             <label className="block text-xs font-bold text-zinc-700 mb-1.5 flex items-center gap-1.5">
               <KeyRound className="w-3.5 h-3.5 text-zinc-500" />
-              <span>Enter Admin Passcode (Default: apna123)</span>
+              <span>Enter Admin Passcode (147258)</span>
             </label>
             <input
               type="password"
@@ -70,7 +70,7 @@ export const AdminSecretModal: React.FC<AdminSecretModalProps> = ({ isOpen, onCl
                 setPasscode(e.target.value);
                 setError(null);
               }}
-              placeholder="Enter passcode..."
+              placeholder="Enter passcode (147258)..."
               className="w-full px-4 py-2.5 bg-zinc-50 border border-zinc-300 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono"
             />
           </div>

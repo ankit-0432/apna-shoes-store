@@ -18,6 +18,7 @@ import { AdminPortal } from './pages/admin/AdminPortal.js';
 import { AdminSecretModal } from './components/common/AdminSecretModal.js';
 import { MobileOtpModal } from './components/common/MobileOtpModal.js';
 import { api } from './services/api.js';
+import './services/firebase.js';
 import { Product, Order } from './types/store.js';
 
 function MainApp() {
