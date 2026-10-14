@@ -14,6 +14,7 @@ import {
 import { Product } from '../types/store.js';
 import { SneakerGraphic } from '../components/common/SneakerGraphic.js';
 import { useCart } from '../context/CartContext.js';
+import { useAuth } from '../context/AuthContext.js';
 import { api } from '../services/api.js';
 
 interface ProductDetailPageProps {
@@ -30,6 +31,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   onNavigate,
 }) => {
   const { addToCart } = useCart();
+  const { user, openLoginModal } = useAuth();
   const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
   const [selectedSize, setSelectedSize] = useState(product.variants[0]?.size || 'UK 8');
   const [quantity, setQuantity] = useState(1);
@@ -66,7 +68,11 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
   const handleBuyNow = () => {
     addToCart(product, selectedSize, selectedVariant.colorName, quantity);
-    onNavigate('checkout');
+    if (!user) {
+      openLoginModal('checkout', 'Please enter your mobile number and OTP to proceed with checkout');
+    } else {
+      onNavigate('checkout');
+    }
   };
 
   const handleShare = () => {

@@ -5,18 +5,32 @@ interface AuthContextType {
   user: User | null;
   isAdmin: boolean;
   login: (email: string, role?: 'customer' | 'admin', name?: string, phone?: string) => void;
+  loginWithPhone: (phone: string, name?: string, email?: string) => void;
   logout: () => void;
   loginAsDemoAdmin: () => void;
   loginAsDemoCustomer: () => void;
+  loginAsDemoNewCustomer: () => void;
+  isLoginModalOpen: boolean;
+  loginReasonMessage: string | null;
+  redirectAfterLogin: string | null;
+  openLoginModal: (redirectAfter?: string, reasonMessage?: string) => void;
+  closeLoginModal: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   isAdmin: false,
   login: () => {},
+  loginWithPhone: () => {},
   logout: () => {},
   loginAsDemoAdmin: () => {},
   loginAsDemoCustomer: () => {},
+  loginAsDemoNewCustomer: () => {},
+  isLoginModalOpen: false,
+  loginReasonMessage: null,
+  redirectAfterLogin: null,
+  openLoginModal: () => {},
+  closeLoginModal: () => {},
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -25,15 +39,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const stored = localStorage.getItem('apna_user');
       if (stored) return JSON.parse(stored);
     } catch (e) {}
-    // Default to a friendly customer session so the user starts browsing seamlessly
-    return {
-      id: 'usr-customer-1',
-      name: 'Rahul Sharma',
-      email: 'rahul.sharma@example.com',
-      phone: '+91 98112 34567',
-      role: 'customer',
-    };
+    // If not stored in localStorage, start as guest (no default orders leaked)
+    return null;
   });
+
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [loginReasonMessage, setLoginReasonMessage] = useState<string | null>(null);
+  const [redirectAfterLogin, setRedirectAfterLogin] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -42,6 +54,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.removeItem('apna_user');
     }
   }, [user]);
+
+  const openLoginModal = (redirectAfter?: string, reasonMessage?: string) => {
+    setRedirectAfterLogin(redirectAfter || null);
+    setLoginReasonMessage(reasonMessage || null);
+    setIsLoginModalOpen(true);
+  };
+
+  const closeLoginModal = () => {
+    setIsLoginModalOpen(false);
+    setLoginReasonMessage(null);
+  };
+
+  const loginWithPhone = (phone: string, name?: string, email?: string) => {
+    const cleanDigits = phone.replace(/\D/g, '');
+    const newUser: User = {
+      id: `usr-${cleanDigits || Date.now()}`,
+      phone,
+      name: name?.trim() || `Customer (${cleanDigits.slice(-4) || 'Shopper'})`,
+      email: email?.trim() || `${cleanDigits}@apnashoes.in`,
+      role: 'customer',
+    };
+    setUser(newUser);
+    closeLoginModal();
+  };
 
   const login = (email: string, role: 'customer' | 'admin' = 'customer', name?: string, phone?: string) => {
     const newUser: User = {
@@ -52,6 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       role,
     };
     setUser(newUser);
+    closeLoginModal();
   };
 
   const loginAsDemoAdmin = () => {
@@ -63,8 +100,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       role: 'admin',
     };
     setUser(adminUser);
+    closeLoginModal();
   };
 
+  // Demo user Rahul Sharma with existing sample orders
   const loginAsDemoCustomer = () => {
     const customerUser: User = {
       id: 'usr-customer-1',
@@ -74,6 +113,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       role: 'customer',
     };
     setUser(customerUser);
+    closeLoginModal();
+  };
+
+  // Brand-new demo user with 0 orders for testing zero-state
+  const loginAsDemoNewCustomer = () => {
+    const newCustomerUser: User = {
+      id: 'usr-new-customer',
+      name: 'Aman Verma',
+      email: 'aman.verma@example.com',
+      phone: '+91 98999 11223',
+      role: 'customer',
+    };
+    setUser(newCustomerUser);
+    closeLoginModal();
   };
 
   const logout = () => {
@@ -86,9 +139,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         isAdmin: user?.role === 'admin',
         login,
+        loginWithPhone,
         logout,
         loginAsDemoAdmin,
         loginAsDemoCustomer,
+        loginAsDemoNewCustomer,
+        isLoginModalOpen,
+        loginReasonMessage,
+        redirectAfterLogin,
+        openLoginModal,
+        closeLoginModal,
       }}
     >
       {children}

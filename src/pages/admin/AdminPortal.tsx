@@ -28,6 +28,13 @@ import {
   Database,
   Copy,
   Server,
+  Share2,
+  MessageSquare,
+  Phone,
+  Mail,
+  Calendar,
+  Send,
+  Clock,
 } from 'lucide-react';
 import { api } from '../../services/api.js';
 import { useAuth } from '../../context/AuthContext.js';
@@ -173,10 +180,27 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigateHome }) => {
   const [showPresetGallery, setShowPresetGallery] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // AWB Confirmation Modal
+  // AWB Confirmation & Share Modals
   const [confirmAwbModalOrder, setConfirmAwbModalOrder] = useState<Order | null>(null);
   const [awbInputCourier, setAwbInputCourier] = useState('Shiprocket — Delhivery Air');
   const [awbInputCode, setAwbInputCode] = useState('');
+  const [awbInputTrackingUrl, setAwbInputTrackingUrl] = useState('');
+  const [awbInputEstDelivery, setAwbInputEstDelivery] = useState('');
+  const [isSubmittingAwb, setIsSubmittingAwb] = useState(false);
+  const [shareAwbModalOrder, setShareAwbModalOrder] = useState<Order | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
+  const [awbCodeCopied, setAwbCodeCopied] = useState(false);
+
+  // Return Processing States & Modals
+  const [returnStatusFilter, setReturnStatusFilter] = useState<'all' | 'requested' | 'approved' | 'picked_up' | 'refund_completed' | 'rejected'>('all');
+  const [returnModalItem, setReturnModalItem] = useState<ReturnRequest | null>(null);
+  const [returnModalType, setReturnModalType] = useState<'approve' | 'picked_up' | 'refund' | 'reject' | null>(null);
+  const [returnModalCourier, setReturnModalCourier] = useState('Shiprocket — Delhivery Reverse Express');
+  const [returnModalAwb, setReturnModalAwb] = useState('');
+  const [returnModalPickupDate, setReturnModalPickupDate] = useState('');
+  const [returnModalTxnId, setReturnModalTxnId] = useState('');
+  const [returnModalNotes, setReturnModalNotes] = useState('');
+  const [isSubmittingReturnAction, setIsSubmittingReturnAction] = useState(false);
 
   // CMS Editor form & 5-Banner Slideshow Manager
   const [cmsDraft, setCmsDraft] = useState<StoreCMSConfig>(() => ({
@@ -374,24 +398,135 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigateHome }) => {
     }
   };
 
-  // Handle Shipment Creation / AWB Assignment
+  // Intelligent Tracking URL Generator
+  const getAutoTrackingUrl = (courier: string, awb: string) => {
+    const c = courier.toLowerCase();
+    const cleanAwb = awb.trim();
+    if (!cleanAwb) return 'https://shiprocket.co/tracking';
+    if (c.includes('delhivery')) return `https://www.delhivery.com/track/package/${cleanAwb}`;
+    if (c.includes('bluedart') || c.includes('blue dart')) return `https://www.bluedart.com/tracking?trackNumber=${cleanAwb}`;
+    if (c.includes('dtdc')) return `https://www.dtdc.in/tracking/shipment-tracking.asp?strCnno=${cleanAwb}`;
+    if (c.includes('shadowfax')) return `https://tracker.shadowfax.in/#/track/${cleanAwb}`;
+    if (c.includes('xpressbees')) return `https://www.xpressbees.com/track?awb=${cleanAwb}`;
+    return `https://shiprocket.co/tracking/${cleanAwb}`;
+  };
+
+  // Handle Shipment Creation / AWB Assignment Modal Open
   const handleOpenConfirmAwbModal = (order: Order) => {
     setConfirmAwbModalOrder(order);
-    setAwbInputCourier(order.shipment?.courierName || 'Shiprocket — Delhivery Air');
-    setAwbInputCode(order.shipment?.awbCode || `DELHIVERY-${Math.floor(100000000 + Math.random() * 900000000)}`);
+    const courier = order.shipment?.courierName || 'Shiprocket — Delhivery Air';
+    const code = order.shipment?.awbCode || `DELHIVERY-${Math.floor(100000000 + Math.random() * 900000000)}`;
+    setAwbInputCourier(courier);
+    setAwbInputCode(code);
+    setAwbInputTrackingUrl(order.shipment?.trackingUrl || getAutoTrackingUrl(courier, code));
+    const defaultDate = order.shipment?.estimatedDelivery
+      ? new Date(order.shipment.estimatedDelivery).toISOString().split('T')[0]
+      : new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    setAwbInputEstDelivery(defaultDate);
+  };
+
+  const handleCourierSelect = (newCourier: string) => {
+    setAwbInputCourier(newCourier);
+    setAwbInputTrackingUrl(getAutoTrackingUrl(newCourier, awbInputCode));
+  };
+
+  const handleAwbCodeType = (newCode: string) => {
+    setAwbInputCode(newCode);
+    setAwbInputTrackingUrl(getAutoTrackingUrl(awbInputCourier, newCode));
+  };
+
+  const handleGeneratePresetAwb = (type: 'delhivery' | 'bluedart' | 'shiprocket' | 'numeric') => {
+    let code = '';
+    let courier = awbInputCourier;
+    if (type === 'delhivery') {
+      code = `DELHIVERY-${Math.floor(100000000 + Math.random() * 900000000)}`;
+      courier = 'Shiprocket — Delhivery Air';
+    } else if (type === 'bluedart') {
+      code = `BLUEDART-${Math.floor(100000000 + Math.random() * 900000000)}`;
+      courier = 'Shiprocket — BlueDart Express';
+    } else if (type === 'shiprocket') {
+      code = `SR-${Math.floor(1000000000 + Math.random() * 9000000000)}`;
+      courier = 'Shiprocket — Delhivery Air';
+    } else {
+      code = `${Math.floor(10000000000 + Math.random() * 90000000000)}`;
+    }
+    setAwbInputCourier(courier);
+    setAwbInputCode(code);
+    setAwbInputTrackingUrl(getAutoTrackingUrl(courier, code));
   };
 
   const handleConfirmAndAssignAwb = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!confirmAwbModalOrder) return;
+    if (!awbInputCode.trim()) {
+      showFeedback('Please provide a valid AWB number', 'error');
+      return;
+    }
+    setIsSubmittingAwb(true);
     try {
-      await api.createShipment(confirmAwbModalOrder.id, awbInputCourier, awbInputCode);
-      showFeedback(`Order ${confirmAwbModalOrder.orderNumber} confirmed with AWB ${awbInputCode}!`);
+      const updatedOrder = await api.createShipment(
+        confirmAwbModalOrder.id,
+        awbInputCourier,
+        awbInputCode.trim(),
+        awbInputTrackingUrl.trim(),
+        awbInputEstDelivery ? new Date(awbInputEstDelivery).toISOString() : undefined
+      );
+      showFeedback(`AWB ${awbInputCode.trim()} confirmed for Order ${confirmAwbModalOrder.orderNumber}!`, 'success');
       setConfirmAwbModalOrder(null);
+      // Automatically open the Share AWB dialog so admin can share it immediately!
+      setShareAwbModalOrder(updatedOrder);
       fetchAdminData();
     } catch (err: any) {
       showFeedback(err.message || 'AWB assignment failed', 'error');
+    } finally {
+      setIsSubmittingAwb(false);
     }
+  };
+
+  const getAwbShareMessage = (order: Order) => {
+    const awb = order.shipment?.awbCode || 'Pending';
+    const courier = order.shipment?.courierName || 'Shiprocket Logistics';
+    const trackingUrl = order.shipment?.trackingUrl || `https://shiprocket.co/tracking/${awb}`;
+    const estDate = order.shipment?.estimatedDelivery
+      ? new Date(order.shipment.estimatedDelivery).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+      : 'In 3-4 business days';
+
+    return `👟 *APNA SHOES - Order Confirmed & Dispatched!*
+
+Namaste *${order.customerName}*,
+Great news! Your footwear order *${order.orderNumber}* has been confirmed by our warehouse team and dispatched!
+
+📦 *Courier Partner:* ${courier}
+🎫 *Airway Bill (AWB) No:* ${awb}
+🔗 *Live Tracking Link:* ${trackingUrl}
+📅 *Estimated Delivery:* ${estDate}
+
+You can also track your shipment anytime on our store by entering your Order No. or AWB No.
+
+Thank you for choosing *APNA SHOES*!`;
+  };
+
+  const getWhatsAppShareUrl = (order: Order) => {
+    const rawPhone = order.customerPhone.replace(/[^0-9]/g, '');
+    const phone = rawPhone.length === 10 ? `91${rawPhone}` : rawPhone;
+    const msg = getAwbShareMessage(order);
+    return `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+  };
+
+  const getSmsShareUrl = (order: Order) => {
+    const rawPhone = order.customerPhone.replace(/[^0-9]/g, '');
+    const awb = order.shipment?.awbCode || 'Pending';
+    const trackingUrl = order.shipment?.trackingUrl || `https://shiprocket.co/tracking/${awb}`;
+    const msg = `APNA SHOES: Your order ${order.orderNumber} has shipped via ${order.shipment?.courierName || 'Courier'}. AWB No: ${awb}. Track: ${trackingUrl}`;
+    return `sms:${rawPhone}?body=${encodeURIComponent(msg)}`;
+  };
+
+  const getEmailShareUrl = (order: Order) => {
+    const awb = order.shipment?.awbCode || 'Pending';
+    const trackingUrl = order.shipment?.trackingUrl || `https://shiprocket.co/tracking/${awb}`;
+    const subject = `APNA SHOES - Order Dispatched: ${order.orderNumber} (AWB: ${awb})`;
+    const body = `Dear ${order.customerName},\n\nYour order ${order.orderNumber} has been dispatched.\n\nCourier: ${order.shipment?.courierName || 'Courier'}\nAWB Number: ${awb}\nLive Tracking: ${trackingUrl}\n\nThank you,\nAPNA SHOES Team`;
+    return `mailto:${order.customerEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   const handleGenerateShipment = async (orderId: string) => {
@@ -444,13 +579,44 @@ APNA-WN-SAMPLE,"Apna Metro Low Women",womens-sneakers,women,1299,2199,41%,20,"Tr
     setCmsDraft({ ...cmsDraft, heroBanners: banners });
   };
 
-  // Handle Return Action
-  const handleReturnAction = async (returnId: string, status: string, notes?: string) => {
+  // Handle Return Actions & Modals
+  const handleOpenReturnModal = (ret: ReturnRequest, action: 'approve' | 'picked_up' | 'refund' | 'reject') => {
+    setReturnModalItem(ret);
+    setReturnModalType(action);
+    setReturnModalCourier(ret.reverseCourier || 'Shiprocket — Delhivery Reverse Express');
+    setReturnModalAwb(ret.reverseAwb || `REV-${Math.floor(100000000 + Math.random() * 900000000)}`);
+    const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    setReturnModalPickupDate(ret.pickupDate ? ret.pickupDate.split('T')[0] : tomorrow);
+    setReturnModalTxnId(ret.refundTransactionId || `UPI/REF-${Date.now().toString().slice(-6)}`);
+    setReturnModalNotes(ret.adminNotes || '');
+  };
+
+  const handleExecuteReturnAction = async () => {
+    if (!returnModalItem || !returnModalType) return;
+    setIsSubmittingReturnAction(true);
+
     try {
-      await api.updateReturnStatus(returnId, status, notes);
+      let targetStatus = 'approved';
+      if (returnModalType === 'approve') targetStatus = 'approved';
+      else if (returnModalType === 'picked_up') targetStatus = 'picked_up';
+      else if (returnModalType === 'refund') targetStatus = 'refund_completed';
+      else if (returnModalType === 'reject') targetStatus = 'rejected';
+
+      await api.updateReturnStatus(returnModalItem.id, targetStatus, returnModalNotes, {
+        reverseCourier: returnModalCourier,
+        reverseAwb: returnModalAwb,
+        pickupDate: returnModalPickupDate ? new Date(returnModalPickupDate).toISOString() : undefined,
+        refundTransactionId: returnModalTxnId,
+      });
+
+      showFeedback(`Return #${returnModalItem.id} updated to ${targetStatus.replace('_', ' ').toUpperCase()}`);
+      setReturnModalItem(null);
+      setReturnModalType(null);
       fetchAdminData();
     } catch (err: any) {
-      alert(err.message || 'Return update failed');
+      showFeedback(err.message || 'Failed to update return', 'error');
+    } finally {
+      setIsSubmittingReturnAction(false);
     }
   };
 
@@ -1101,31 +1267,42 @@ APNA-WN-SAMPLE,"Apna Metro Low Women",womens-sneakers,women,1299,2199,41%,20,"Tr
                         </td>
                         <td className="py-3 px-4">
                           {o.shipment?.awbCode ? (
-                            <div className="space-y-0.5">
-                              <div className="flex items-center gap-1.5">
-                                <span className="font-mono font-bold text-emerald-900 bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 rounded text-[11px]">
-                                  {o.shipment.awbCode}
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="font-mono font-bold text-emerald-950 bg-emerald-50 border border-emerald-300 px-2 py-0.5 rounded text-[11px] inline-flex items-center gap-1">
+                                  <Truck className="w-3 h-3 text-emerald-600 shrink-0" />
+                                  <span>{o.shipment.awbCode}</span>
                                 </span>
                                 <button
                                   onClick={() => handleOpenConfirmAwbModal(o)}
-                                  className="text-[10px] text-zinc-500 hover:text-zinc-900 underline"
+                                  className="text-[10px] text-zinc-500 hover:text-zinc-900 underline font-semibold"
                                   title="Edit AWB details"
                                 >
                                   Edit
                                 </button>
                               </div>
-                              <span className="text-[10px] text-zinc-500 block truncate max-w-[180px]">
-                                {o.shipment.courierName}
-                              </span>
+                              <div className="flex items-center justify-between gap-2 max-w-[210px]">
+                                <span className="text-[10px] text-zinc-500 truncate block">
+                                  {o.shipment.courierName}
+                                </span>
+                                <button
+                                  onClick={() => setShareAwbModalOrder(o)}
+                                  className="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] font-bold inline-flex items-center gap-1 transition-colors shrink-0 shadow-2xs"
+                                  title="Share AWB with customer via WhatsApp / SMS"
+                                >
+                                  <Share2 className="w-2.5 h-2.5" />
+                                  <span>Share AWB</span>
+                                </button>
+                              </div>
                             </div>
                           ) : (
-                            <div className="space-y-1">
+                            <div className="space-y-1.5">
                               <span className="text-[9.5px] font-bold uppercase text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded inline-block">
                                 Awaiting AWB
                               </span>
                               <button
                                 onClick={() => handleOpenConfirmAwbModal(o)}
-                                className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[11px] font-bold transition-colors flex items-center gap-1 shadow-xs"
+                                className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[11px] font-bold transition-colors flex items-center gap-1 shadow-xs cursor-pointer"
                               >
                                 <CheckCircle2 className="w-3.5 h-3.5" />
                                 <span>Confirm & Assign AWB</span>
@@ -1134,13 +1311,24 @@ APNA-WN-SAMPLE,"Apna Metro Low Women",womens-sneakers,women,1299,2199,41%,20,"Tr
                           )}
                         </td>
                         <td className="py-3 px-4 text-right">
-                          <button
-                            onClick={() => setSelectedInvoiceOrder(o)}
-                            className="p-1.5 text-zinc-600 hover:text-zinc-950 rounded hover:bg-zinc-100"
-                            title="Print Tax Invoice & Packing Slip"
-                          >
-                            <FileText className="w-4 h-4" />
-                          </button>
+                          <div className="flex items-center justify-end gap-1">
+                            {o.shipment?.awbCode && (
+                              <button
+                                onClick={() => setShareAwbModalOrder(o)}
+                                className="p-1.5 text-emerald-700 hover:text-emerald-950 rounded hover:bg-emerald-50 transition-colors"
+                                title="Share AWB with Customer"
+                              >
+                                <Share2 className="w-4 h-4" />
+                              </button>
+                            )}
+                            <button
+                              onClick={() => setSelectedInvoiceOrder(o)}
+                              className="p-1.5 text-zinc-600 hover:text-zinc-950 rounded hover:bg-zinc-100"
+                              title="Print Tax Invoice & Packing Slip"
+                            >
+                              <FileText className="w-4 h-4" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -1150,92 +1338,313 @@ APNA-WN-SAMPLE,"Apna Metro Low Women",womens-sneakers,women,1299,2199,41%,20,"Tr
             </div>
           )}
 
-          {/* TAB 4: 7-DAY RETURN REQUESTS */}
+          {/* TAB 4: 7-DAY RETURN & REFUND MANAGEMENT */}
           {activeTab === 'returns' && (
             <div className="space-y-6">
-              <div>
-                <h2 className="text-xl font-black text-zinc-950 font-display">
-                  7-Day Return & Refund Authorization Queue
-                </h2>
-                <p className="text-xs text-zinc-500 mt-0.5">
-                  Review customer return requests within 7-calendar-day window, schedule reverse pickups, and issue refunds
-                </p>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-black text-zinc-950 font-display">
+                    7-Day Return & Refund Authorization Queue
+                  </h2>
+                  <p className="text-xs text-zinc-500 mt-0.5">
+                    Review customer return requests, inspect items, assign reverse courier AWB for doorstep pickup, and issue 100% refunds.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-zinc-700 bg-white border border-zinc-200 px-3 py-1.5 rounded-xl shadow-2xs">
+                    Total Requests: <strong className="text-orange-600">{returns.length}</strong>
+                  </span>
+                </div>
               </div>
 
-              <div className="bg-white rounded-2xl border border-zinc-200 shadow-xs overflow-hidden">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead>
-                    <tr className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 font-bold uppercase text-[10px]">
-                      <th className="py-3 px-4">Return ID & Order</th>
-                      <th className="py-3 px-4">Customer & Phone</th>
-                      <th className="py-3 px-4">Reason & Details</th>
-                      <th className="py-3 px-4">Refund Amount</th>
-                      <th className="py-3 px-4">Current Status</th>
-                      <th className="py-3 px-4 text-right">Fulfillment Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-zinc-100">
-                    {returns.map((ret) => (
-                      <tr key={ret.id} className="hover:bg-zinc-50/50">
-                        <td className="py-3 px-4 font-mono">
-                          <span className="font-bold text-zinc-900 block">{ret.orderNumber}</span>
-                          <span className="text-[10px] text-zinc-400">ID: {ret.id}</span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className="font-semibold text-zinc-900 block">{ret.customerName}</span>
-                          <span className="text-zinc-500 text-[11px]">{ret.customerPhone}</span>
-                        </td>
-                        <td className="py-3 px-4 max-w-xs">
-                          <span className="font-bold text-zinc-800 capitalize block">
-                            {ret.reason.replace('_', ' ')}
-                          </span>
-                          <p className="text-[11px] text-zinc-500 mt-0.5 leading-tight">{ret.reasonDetails}</p>
-                        </td>
-                        <td className="py-3 px-4 font-black text-zinc-950 tabular-nums">
-                          ₹{ret.refundAmount.toLocaleString('en-IN')}
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                            ret.status === 'refund_completed'
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : ret.status === 'pickup_scheduled'
-                              ? 'bg-blue-100 text-blue-800'
-                              : 'bg-amber-100 text-amber-800'
-                          }`}>
-                            {ret.status.replace('_', ' ')}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-right space-x-1">
-                          {ret.status === 'requested' && (
-                            <button
-                              onClick={() => handleReturnAction(ret.id, 'approved', 'Approved by returns desk')}
-                              className="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-[10px]"
-                            >
-                              Approve Pickup
-                            </button>
-                          )}
-                          {ret.status === 'approved' && (
-                            <button
-                              onClick={() => handleReturnAction(ret.id, 'picked_up', 'Courier picked up package')}
-                              className="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded text-[10px]"
-                            >
-                              Mark Picked Up
-                            </button>
-                          )}
-                          {(ret.status === 'picked_up' || ret.status === 'approved') && (
-                            <button
-                              onClick={() => handleReturnAction(ret.id, 'refund_completed', 'Refund reconciled')}
-                              className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded text-[10px]"
-                            >
-                              Issue Refund
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              {/* Status Filter Tabs */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+                {(
+                  [
+                    { id: 'all', label: 'All Requests', count: returns.length },
+                    { id: 'requested', label: 'Pending Review', count: returns.filter((r) => r.status === 'requested').length },
+                    { id: 'approved', label: 'Pickup Scheduled', count: returns.filter((r) => r.status === 'approved' || r.status === 'pickup_scheduled').length },
+                    { id: 'picked_up', label: 'Picked Up', count: returns.filter((r) => r.status === 'picked_up').length },
+                    { id: 'refund_completed', label: 'Refund Completed', count: returns.filter((r) => r.status === 'refund_completed').length },
+                    { id: 'rejected', label: 'Rejected', count: returns.filter((r) => r.status === 'rejected').length },
+                  ] as const
+                ).map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setReturnStatusFilter(tab.id as any)}
+                    className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+                      returnStatusFilter === tab.id
+                        ? 'bg-zinc-950 text-white shadow-xs'
+                        : 'bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-50'
+                    }`}
+                  >
+                    <span>{tab.label}</span>
+                    <span
+                      className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                        returnStatusFilter === tab.id
+                          ? 'bg-zinc-800 text-zinc-200'
+                          : 'bg-zinc-100 text-zinc-700'
+                      }`}
+                    >
+                      {tab.count}
+                    </span>
+                  </button>
+                ))}
               </div>
+
+              {/* Returns List */}
+              {returns.filter((r) => returnStatusFilter === 'all' || r.status === returnStatusFilter || (returnStatusFilter === 'approved' && r.status === 'pickup_scheduled')).length === 0 ? (
+                <div className="bg-white rounded-2xl border border-zinc-200 p-12 text-center text-xs text-zinc-400 space-y-2">
+                  <RotateCcw className="w-8 h-8 text-zinc-300 mx-auto" />
+                  <p className="font-bold text-zinc-700 text-sm">No return requests found in this view</p>
+                  <p>Customer return requests will appear here once submitted.</p>
+                </div>
+              ) : (
+                <div className="bg-white rounded-2xl border border-zinc-200 shadow-xs overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs border-collapse min-w-[900px]">
+                      <thead>
+                        <tr className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 font-bold uppercase text-[10px]">
+                          <th className="py-3 px-4">Return ID & Order</th>
+                          <th className="py-3 px-4">Customer & Contact</th>
+                          <th className="py-3 px-4">Returned Item(s)</th>
+                          <th className="py-3 px-4">Type & Reason</th>
+                          <th className="py-3 px-4">Refund / Payout</th>
+                          <th className="py-3 px-4">Reverse Logistics</th>
+                          <th className="py-3 px-4 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-zinc-100">
+                        {returns
+                          .filter(
+                            (r) =>
+                              returnStatusFilter === 'all' ||
+                              r.status === returnStatusFilter ||
+                              (returnStatusFilter === 'approved' && r.status === 'pickup_scheduled')
+                          )
+                          .map((ret) => (
+                            <tr key={ret.id} className="hover:bg-zinc-50/50 align-top">
+                              {/* Order & Return ID */}
+                              <td className="py-3.5 px-4 font-mono">
+                                <span className="font-bold text-zinc-950 block">{ret.orderNumber}</span>
+                                <span className="text-[10px] text-zinc-400 block">Ret ID: {ret.id}</span>
+                                <span className="text-[10px] text-zinc-400">
+                                  {new Date(ret.createdAt).toLocaleDateString('en-IN')}
+                                </span>
+                              </td>
+
+                              {/* Customer & Contact */}
+                              <td className="py-3.5 px-4">
+                                <span className="font-bold text-zinc-900 block">{ret.customerName}</span>
+                                <span className="text-zinc-600 font-mono text-[11px] block">{ret.customerPhone}</span>
+                                <div className="flex items-center gap-1.5 mt-1.5">
+                                  <a
+                                    href={`https://wa.me/${ret.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
+                                      `Namaste ${ret.customerName}, regarding your Return request for APNA SHOES order ${ret.orderNumber}.`
+                                    )}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="p-1 rounded bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-[10px] font-bold inline-flex items-center gap-1"
+                                    title="WhatsApp Customer"
+                                  >
+                                    <MessageSquare className="w-3 h-3 text-emerald-600" />
+                                    <span>WhatsApp</span>
+                                  </a>
+                                  <a
+                                    href={`tel:${ret.customerPhone.replace(/\D/g, '')}`}
+                                    className="p-1 rounded bg-zinc-100 text-zinc-700 hover:bg-zinc-200 text-[10px] font-bold inline-flex items-center gap-1"
+                                    title="Call Customer"
+                                  >
+                                    <Phone className="w-3 h-3" />
+                                    <span>Call</span>
+                                  </a>
+                                </div>
+                              </td>
+
+                              {/* Items to Return */}
+                              <td className="py-3.5 px-4 max-w-[200px]">
+                                {ret.itemsToReturn && ret.itemsToReturn.length > 0 ? (
+                                  <div className="space-y-1.5">
+                                    {ret.itemsToReturn.map((item, idx) => (
+                                      <div key={idx} className="flex items-center gap-2">
+                                        {item.image ? (
+                                          <img
+                                            src={item.image}
+                                            alt=""
+                                            className="w-8 h-8 rounded-lg object-cover border border-zinc-200 shrink-0"
+                                          />
+                                        ) : (
+                                          <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center shrink-0">
+                                            <Package className="w-4 h-4 text-zinc-400" />
+                                          </div>
+                                        )}
+                                        <div className="min-w-0">
+                                          <p className="font-bold text-zinc-900 truncate text-[11px]">
+                                            {item.productName}
+                                          </p>
+                                          <p className="text-[10px] text-zinc-500">
+                                            Size: <strong>{item.size}</strong> · Qty: {item.quantity}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <span className="text-zinc-500 italic text-[11px]">All Order Items</span>
+                                )}
+                              </td>
+
+                              {/* Type & Reason */}
+                              <td className="py-3.5 px-4 max-w-xs">
+                                <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-zinc-100 text-zinc-800 uppercase mb-1">
+                                  {ret.returnType === 'size_exchange'
+                                    ? `Exchange → ${ret.desiredSize || 'New Size'}`
+                                    : '100% Refund'}
+                                </span>
+                                <span className="font-bold text-zinc-900 block capitalize">
+                                  {ret.reason.replace(/_/g, ' ')}
+                                </span>
+                                <p className="text-[11px] text-zinc-500 mt-0.5 leading-tight">
+                                  "{ret.reasonDetails}"
+                                </p>
+                                {ret.photoUrl && (
+                                  <a
+                                    href={ret.photoUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-[10.5px] text-blue-600 hover:underline flex items-center gap-1 mt-1 font-semibold"
+                                  >
+                                    <ExternalLink className="w-3 h-3" />
+                                    <span>View Customer Photo Proof</span>
+                                  </a>
+                                )}
+                              </td>
+
+                              {/* Refund Amount & Payout */}
+                              <td className="py-3.5 px-4">
+                                <span className="font-black text-zinc-950 text-sm tabular-nums block">
+                                  ₹{ret.refundAmount.toLocaleString('en-IN')}
+                                </span>
+                                {ret.payoutDetails?.upiId && (
+                                  <span className="text-[10.5px] font-mono bg-emerald-50 text-emerald-800 px-1.5 py-0.5 rounded border border-emerald-200 block mt-1 truncate max-w-[150px]">
+                                    UPI: {ret.payoutDetails.upiId}
+                                  </span>
+                                )}
+                                {ret.payoutDetails?.accountNumber && (
+                                  <span className="text-[10px] font-mono text-zinc-600 block mt-1">
+                                    A/C: {ret.payoutDetails.accountNumber} ({ret.payoutDetails.ifsc})
+                                  </span>
+                                )}
+                              </td>
+
+                              {/* Reverse Logistics Status */}
+                              <td className="py-3.5 px-4">
+                                <span
+                                  className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase inline-block mb-1 ${
+                                    ret.status === 'refund_completed'
+                                      ? 'bg-emerald-100 text-emerald-800'
+                                      : ret.status === 'approved' || ret.status === 'pickup_scheduled'
+                                      ? 'bg-blue-100 text-blue-800'
+                                      : ret.status === 'picked_up'
+                                      ? 'bg-amber-100 text-amber-800'
+                                      : ret.status === 'rejected'
+                                      ? 'bg-red-100 text-red-800'
+                                      : 'bg-zinc-100 text-zinc-800'
+                                  }`}
+                                >
+                                  {ret.status.replace(/_/g, ' ')}
+                                </span>
+
+                                {ret.reverseAwb && (
+                                  <div className="space-y-0.5">
+                                    <span className="text-[10.5px] font-mono font-bold text-blue-900 block">
+                                      AWB: {ret.reverseAwb}
+                                    </span>
+                                    <span className="text-[10px] text-zinc-500 block">
+                                      {ret.reverseCourier}
+                                    </span>
+                                    {ret.pickupDate && (
+                                      <span className="text-[10px] text-zinc-600 block">
+                                        Pickup: {new Date(ret.pickupDate).toLocaleDateString('en-IN')}
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+
+                                {ret.refundTransactionId && (
+                                  <span className="text-[10px] font-mono text-emerald-700 font-bold block mt-1">
+                                    Txn: {ret.refundTransactionId}
+                                  </span>
+                                )}
+                              </td>
+
+                              {/* Action Buttons */}
+                              <td className="py-3.5 px-4 text-right">
+                                <div className="flex flex-col items-end gap-1.5">
+                                  {ret.status === 'requested' && (
+                                    <>
+                                      <button
+                                        onClick={() => handleOpenReturnModal(ret, 'approve')}
+                                        className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-[10.5px] shadow-2xs transition-colors cursor-pointer w-full text-center"
+                                      >
+                                        Approve & Reverse AWB
+                                      </button>
+                                      <button
+                                        onClick={() => handleOpenReturnModal(ret, 'reject')}
+                                        className="px-2.5 py-1 text-red-600 hover:bg-red-50 font-bold rounded text-[10px] transition-colors cursor-pointer"
+                                      >
+                                        Reject Return
+                                      </button>
+                                    </>
+                                  )}
+
+                                  {ret.status === 'approved' && (
+                                    <>
+                                      <button
+                                        onClick={() => handleOpenReturnModal(ret, 'picked_up')}
+                                        className="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-lg text-[10.5px] shadow-2xs transition-colors cursor-pointer w-full text-center"
+                                      >
+                                        Mark Picked Up
+                                      </button>
+                                      <button
+                                        onClick={() => handleOpenReturnModal(ret, 'refund')}
+                                        className="px-2.5 py-1 text-emerald-700 hover:bg-emerald-50 font-bold rounded text-[10px] transition-colors cursor-pointer"
+                                      >
+                                        Issue Refund Now
+                                      </button>
+                                    </>
+                                  )}
+
+                                  {ret.status === 'picked_up' && (
+                                    <button
+                                      onClick={() => handleOpenReturnModal(ret, 'refund')}
+                                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-[10.5px] shadow-2xs transition-colors cursor-pointer w-full text-center"
+                                    >
+                                      Complete 100% Refund
+                                    </button>
+                                  )}
+
+                                  {ret.status === 'refund_completed' && (
+                                    <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                      ✓ Fully Reconciled
+                                    </span>
+                                  )}
+
+                                  {ret.status === 'rejected' && (
+                                    <span className="text-[10px] text-red-700 font-bold bg-red-50 px-2 py-0.5 rounded border border-red-200">
+                                      ✕ Rejected
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -2485,6 +2894,656 @@ APNA-WN-SAMPLE,"Apna Metro Low Women",womens-sneakers,women,1299,2199,41%,20,"Tr
                   <span>{sqlCopied ? 'Copied!' : 'Copy SQL'}</span>
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 1. AIRWAY BILL (AWB) CONFIRMATION & INSERTION MODAL */}
+      {confirmAwbModalOrder && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl border border-zinc-200 max-h-[92vh] flex flex-col space-y-4 overflow-y-auto">
+            {/* Header */}
+            <div className="flex justify-between items-start pb-3 border-b border-zinc-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
+                  <Truck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-zinc-950 font-display">
+                    {confirmAwbModalOrder.shipment?.awbCode ? 'Update Airway Bill (AWB)' : 'Confirm & Insert Airway Bill (AWB)'}
+                  </h3>
+                  <p className="text-[11px] text-zinc-500">
+                    Assign carrier logistics, tracking code, and confirm customer dispatch
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setConfirmAwbModalOrder(null)}
+                className="p-1.5 text-zinc-400 hover:text-zinc-700 rounded-full hover:bg-zinc-100 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Order Brief Box */}
+            <div className="p-3.5 bg-zinc-50 rounded-2xl border border-zinc-200 text-xs space-y-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase text-zinc-400">Order Code:</span>
+                  <span className="font-mono font-bold text-zinc-900 bg-white px-2 py-0.5 rounded border border-zinc-200">
+                    {confirmAwbModalOrder.orderNumber}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-bold uppercase text-zinc-400">Total:</span>
+                  <span className="font-black text-zinc-900">₹{confirmAwbModalOrder.totalAmount.toLocaleString('en-IN')}</span>
+                  <span className="text-[10px] uppercase font-bold text-zinc-500">({confirmAwbModalOrder.paymentMethod})</span>
+                </div>
+              </div>
+
+              <div className="pt-1 border-t border-zinc-200/60 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                <div>
+                  <span className="text-zinc-400 block text-[10px] uppercase font-semibold">Customer & Contact</span>
+                  <span className="font-bold text-zinc-800">{confirmAwbModalOrder.customerName}</span>
+                  <span className="block text-zinc-500">{confirmAwbModalOrder.customerPhone}</span>
+                </div>
+                <div>
+                  <span className="text-zinc-400 block text-[10px] uppercase font-semibold">Delivery Destination</span>
+                  <span className="text-zinc-700 block truncate">
+                    {confirmAwbModalOrder.shippingAddress.city}, {confirmAwbModalOrder.shippingAddress.state} ({confirmAwbModalOrder.shippingAddress.pincode})
+                  </span>
+                </div>
+              </div>
+
+              {confirmAwbModalOrder.items && confirmAwbModalOrder.items.length > 0 && (
+                <div className="pt-1 border-t border-zinc-200/60 flex items-center gap-2 text-[11px] text-zinc-600 truncate">
+                  <span className="text-zinc-400 font-semibold shrink-0">Items:</span>
+                  <span className="truncate">
+                    {confirmAwbModalOrder.items.map(i => `${i.quantity}x ${i.productName} (Size ${i.size})`).join(', ')}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* AWB Form */}
+            <form onSubmit={handleConfirmAndAssignAwb} className="space-y-4 text-xs">
+              {/* Courier Selection */}
+              <div className="space-y-1.5">
+                <label className="font-bold text-zinc-800 flex items-center justify-between">
+                  <span>Courier Partner / Service</span>
+                  <span className="text-[10px] text-zinc-400 font-normal">Select or type custom carrier</span>
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 mb-2">
+                  {[
+                    'Shiprocket — Delhivery Air',
+                    'Shiprocket — BlueDart Express',
+                    'Delhivery Surface',
+                    'BlueDart Air Express',
+                    'DTDC Express',
+                    'Shadowfax Logistics',
+                  ].map((courierOption) => (
+                    <button
+                      key={courierOption}
+                      type="button"
+                      onClick={() => handleCourierSelect(courierOption)}
+                      className={`px-2 py-1.5 rounded-xl border text-[10.5px] font-semibold text-left truncate transition-colors ${
+                        awbInputCourier === courierOption
+                          ? 'bg-orange-50 border-orange-400 text-orange-950 font-bold'
+                          : 'bg-zinc-50 border-zinc-200 text-zinc-700 hover:bg-zinc-100'
+                      }`}
+                    >
+                      {courierOption}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  required
+                  value={awbInputCourier}
+                  onChange={(e) => handleCourierSelect(e.target.value)}
+                  placeholder="e.g. Shiprocket — Delhivery Air"
+                  className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-medium focus:bg-white focus:outline-none focus:ring-1 focus:ring-orange-500"
+                />
+              </div>
+
+              {/* AWB Code */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="font-bold text-zinc-800 flex items-center gap-1.5">
+                    <span>Airway Bill (AWB) Tracking Number *</span>
+                  </label>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => handleGeneratePresetAwb('delhivery')}
+                      className="text-[10px] text-orange-600 hover:text-orange-700 hover:underline font-bold"
+                    >
+                      + Delhivery
+                    </button>
+                    <span className="text-zinc-300">·</span>
+                    <button
+                      type="button"
+                      onClick={() => handleGeneratePresetAwb('bluedart')}
+                      className="text-[10px] text-blue-600 hover:text-blue-700 hover:underline font-bold"
+                    >
+                      + BlueDart
+                    </button>
+                    <span className="text-zinc-300">·</span>
+                    <button
+                      type="button"
+                      onClick={() => handleGeneratePresetAwb('numeric')}
+                      className="text-[10px] text-zinc-600 hover:text-zinc-800 hover:underline font-bold"
+                    >
+                      + Numeric
+                    </button>
+                  </div>
+                </div>
+                <input
+                  type="text"
+                  required
+                  value={awbInputCode}
+                  onChange={(e) => handleAwbCodeType(e.target.value)}
+                  placeholder="Insert new AWB No (e.g. DELHIVERY-89213491 or 784290123491)"
+                  className="w-full px-3 py-2.5 bg-zinc-50 border border-zinc-300 rounded-xl text-sm font-mono font-bold text-zinc-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+                <p className="text-[10.5px] text-zinc-500">
+                  This AWB code will be instantly visible to customer in <strong>Track Order</strong>, <strong>My Orders</strong>, and <strong>Order Confirmation</strong>.
+                </p>
+              </div>
+
+              {/* Live Tracking Link */}
+              <div className="space-y-1.5">
+                <label className="font-bold text-zinc-800 flex items-center justify-between">
+                  <span>Carrier Live Tracking URL</span>
+                  <span className="text-[10px] text-zinc-400 font-normal">Auto-generated or custom</span>
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="url"
+                    value={awbInputTrackingUrl}
+                    onChange={(e) => setAwbInputTrackingUrl(e.target.value)}
+                    placeholder="https://shiprocket.co/tracking/..."
+                    className="flex-1 px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-[11px] font-mono text-zinc-700 focus:bg-white focus:outline-none focus:ring-1 focus:ring-orange-500"
+                  />
+                  {awbInputTrackingUrl && (
+                    <a
+                      href={awbInputTrackingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-2.5 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-xl font-bold flex items-center gap-1 shrink-0"
+                      title="Test live tracking link"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span className="text-[10px]">Test Link</span>
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {/* Estimated Delivery Date */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="font-bold text-zinc-800">Estimated Delivery Date</label>
+                  <input
+                    type="date"
+                    value={awbInputEstDelivery}
+                    onChange={(e) => setAwbInputEstDelivery(e.target.value)}
+                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-semibold focus:bg-white focus:outline-none focus:ring-1 focus:ring-orange-500"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="font-bold text-zinc-800">Fulfillment Status</label>
+                  <div className="px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-xl text-xs font-bold text-emerald-800 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>Auto-advance to 'Shipped'</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-100">
+                <button
+                  type="button"
+                  onClick={() => setConfirmAwbModalOrder(null)}
+                  className="px-4 py-2.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-xl font-semibold transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingAwb}
+                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold flex items-center gap-2 shadow-sm transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>{isSubmittingAwb ? 'Saving AWB...' : 'Confirm & Save Airway Bill'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 2. SHARE NEW AWB NUMBER WITH CUSTOMER MODAL */}
+      {shareAwbModalOrder && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-zinc-200 space-y-4">
+            {/* Header */}
+            <div className="flex justify-between items-start pb-2 border-b border-zinc-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-md">
+                  <Check className="w-5 h-5 stroke-[3]" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-zinc-950 font-display">
+                    AWB Confirmed! Share with Customer
+                  </h3>
+                  <p className="text-[11px] text-zinc-500">
+                    Share new AWB tracking code directly via WhatsApp, SMS, or Email
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShareAwbModalOrder(null)}
+                className="p-1.5 text-zinc-400 hover:text-zinc-700 rounded-full hover:bg-zinc-100 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* AWB Highlight Card */}
+            <div className="p-4 bg-emerald-50/70 border border-emerald-200 rounded-2xl space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase text-emerald-800 tracking-wider">
+                  Airway Bill (AWB) Confirmed
+                </span>
+                <span className="text-[10px] font-mono text-zinc-500">
+                  Order: <strong className="text-zinc-900">{shareAwbModalOrder.orderNumber}</strong>
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 bg-white p-3 rounded-xl border border-emerald-300 shadow-2xs">
+                <div>
+                  <span className="text-[10px] text-zinc-400 uppercase font-semibold block">Airway Bill Number</span>
+                  <span className="text-lg font-black font-mono text-emerald-950 tracking-wide">
+                    {shareAwbModalOrder.shipment?.awbCode || 'Awaiting Code'}
+                  </span>
+                  <span className="text-[11px] text-zinc-500 block">
+                    {shareAwbModalOrder.shipment?.courierName}
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    if (shareAwbModalOrder.shipment?.awbCode) {
+                      navigator.clipboard.writeText(shareAwbModalOrder.shipment.awbCode);
+                      setAwbCodeCopied(true);
+                      setTimeout(() => setAwbCodeCopied(false), 2000);
+                    }
+                  }}
+                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                >
+                  {awbCodeCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{awbCodeCopied ? 'Copied!' : 'Copy AWB'}</span>
+                </button>
+              </div>
+
+              <div className="text-[11px] text-zinc-600 flex items-center justify-between pt-1">
+                <span>Customer: <strong>{shareAwbModalOrder.customerName}</strong> ({shareAwbModalOrder.customerPhone})</span>
+                <span className="text-emerald-700 font-bold">Visible to customer now ✓</span>
+              </div>
+            </div>
+
+            {/* Ready Pre-formatted Customer Message */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-bold text-zinc-700 uppercase tracking-wider">
+                  Customer Message Preview
+                </label>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(getAwbShareMessage(shareAwbModalOrder));
+                    setShareCopied(true);
+                    setTimeout(() => setShareCopied(false), 2000);
+                  }}
+                  className="text-[11px] text-orange-600 hover:text-orange-700 font-bold flex items-center gap-1 cursor-pointer"
+                >
+                  {shareCopied ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                  <span>{shareCopied ? 'Copied Full Message!' : 'Copy Full Message'}</span>
+                </button>
+              </div>
+              <div className="p-3 bg-zinc-950 text-emerald-300 rounded-2xl font-mono text-[11px] leading-relaxed max-h-36 overflow-y-auto whitespace-pre-line border border-zinc-800">
+                {getAwbShareMessage(shareAwbModalOrder)}
+              </div>
+            </div>
+
+            {/* Quick Share Buttons */}
+            <div className="space-y-2 pt-1">
+              <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider block">
+                Instant Share Channels
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <a
+                  href={getWhatsAppShareUrl(shareAwbModalOrder)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  <span>Share via WhatsApp</span>
+                </a>
+
+                <a
+                  href={getSmsShareUrl(shareAwbModalOrder)}
+                  className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer"
+                >
+                  <Phone className="w-4 h-4" />
+                  <span>Share via SMS</span>
+                </a>
+
+                <a
+                  href={getEmailShareUrl(shareAwbModalOrder)}
+                  className="px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer"
+                >
+                  <Mail className="w-4 h-4" />
+                  <span>Share via Email</span>
+                </a>
+
+                {shareAwbModalOrder.shipment?.trackingUrl && (
+                  <a
+                    href={shareAwbModalOrder.shipment.trackingUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    <span>Open Live Tracking</span>
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {/* Bottom Footer */}
+            <div className="pt-2 border-t border-zinc-100 flex justify-end">
+              <button
+                onClick={() => setShareAwbModalOrder(null)}
+                className="px-5 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-xl font-bold text-xs transition-colors cursor-pointer"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3. RETURN FULFILLMENT & REFUND ACTION MODAL */}
+      {returnModalItem && returnModalType && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="bg-white rounded-3xl shadow-2xl border border-zinc-200 max-w-lg w-full overflow-hidden space-y-4 p-6 animate-in fade-in duration-200">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
+              <div className="flex items-center gap-2">
+                <div
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+                    returnModalType === 'approve'
+                      ? 'bg-blue-100 text-blue-700'
+                      : returnModalType === 'picked_up'
+                      ? 'bg-amber-100 text-amber-700'
+                      : returnModalType === 'refund'
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-red-100 text-red-700'
+                  }`}
+                >
+                  <RotateCcw className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-zinc-950 font-display">
+                    {returnModalType === 'approve'
+                      ? 'Approve Return & Reverse Pickup AWB'
+                      : returnModalType === 'picked_up'
+                      ? 'Confirm Doorstep Item Pickup'
+                      : returnModalType === 'refund'
+                      ? 'Issue 100% Refund to Customer'
+                      : 'Reject Return Request'}
+                  </h3>
+                  <p className="text-[11px] text-zinc-500 font-mono">
+                    Order: {returnModalItem.orderNumber} · Customer: {returnModalItem.customerName}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setReturnModalItem(null);
+                  setReturnModalType(null);
+                }}
+                className="p-1.5 rounded-full text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Return Context Summary */}
+            <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-200 text-xs space-y-1.5">
+              <div className="flex justify-between">
+                <span className="text-zinc-500">Customer Phone:</span>
+                <span className="font-bold text-zinc-900 font-mono">{returnModalItem.customerPhone}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-zinc-500">Refund / Claim Value:</span>
+                <span className="font-bold text-zinc-950 text-sm">₹{returnModalItem.refundAmount}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-zinc-500">Return Reason:</span>
+                <span className="font-semibold text-zinc-800 capitalize">
+                  {returnModalItem.reason.replace(/_/g, ' ')}
+                </span>
+              </div>
+              {returnModalItem.pickupAddress && (
+                <div className="pt-1 border-t border-zinc-200">
+                  <span className="text-zinc-500 text-[10.5px]">Doorstep Pickup Address:</span>
+                  <p className="text-zinc-700 text-[11px] font-medium leading-tight">
+                    {returnModalItem.pickupAddress}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Action Specific Fields */}
+            {returnModalType === 'approve' && (
+              <div className="space-y-3 text-xs">
+                <div>
+                  <label className="block text-zinc-800 font-bold mb-1">
+                    Reverse Courier Partner *
+                  </label>
+                  <select
+                    value={returnModalCourier}
+                    onChange={(e) => setReturnModalCourier(e.target.value)}
+                    className="w-full px-3 py-2 bg-zinc-50 border border-zinc-300 rounded-xl font-medium"
+                  >
+                    <option value="Shiprocket — Delhivery Reverse Express">
+                      Shiprocket — Delhivery Reverse Express
+                    </option>
+                    <option value="Shiprocket — BlueDart Reverse Surface">
+                      Shiprocket — BlueDart Reverse Surface
+                    </option>
+                    <option value="Shadowfax Doorstep Reverse">Shadowfax Doorstep Reverse</option>
+                    <option value="DTDC Reverse Express">DTDC Reverse Express</option>
+                  </select>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-zinc-800 font-bold">
+                      Reverse Pickup AWB Number *
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setReturnModalAwb(`REV-${Math.floor(100000000 + Math.random() * 900000000)}`)
+                      }
+                      className="text-[10.5px] text-orange-600 hover:underline font-bold"
+                    >
+                      + Auto Generate
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    value={returnModalAwb}
+                    onChange={(e) => setReturnModalAwb(e.target.value)}
+                    placeholder="e.g. REV-789123456"
+                    className="w-full px-3 py-2 bg-white border border-zinc-300 rounded-xl font-mono font-bold text-zinc-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-zinc-800 font-bold mb-1">
+                    Scheduled Reverse Pickup Date *
+                  </label>
+                  <input
+                    type="date"
+                    value={returnModalPickupDate}
+                    onChange={(e) => setReturnModalPickupDate(e.target.value)}
+                    className="w-full px-3 py-2 bg-white border border-zinc-300 rounded-xl"
+                  />
+                </div>
+              </div>
+            )}
+
+            {returnModalType === 'picked_up' && (
+              <div className="p-3.5 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 space-y-1">
+                <p className="font-bold">Confirm Reverse Courier Handover</p>
+                <p className="text-[11px] leading-relaxed">
+                  Has the courier partner collected the shoes from the customer's address? Marking this will update the customer portal to <strong>PICKED UP</strong> and trigger quality warehouse inspection.
+                </p>
+              </div>
+            )}
+
+            {returnModalType === 'refund' && (
+              <div className="space-y-3 text-xs">
+                <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-950 space-y-1">
+                  <div className="flex justify-between items-center font-bold">
+                    <span>Payable Refund Amount:</span>
+                    <span className="text-base text-emerald-800">₹{returnModalItem.refundAmount}</span>
+                  </div>
+                  {returnModalItem.payoutDetails?.upiId && (
+                    <div className="flex justify-between items-center text-[11px] pt-1 border-t border-emerald-200">
+                      <span>Customer UPI ID:</span>
+                      <strong className="font-mono bg-white px-2 py-0.5 rounded border border-emerald-300">
+                        {returnModalItem.payoutDetails.upiId}
+                      </strong>
+                    </div>
+                  )}
+                  {returnModalItem.payoutDetails?.accountNumber && (
+                    <div className="text-[11px] pt-1 border-t border-emerald-200">
+                      <span>Bank Transfer:</span>
+                      <strong className="block font-mono">
+                        A/C: {returnModalItem.payoutDetails.accountNumber} · IFSC: {returnModalItem.payoutDetails.ifsc}
+                      </strong>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-zinc-800 font-bold mb-1">
+                    Bank UTR / Transaction Reference Number *
+                  </label>
+                  <input
+                    type="text"
+                    value={returnModalTxnId}
+                    onChange={(e) => setReturnModalTxnId(e.target.value)}
+                    placeholder="e.g. UPI/29182379182 or BANK-IMPS-8921"
+                    className="w-full px-3 py-2 bg-white border border-zinc-300 rounded-xl font-mono text-zinc-900 font-bold"
+                  />
+                  <p className="text-[10.5px] text-zinc-400 mt-1">
+                    The customer will see this transaction reference code in their return portal.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {returnModalType === 'reject' && (
+              <div className="space-y-3 text-xs">
+                <div className="p-3 bg-red-50 rounded-xl border border-red-200 text-red-950 space-y-1">
+                  <p className="font-bold">Reject Return Request</p>
+                  <p className="text-[11px] text-red-800">
+                    The return request will be rejected and the order status reverted to Delivered. Please provide the justification below.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-zinc-800 font-bold mb-1">
+                    Rejection Reason (Visible to Customer) *
+                  </label>
+                  <select
+                    value={returnModalNotes}
+                    onChange={(e) => setReturnModalNotes(e.target.value)}
+                    className="w-full px-3 py-2 bg-white border border-zinc-300 rounded-xl"
+                  >
+                    <option value="">Select standard reason or write custom...</option>
+                    <option value="Tags removed and signs of outdoor sole wear">
+                      Tags removed and signs of outdoor sole wear
+                    </option>
+                    <option value="Exceeded 7-calendar-day return window from delivery date">
+                      Exceeded 7-calendar-day return window from delivery date
+                    </option>
+                    <option value="Original manufacturer box / packaging missing">
+                      Original manufacturer box / packaging missing
+                    </option>
+                    <option value="Footwear washed or altered">Footwear washed or altered</option>
+                  </select>
+                </div>
+              </div>
+            )}
+
+            {/* Admin Notes */}
+            <div>
+              <label className="block text-zinc-800 font-bold text-xs mb-1">
+                Admin Audit Notes (Optional)
+              </label>
+              <input
+                type="text"
+                value={returnModalNotes}
+                onChange={(e) => setReturnModalNotes(e.target.value)}
+                placeholder="Internal verification notes..."
+                className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-xs"
+              />
+            </div>
+
+            {/* Modal Actions */}
+            <div className="pt-3 border-t border-zinc-100 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setReturnModalItem(null);
+                  setReturnModalType(null);
+                }}
+                className="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold rounded-xl text-xs transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleExecuteReturnAction}
+                disabled={isSubmittingReturnAction}
+                className={`px-5 py-2 text-white font-bold rounded-xl text-xs shadow-md transition-colors cursor-pointer disabled:opacity-50 ${
+                  returnModalType === 'approve'
+                    ? 'bg-blue-600 hover:bg-blue-500'
+                    : returnModalType === 'picked_up'
+                    ? 'bg-amber-600 hover:bg-amber-500'
+                    : returnModalType === 'refund'
+                    ? 'bg-emerald-600 hover:bg-emerald-500'
+                    : 'bg-red-600 hover:bg-red-500'
+                }`}
+              >
+                {isSubmittingReturnAction
+                  ? 'Saving...'
+                  : returnModalType === 'approve'
+                  ? 'Approve & Schedule Reverse Pickup'
+                  : returnModalType === 'picked_up'
+                  ? 'Confirm Picked Up'
+                  : returnModalType === 'refund'
+                  ? 'Complete & Reconcile 100% Refund'
+                  : 'Confirm Rejection'}
+              </button>
             </div>
           </div>
         </div>

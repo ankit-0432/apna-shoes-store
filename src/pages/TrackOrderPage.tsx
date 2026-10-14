@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Truck, CheckCircle2, Clock, MapPin, Package, ArrowRight, RotateCcw } from 'lucide-react';
+import { Search, Truck, CheckCircle2, Clock, MapPin, Package, ArrowRight, RotateCcw, Copy, Check, ExternalLink, RefreshCw, Share2 } from 'lucide-react';
 import { api } from '../services/api.js';
 import { Order, ShipmentEvent } from '../types/store.js';
 
@@ -13,22 +13,24 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({ initialOrderNumb
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [awbCopied, setAwbCopied] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchOrderTracking = async (q: string) => {
     if (!q.trim()) return;
     setLoading(true);
     setError(null);
     try {
-      // Try search by order ID
+      // Try search by order ID or AWB
       const res = await api.getOrder(q.trim());
       setOrder(res);
     } catch (e: any) {
-      // Try search by user phone or orders list
+      // Try search across orders list
       try {
         const orders = await api.getOrders();
         const found = orders.find(
           o => o.orderNumber.toLowerCase() === q.trim().toLowerCase() ||
-               o.shipment?.awbCode === q.trim()
+               (o.shipment?.awbCode && o.shipment.awbCode.toLowerCase() === q.trim().toLowerCase())
         );
         if (found) {
           setOrder(found);
@@ -40,6 +42,19 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({ initialOrderNumb
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    if (!order) return;
+    setRefreshing(true);
+    try {
+      const refreshed = await api.getOrder(order.id);
+      setOrder(refreshed);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -77,6 +92,7 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({ initialOrderNumb
   };
 
   const currentStepIdx = order ? getStepIndex(order.orderStatus) : 0;
+  const hasAwb = Boolean(order?.shipment?.awbCode);
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8">
@@ -90,22 +106,22 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({ initialOrderNumb
           Track Your Apna Shoes Shipment
         </h1>
         <p className="text-xs text-zinc-500 max-w-md mx-auto">
-          Enter your Apna Shoes Order Number (e.g. APNA-2026-7842) or Shiprocket AWB code for real-time courier updates.
+          Enter your unique Order Number (e.g. APNA-2026-7842) or Airway Bill (AWB) number for live courier dispatch updates.
         </p>
 
         <form onSubmit={handleSearch} className="max-w-md mx-auto flex gap-2 pt-2">
           <input
             type="text"
             required
-            placeholder="Order ID or Shiprocket AWB"
+            placeholder="Order ID or Airway Bill (AWB) No"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 px-4 py-2.5 bg-zinc-50 border border-zinc-300 rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="flex-1 px-4 py-2.5 bg-zinc-50 border border-zinc-300 rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-orange-500 font-mono"
           />
           <button
             type="submit"
             disabled={loading}
-            className="px-5 py-2.5 bg-zinc-950 text-white font-bold text-xs rounded-xl hover:bg-zinc-800 transition-colors disabled:opacity-50"
+            className="px-5 py-2.5 bg-zinc-950 text-white font-bold text-xs rounded-xl hover:bg-zinc-800 transition-colors disabled:opacity-50 cursor-pointer"
           >
             {loading ? 'Tracking...' : 'Track'}
           </button>
@@ -120,25 +136,33 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({ initialOrderNumb
           {/* Top Shipment Summary */}
           <div className="p-6 sm:p-8 bg-zinc-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs font-bold uppercase tracking-wider text-orange-600">
                   {order.shipment?.courierName || 'Shiprocket Logistics'}
                 </span>
                 <span>·</span>
                 <span className="text-xs font-semibold text-zinc-500">
-                  AWB: <strong className="text-zinc-900 font-mono">{order.shipment?.awbCode || 'Pending Dispatch'}</strong>
+                  Order Code: <strong className="text-zinc-900 font-mono">{order.orderNumber}</strong>
                 </span>
               </div>
-              <h2 className="text-xl font-black text-zinc-950 mt-1 font-display">
-                Order {order.orderNumber}
+              <h2 className="text-xl font-black text-zinc-950 mt-1 font-display flex items-center gap-2">
+                <span>Shipment for {order.customerName}</span>
+                <button
+                  onClick={handleRefresh}
+                  disabled={refreshing}
+                  className="p-1 text-zinc-400 hover:text-zinc-700 rounded-lg hover:bg-zinc-200/60 transition-colors"
+                  title="Refresh order status"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-orange-600' : ''}`} />
+                </button>
               </h2>
               <p className="text-xs text-zinc-500">
-                Recipient: <strong className="text-zinc-800">{order.customerName}</strong> ({order.shippingAddress.city}, {order.shippingAddress.state})
+                Destination: <strong className="text-zinc-800">{order.shippingAddress.city}, {order.shippingAddress.state}</strong> ({order.shippingAddress.pincode})
               </p>
             </div>
 
             <div className="text-left sm:text-right">
-              <span className="text-xs text-zinc-500 block">Status</span>
+              <span className="text-xs text-zinc-500 block">Current Status</span>
               <span className={`text-sm font-extrabold uppercase px-2.5 py-1 rounded-md inline-block mt-0.5 ${
                 order.orderStatus === 'delivered'
                   ? 'bg-emerald-100 text-emerald-800'
@@ -147,6 +171,69 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({ initialOrderNumb
                 {order.orderStatus.replace('_', ' ')}
               </span>
             </div>
+          </div>
+
+          {/* DEDICATED AIRWAY BILL (AWB) HIGHLIGHT CARD */}
+          <div className={`p-6 sm:p-7 border-t border-b ${hasAwb ? 'bg-emerald-50/70 border-emerald-200' : 'bg-amber-50/70 border-amber-200'} space-y-3`}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <span className={`text-[10px] font-bold uppercase tracking-wider block ${hasAwb ? 'text-emerald-800' : 'text-amber-800'}`}>
+                  {hasAwb ? 'Airway Bill (AWB) Confirmed by Admin' : 'Airway Bill (AWB) Status'}
+                </span>
+                {hasAwb ? (
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
+                    <span className="text-xl sm:text-2xl font-black font-mono text-emerald-950 tracking-tight bg-white px-3 py-1 rounded-xl border border-emerald-300 shadow-2xs">
+                      {order.shipment?.awbCode}
+                    </span>
+                    <button
+                      onClick={() => {
+                        if (order.shipment?.awbCode) {
+                          navigator.clipboard.writeText(order.shipment.awbCode);
+                          setAwbCopied(true);
+                          setTimeout(() => setAwbCopied(false), 2000);
+                        }
+                      }}
+                      className="px-3 py-1.5 bg-white border border-emerald-300 hover:bg-emerald-50 text-emerald-800 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                    >
+                      {awbCopied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{awbCopied ? 'Copied!' : 'Copy AWB'}</span>
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-xs text-amber-900 mt-1 font-medium">
+                    Awaiting Admin AWB Assignment (Dispatched within less than 24 hours)
+                  </p>
+                )}
+              </div>
+
+              {hasAwb && order.shipment?.trackingUrl && (
+                <div className="flex items-center gap-2">
+                  <a
+                    href={order.shipment.trackingUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Track on Courier Site</span>
+                  </a>
+                </div>
+              )}
+            </div>
+
+            {hasAwb && (
+              <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-600 pt-1">
+                <span>Courier: <strong className="text-zinc-900">{order.shipment?.courierName}</strong></span>
+                {order.shipment?.estimatedDelivery && (
+                  <span>
+                    Est. Delivery:{' '}
+                    <strong className="text-zinc-900">
+                      {new Date(order.shipment.estimatedDelivery).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </strong>
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Stepper Progress Bar */}

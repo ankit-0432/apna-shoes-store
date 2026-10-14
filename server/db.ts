@@ -26,8 +26,54 @@ import { syncSubscriberToSupabase, syncOrderToSupabase } from './supabase.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const DATA_DIR = path.resolve(__dirname, '../data');
-const DB_FILE = path.join(DATA_DIR, 'store.json');
+
+function resolveDataStorage(): { dataDir: string; dbFile: string } {
+  // Try project root data directory first (e.g. process.cwd()/data or ./data)
+  const candidateDirs = [
+    path.resolve(process.cwd(), 'data'),
+    path.resolve(__dirname, 'data'),
+    path.resolve(__dirname, '../data'),
+  ];
+
+  for (const dir of candidateDirs) {
+    // Avoid root system directory (/data) which triggers EACCES on container platforms
+    if (dir === '/data' || dir === '\\data') continue;
+
+    try {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.accessSync(dir, fs.constants.W_OK);
+      return { dataDir: dir, dbFile: path.join(dir, 'store.json') };
+    } catch {
+      // Try next candidate
+    }
+  }
+
+  // Fallback to writable temporary directory in restricted/read-only environments
+  const tmpDir = path.resolve(process.env.TMPDIR || '/tmp', 'apna-shoes-data');
+  const tmpFile = path.join(tmpDir, 'store.json');
+  try {
+    if (!fs.existsSync(tmpDir)) {
+      fs.mkdirSync(tmpDir, { recursive: true });
+    }
+    // If a seeded store.json exists in ./data, copy it to tmpDir
+    const localStore = path.resolve(process.cwd(), 'data', 'store.json');
+    if (fs.existsSync(localStore) && !fs.existsSync(tmpFile)) {
+      try {
+        fs.copyFileSync(localStore, tmpFile);
+      } catch {
+        // Ignore copy error
+      }
+    }
+  } catch (err) {
+    console.warn('[DB] Could not create fallback tmp data dir:', err);
+  }
+
+  return { dataDir: tmpDir, dbFile: tmpFile };
+}
+
+const { dataDir: DATA_DIR, dbFile: DB_FILE } = resolveDataStorage();
 
 interface DatabaseStore {
   products: Product[];
@@ -42,13 +88,25 @@ interface DatabaseStore {
   notifications: Array<{ id: string; timestamp: string; channel: string; recipient: string; title: string; message: string }>;
   subscribers?: Array<{ id: string; email: string; subscribedAt: string; source: string }>;
   deletedProductIds?: string[];
+  integrations?: any;
 }
+
+interface OtpEntry {
+  phone: string;
+  code: string;
+  expiresAt: number;
+}
+const activeOtps = new Map<string, OtpEntry>();
 
 let db: DatabaseStore;
 
 function initDb() {
   if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+    try {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    } catch (err) {
+      console.warn('[DB] Could not create DATA_DIR in initDb:', err);
+    }
   }
 
   if (fs.existsSync(DB_FILE)) {
@@ -335,14 +393,30 @@ export const DB = {
   },
 
   getOrderById(id: string) {
-    return db.orders.find(o => o.id === id || o.orderNumber === id);
+    const clean = id.trim();
+    return db.orders.find(
+      o =>
+        o.id === clean ||
+        o.orderNumber.toLowerCase() === clean.toLowerCase() ||
+        (o.shipment?.awbCode && o.shipment.awbCode.toLowerCase() === clean.toLowerCase())
+    );
   },
 
   getUserOrders(emailOrPhone: string) {
     const query = emailOrPhone.toLowerCase().trim();
-    return db.orders.filter(
-      o => o.customerEmail.toLowerCase() === query || o.customerPhone.includes(query)
-    );
+    const queryDigits = query.replace(/\D/g, '');
+    return db.orders.filter(o => {
+      if (o.customerEmail && o.customerEmail.toLowerCase() === query) return true;
+      if (queryDigits.length >= 7) {
+        const orderPhoneDigits = o.customerPhone.replace(/\D/g, '');
+        return (
+          orderPhoneDigits.endsWith(queryDigits) ||
+          queryDigits.endsWith(orderPhoneDigits) ||
+          orderPhoneDigits === queryDigits
+        );
+      }
+      return o.customerPhone.toLowerCase().includes(query);
+    });
   },
 
   createOrder(orderData: Omit<Order, 'id' | 'orderNumber' | 'createdAt' | 'updatedAt'>) {
@@ -429,48 +503,78 @@ export const DB = {
     return order;
   },
 
-  createShipment(orderId: string, courierName: string = 'Shiprocket — Delhivery Surface', customAwb?: string) {
+  createShipment(
+    orderId: string,
+    courierName: string = 'Shiprocket — Delhivery Air',
+    customAwb?: string,
+    customTrackingUrl?: string,
+    estimatedDelivery?: string,
+    customStatus?: 'manifested' | 'picked_up' | 'in_transit' | 'out_for_delivery' | 'delivered'
+  ) {
     const order = db.orders.find(o => o.id === orderId || o.orderNumber === orderId);
     if (!order) return null;
 
     const awbCode = customAwb?.trim() ? customAwb.trim() : `${Math.floor(10000000000 + Math.random() * 90000000000)}`;
-    const shipmentId = `SR-${courierName.substring(0, 3).toUpperCase()}-${Date.now().toString().slice(-6)}`;
-    const estDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
+    const shipmentId = order.shipment?.shipmentId || `SR-${courierName.substring(0, 3).toUpperCase()}-${Date.now().toString().slice(-6)}`;
+    const estDate = estimatedDelivery || order.shipment?.estimatedDelivery || new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
+
+    // Determine smart tracking URL if not provided
+    let trackingUrl = customTrackingUrl?.trim();
+    if (!trackingUrl) {
+      const lowerCourier = courierName.toLowerCase();
+      if (lowerCourier.includes('delhivery')) {
+        trackingUrl = `https://www.delhivery.com/track/package/${awbCode}`;
+      } else if (lowerCourier.includes('bluedart') || lowerCourier.includes('blue dart')) {
+        trackingUrl = `https://www.bluedart.com/tracking?trackNumber=${awbCode}`;
+      } else if (lowerCourier.includes('dtdc')) {
+        trackingUrl = `https://www.dtdc.in/tracking/shipment-tracking.asp?strCnno=${awbCode}`;
+      } else if (lowerCourier.includes('shadowfax')) {
+        trackingUrl = `https://tracker.shadowfax.in/#/track/${awbCode}`;
+      } else if (lowerCourier.includes('xpressbees')) {
+        trackingUrl = `https://www.xpressbees.com/track?awb=${awbCode}`;
+      } else {
+        trackingUrl = `https://shiprocket.co/tracking/${awbCode}`;
+      }
+    }
+
+    const currentEvents = order.shipment?.events || [];
+    const newEvent = {
+      id: `ev-${Date.now()}`,
+      statusCode: 'AWB_CONFIRMED',
+      statusTitle: 'Airway Bill (AWB) Confirmed & Assigned',
+      location: 'Apna Shoes Noida Central Warehouse',
+      timestamp: new Date().toISOString(),
+      description: `Dispatched via ${courierName}. Airway Bill Tracking Number: ${awbCode}`,
+    };
 
     const shipment = {
-      id: `ship-${Date.now()}`,
+      id: order.shipment?.id || `ship-${Date.now()}`,
       orderId: order.id,
       courierName,
       shipmentId,
       awbCode,
-      status: 'manifested' as const,
-      trackingUrl: `https://shiprocket.co/tracking/${awbCode}`,
-      pickupScheduledAt: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString(),
+      status: customStatus || (order.shipment?.status === 'delivered' ? 'delivered' : 'manifested'),
+      trackingUrl,
+      pickupScheduledAt: order.shipment?.pickupScheduledAt || new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString(),
       estimatedDelivery: estDate,
-      events: [
-        {
-          id: `ev-${Date.now()}`,
-          statusCode: 'MF',
-          statusTitle: 'Manifest Generated',
-          location: 'Apna Shoes Warehouse Noida',
-          timestamp: new Date().toISOString(),
-          description: `Shipment booked with ${courierName}. AWB: ${awbCode}`,
-        },
-      ],
+      actualDelivery: order.shipment?.actualDelivery,
+      events: [...currentEvents, newEvent],
     };
 
     order.shipment = shipment;
-    order.orderStatus = 'shipped';
+    if (order.orderStatus === 'order_placed' || order.orderStatus === 'confirmed' || order.orderStatus === 'processing' || order.orderStatus === 'packed') {
+      order.orderStatus = 'shipped';
+    }
     order.updatedAt = new Date().toISOString();
 
     DB.recordNotification(
       'whatsapp',
       order.customerPhone,
-      `Order Dispatched: ${order.orderNumber}`,
-      `Your APNA SHOES order ${order.orderNumber} has shipped via ${courierName}! Tracking AWB: ${awbCode}. Track here: ${shipment.trackingUrl}`
+      `AWB Confirmed: ${order.orderNumber}`,
+      `Your APNA SHOES order ${order.orderNumber} has been confirmed with Airway Bill (AWB) ${awbCode} via ${courierName}. Track here: ${shipment.trackingUrl}`
     );
 
-    DB.logAudit('ADMIN', 'SHIPMENT_CREATED', { orderNumber: order.orderNumber, awbCode });
+    DB.logAudit('ADMIN', 'AWB_CONFIRMED', { orderNumber: order.orderNumber, awbCode, courierName });
     saveDb();
     return order;
   },
@@ -480,21 +584,56 @@ export const DB = {
     return db.returns;
   },
 
+  getUserReturns(emailOrPhone: string) {
+    const query = emailOrPhone.toLowerCase().trim();
+    const queryDigits = query.replace(/\D/g, '');
+    return db.returns.filter(r => {
+      if (r.customerEmail && r.customerEmail.toLowerCase() === query) return true;
+      if (queryDigits.length >= 7) {
+        const returnPhoneDigits = r.customerPhone.replace(/\D/g, '');
+        return (
+          returnPhoneDigits.endsWith(queryDigits) ||
+          queryDigits.endsWith(returnPhoneDigits) ||
+          returnPhoneDigits === queryDigits
+        );
+      }
+      return r.customerPhone.toLowerCase().includes(query);
+    });
+  },
+
   createReturnRequest(req: {
     orderId: string;
     reason: ReturnRequest['reason'];
     reasonDetails: string;
     photoUrl?: string;
+    itemsToReturn?: Array<{
+      itemId?: string;
+      productName: string;
+      size: string;
+      quantity: number;
+      image?: string;
+      price?: number;
+    }>;
+    returnType?: 'refund' | 'size_exchange';
+    desiredSize?: string;
+    payoutDetails?: {
+      method: 'upi' | 'bank_transfer';
+      upiId?: string;
+      accountNumber?: string;
+      ifsc?: string;
+      accountHolder?: string;
+    };
+    pickupAddress?: string;
   }) {
     const order = db.orders.find(o => o.id === req.orderId || o.orderNumber === req.orderId);
     if (!order) throw new Error('Order not found');
 
     if (order.orderStatus !== 'delivered') {
-      throw new Error('Only delivered orders are eligible for return');
+      throw new Error(`Only delivered orders are eligible for return. Current status: ${order.orderStatus}`);
     }
 
     if (!order.deliveredAt) {
-      throw new Error('Delivery timestamp not verified');
+      order.deliveredAt = order.updatedAt || new Date().toISOString();
     }
 
     const deliveryTime = new Date(order.deliveredAt).getTime();
@@ -508,6 +647,17 @@ export const DB = {
     const returnNumber = `RET-${Math.floor(10000 + Math.random() * 90000)}`;
     const deadline = new Date(deliveryTime + sevenDaysMs).toISOString();
 
+    let refundAmount = order.totalAmount;
+    if (req.itemsToReturn && req.itemsToReturn.length > 0) {
+      const calc = req.itemsToReturn.reduce(
+        (acc, item) => acc + (Number(item.price || 0) * (item.quantity || 1)),
+        0
+      );
+      if (calc > 0) refundAmount = Math.min(order.totalAmount, calc);
+    }
+
+    const pickupAddress = req.pickupAddress || `${order.shippingAddress.flatHouse}, ${order.shippingAddress.streetLocality}, ${order.shippingAddress.city} - ${order.shippingAddress.pincode}`;
+
     const returnRequest: ReturnRequest = {
       id: `ret-${Date.now()}`,
       orderId: order.id,
@@ -515,12 +665,17 @@ export const DB = {
       customerName: order.customerName,
       customerEmail: order.customerEmail,
       customerPhone: order.customerPhone,
+      itemsToReturn: req.itemsToReturn,
+      returnType: req.returnType || 'refund',
+      desiredSize: req.desiredSize,
+      payoutDetails: req.payoutDetails,
+      pickupAddress,
       reason: req.reason,
       reasonDetails: req.reasonDetails,
       photoUrl: req.photoUrl,
       status: 'requested',
       returnDeadline: deadline,
-      refundAmount: order.totalAmount,
+      refundAmount,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -532,7 +687,7 @@ export const DB = {
       'whatsapp',
       order.customerPhone,
       `Return Requested: ${order.orderNumber}`,
-      `We received your return request ${returnNumber} for order ${order.orderNumber}. Our team will review within 24 hours to schedule doorstep pickup.`
+      `We received your return request ${returnNumber} for order ${order.orderNumber} (${returnRequest.returnType === 'size_exchange' ? 'Size Exchange' : '100% Refund'}). Our team will review within 24 hours to schedule doorstep pickup.`
     );
 
     DB.logAudit('CUSTOMER', 'RETURN_REQUESTED', { returnNumber, orderNumber: order.orderNumber });
@@ -540,30 +695,54 @@ export const DB = {
     return returnRequest;
   },
 
-  updateReturnStatus(returnId: string, status: ReturnRequest['status'], adminNotes?: string) {
+  updateReturnStatus(
+    returnId: string,
+    status: ReturnRequest['status'],
+    adminNotes?: string,
+    reverseCourier?: string,
+    reverseAwb?: string,
+    pickupDate?: string,
+    refundTransactionId?: string
+  ) {
     const ret = db.returns.find(r => r.id === returnId);
     if (!ret) return null;
 
     ret.status = status;
     ret.updatedAt = new Date().toISOString();
     if (adminNotes) ret.adminNotes = adminNotes;
+    if (reverseCourier) ret.reverseCourier = reverseCourier;
+    if (reverseAwb) ret.reverseAwb = reverseAwb;
+    if (pickupDate) ret.pickupDate = pickupDate;
+    if (refundTransactionId) ret.refundTransactionId = refundTransactionId;
 
     const order = db.orders.find(o => o.id === ret.orderId);
 
     if (status === 'approved') {
-      ret.pickupDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+      if (!ret.pickupDate) {
+        ret.pickupDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+      }
+      if (!ret.reverseCourier) {
+        ret.reverseCourier = 'Shiprocket — Delhivery Reverse Express';
+      }
+      if (!ret.reverseAwb) {
+        ret.reverseAwb = `REV-${Math.floor(100000000 + Math.random() * 900000000)}`;
+      }
       if (order) order.orderStatus = 'return_approved';
     } else if (status === 'picked_up') {
       if (order) order.orderStatus = 'return_picked_up';
     } else if (status === 'refund_completed') {
-      ret.refundTransactionId = `RFND-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+      if (!ret.refundTransactionId) {
+        ret.refundTransactionId = `RFND-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+      }
       if (order) {
         order.orderStatus = 'refunded';
         order.paymentStatus = 'refunded';
       }
+    } else if (status === 'rejected') {
+      if (order) order.orderStatus = 'delivered'; // revert to delivered
     }
 
-    DB.logAudit('ADMIN', 'UPDATE_RETURN_STATUS', { returnId, status });
+    DB.logAudit('ADMIN', 'UPDATE_RETURN_STATUS', { returnId, status, reverseAwb: ret.reverseAwb });
     saveDb();
     return ret;
   },
@@ -744,6 +923,35 @@ export const DB = {
     saveDb();
     syncSubscriberToSupabase(cleanEmail, source).catch(() => {});
     return { success: true, alreadySubscribed: false, subscriber: newSub };
+  },
+
+  // MOBILE NUMBER OTP AUTHENTICATION
+  createOtp(phone: string): string {
+    const cleanPhone = phone.replace(/\D/g, '');
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    activeOtps.set(cleanPhone, {
+      phone,
+      code,
+      expiresAt: Date.now() + 10 * 60 * 1000,
+    });
+    return code;
+  },
+
+  verifyOtp(phone: string, inputCode: string): boolean {
+    const cleanPhone = phone.replace(/\D/g, '');
+    // Allow standard testing demo code "1234"
+    if (inputCode.trim() === '1234') return true;
+    const entry = activeOtps.get(cleanPhone);
+    if (!entry) return false;
+    if (Date.now() > entry.expiresAt) {
+      activeOtps.delete(cleanPhone);
+      return false;
+    }
+    if (entry.code === inputCode.trim()) {
+      activeOtps.delete(cleanPhone);
+      return true;
+    }
+    return false;
   },
 
   getRawStoreData() {

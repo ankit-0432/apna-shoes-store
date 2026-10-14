@@ -15,15 +15,40 @@ function cleanSupabaseUrl(url?: string): string {
 
 export const SUPABASE_URL = cleanSupabaseUrl(process.env.SUPABASE_URL);
 
-export const SUPABASE_SERVICE_ROLE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY && !process.env.SUPABASE_SERVICE_ROLE_KEY.includes('your-')
-    ? process.env.SUPABASE_SERVICE_ROLE_KEY
-    : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6eHl4aGVmanhzeWxkcXNkdmJwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MTgwMzM3MSwiZXhwIjoyMTA3Mzc5MzcxfQ.d54TM6NO-Y6ht8BuRM9W_JqG5OOq6fKoeh-3GkO2tT4';
+function getJwtRef(token?: string): string | null {
+  try {
+    if (!token) return null;
+    const parts = token.split('.');
+    if (parts.length >= 2) {
+      const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
+      return payload.ref || null;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
 
-export const SUPABASE_ANON_KEY =
-  process.env.SUPABASE_ANON_KEY && !process.env.SUPABASE_ANON_KEY.includes('your-')
-    ? process.env.SUPABASE_ANON_KEY
-    : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6eHl4aGVmanhzeWxkcXNkdmJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MDMzNzEsImV4cCI6MjEwNzM3OTM3MX0.QJPQAOxF6vZwTE18sGDoO4QfwO64k0FVOWP3B1tXeYA';
+function cleanSupabaseKey(key: string | undefined, fallback: string): string {
+  if (!key || key.includes('your-') || key.length < 40) {
+    return fallback;
+  }
+  const ref = getJwtRef(key);
+  if (ref && ref !== 'fzxyxhefjxsyldqsdvbp') {
+    return fallback;
+  }
+  return key;
+}
+
+export const SUPABASE_SERVICE_ROLE_KEY = cleanSupabaseKey(
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6eHl4aGVmanhzeWxkcXNkdmJwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MTgwMzM3MSwiZXhwIjoyMTA3Mzc5MzcxfQ.d54TM6NO-Y6ht8BuRM9W_JqG5OOq6fKoeh-3GkO2tT4'
+);
+
+export const SUPABASE_ANON_KEY = cleanSupabaseKey(
+  process.env.SUPABASE_ANON_KEY,
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6eHl4aGVmanhzeWxkcXNkdmJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MDMzNzEsImV4cCI6MjEwNzM3OTM3MX0.QJPQAOxF6vZwTE18sGDoO4QfwO64k0FVOWP3B1tXeYA'
+);
 
 export const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   auth: {
@@ -57,9 +82,10 @@ export async function getSupabaseStatus(): Promise<SupabaseStatusResult> {
   try {
     for (const table of targetTables) {
       try {
-        const { count, error } = await supabaseAdmin
+        const { count, data, error } = await supabaseAdmin
           .from(table)
-          .select('*', { count: 'exact', head: true });
+          .select('*', { count: 'exact' })
+          .limit(1);
 
         if (error) {
           anyTableMissing = true;
@@ -69,7 +95,7 @@ export async function getSupabaseStatus(): Promise<SupabaseStatusResult> {
             tablesResult[table] = { exists: false, error: error.message || 'Table not found' };
           }
         } else {
-          tablesResult[table] = { exists: true, rowCount: count ?? 0 };
+          tablesResult[table] = { exists: true, rowCount: count ?? data?.length ?? 0 };
         }
       } catch (tableErr: any) {
         tablesResult[table] = { exists: false, error: tableErr.message };
@@ -107,9 +133,15 @@ export async function getSupabaseStatus(): Promise<SupabaseStatusResult> {
  * Reads SQL schema file for display and setup
  */
 export function getSqlSchema(): string {
-  const schemaPath = path.resolve(__dirname, '../database/schema.sql');
-  if (fs.existsSync(schemaPath)) {
-    return fs.readFileSync(schemaPath, 'utf-8');
+  const candidatePaths = [
+    path.resolve(process.cwd(), 'database/schema.sql'),
+    path.resolve(__dirname, 'database/schema.sql'),
+    path.resolve(__dirname, '../database/schema.sql'),
+  ];
+  for (const schemaPath of candidatePaths) {
+    if (fs.existsSync(schemaPath)) {
+      return fs.readFileSync(schemaPath, 'utf-8');
+    }
   }
   return '-- Schema file not found';
 }

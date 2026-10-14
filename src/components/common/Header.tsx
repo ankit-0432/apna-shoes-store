@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Search, User as UserIcon, Menu, X, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
+import { ShoppingBag, Search, User as UserIcon, Menu, X, ShieldCheck, Truck, RotateCcw, Phone } from 'lucide-react';
 import { useCart } from '../../context/CartContext.js';
 import { useStoreConfig } from '../../context/StoreConfigContext.js';
 import { useAuth } from '../../context/AuthContext.js';
@@ -12,7 +12,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ onNavigate, currentView }) => {
   const { totalItemsCount, setIsDrawerOpen } = useCart();
   const { config } = useStoreConfig();
-  const { user, isAdmin, logout, loginAsDemoAdmin, loginAsDemoCustomer } = useAuth();
+  const { user, isAdmin, logout, loginAsDemoAdmin, loginAsDemoCustomer, openLoginModal } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -173,108 +173,105 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, currentView }) => {
             <Search className="w-5 h-5" />
           </button>
 
-          {/* Account Dropdown */}
-          <div className="relative">
+          {/* Sign In or Account Dropdown */}
+          {!user ? (
             <button
-              onClick={() => setAccountMenuOpen(!accountMenuOpen)}
-              className="p-2 text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 rounded-full transition-colors flex items-center gap-1.5"
-              aria-label="User Account"
+              onClick={() => openLoginModal(undefined, 'Sign in with your mobile number to view your orders and track shipments')}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-zinc-100 hover:bg-orange-50 hover:text-orange-600 text-zinc-900 border border-zinc-200 transition-all cursor-pointer"
+              title="Sign in with mobile number and OTP"
             >
-              <UserIcon className="w-5 h-5" />
-              {isAdmin && (
-                <span className="hidden sm:inline-block text-[10px] font-bold bg-zinc-900 text-white px-1.5 py-0.5 rounded">
-                  ADMIN
-                </span>
-              )}
+              <Phone className="w-3.5 h-3.5 text-orange-600" />
+              <span className="hidden sm:inline">Sign In / OTP</span>
+              <span className="sm:hidden text-[11px]">Sign In</span>
             </button>
-
-            {accountMenuOpen && (
-              <div 
-                className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-zinc-200 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
-                onMouseLeave={() => setAccountMenuOpen(false)}
+          ) : (
+            <div className="relative">
+              <button
+                onClick={() => setAccountMenuOpen(!accountMenuOpen)}
+                className="px-2.5 py-1.5 text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 rounded-xl transition-colors flex items-center gap-1.5 border border-zinc-200 bg-white"
+                aria-label="User Account"
               >
-                <div className="px-4 py-2 border-b border-zinc-100">
-                  <p className="text-xs text-zinc-500">Signed in as</p>
-                  <p className="text-sm font-semibold text-zinc-900 truncate">
-                    {user?.name || 'Guest Shopper'}
-                  </p>
-                  <p className="text-xs text-zinc-400 truncate">{user?.email || 'Browse & Shop'}</p>
-                </div>
-
-                <div className="py-1 text-sm text-zinc-700">
-                  <button
-                    onClick={() => {
-                      onNavigate('my-orders');
-                      setAccountMenuOpen(false);
-                    }}
-                    className="w-full text-left px-4 py-2 hover:bg-zinc-50 flex items-center justify-between"
-                  >
-                    <span>My Orders</span>
-                    <span className="text-xs text-zinc-400">View History</span>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      onNavigate('returns');
-                      setAccountMenuOpen(false);
-                    }}
-                    className="w-full text-left px-4 py-2 hover:bg-zinc-50 flex items-center justify-between"
-                  >
-                    <span>7-Day Return Requests</span>
-                    <span className="text-xs text-orange-600 font-medium">Hassle-Free</span>
-                  </button>
-
-                  {isAdmin && (
-                    <button
-                      onClick={() => {
-                        onNavigate('admin');
-                        setAccountMenuOpen(false);
-                      }}
-                      className="w-full text-left px-4 py-2 hover:bg-zinc-50 flex items-center justify-between font-medium text-zinc-900 border-t border-zinc-100"
-                    >
-                      <span className="flex items-center gap-1.5">
-                        <ShieldCheck className="w-4 h-4 text-orange-600" />
-                        Admin Dashboard
-                      </span>
-                      <span className="text-[10px] uppercase font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded">
-                        Manage Store
-                      </span>
-                    </button>
-                  )}
-                </div>
-
+                <UserIcon className="w-4 h-4 text-orange-600" />
+                <span className="hidden md:inline text-xs font-bold text-zinc-800 max-w-[120px] truncate">
+                  {user.phone ? user.phone.replace('+91 ', '') : user.name}
+                </span>
                 {isAdmin && (
-                  <div className="border-t border-zinc-100 pt-2 px-3 space-y-1">
+                  <span className="text-[10px] font-bold bg-zinc-900 text-white px-1.5 py-0.5 rounded">
+                    ADMIN
+                  </span>
+                )}
+              </button>
+
+              {accountMenuOpen && (
+                <div 
+                  className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-zinc-200 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
+                  onMouseLeave={() => setAccountMenuOpen(false)}
+                >
+                  <div className="px-4 py-2 border-b border-zinc-100">
+                    <p className="text-[10.5px] font-bold uppercase tracking-wider text-orange-600">Verified Customer</p>
+                    <p className="text-sm font-bold text-zinc-900 truncate">
+                      {user.name}
+                    </p>
+                    <p className="text-xs font-mono text-zinc-500 truncate">{user.phone || user.email}</p>
+                  </div>
+
+                  <div className="py-1 text-xs text-zinc-700">
                     <button
                       onClick={() => {
-                        loginAsDemoCustomer();
+                        onNavigate('my-orders');
                         setAccountMenuOpen(false);
-                        onNavigate('home');
                       }}
-                      className="w-full text-left text-xs px-2.5 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 font-bold text-red-700 flex items-center justify-between transition-colors"
+                      className="w-full text-left px-4 py-2.5 hover:bg-zinc-50 flex items-center justify-between"
                     >
-                      <span>Exit Admin Mode</span>
-                      <span className="text-[10px] bg-red-200 text-red-800 px-1.5 py-0.5 rounded">Storefront</span>
+                      <span className="font-semibold">My Orders</span>
+                      <span className="text-[10px] text-zinc-400">Track shipments</span>
                     </button>
-                  </div>
-                )}
 
-                {user && (
+                    <button
+                      onClick={() => {
+                        onNavigate('returns');
+                        setAccountMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2.5 hover:bg-zinc-50 flex items-center justify-between"
+                    >
+                      <span className="font-semibold">7-Day Return Requests</span>
+                      <span className="text-[10px] text-orange-600 font-bold">Doorstep Pickup</span>
+                    </button>
+
+                    {isAdmin && (
+                      <button
+                        onClick={() => {
+                          onNavigate('admin');
+                          setAccountMenuOpen(false);
+                        }}
+                        className="w-full text-left px-4 py-2.5 hover:bg-zinc-50 flex items-center justify-between font-bold text-zinc-900 border-t border-zinc-100"
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <ShieldCheck className="w-4 h-4 text-orange-600" />
+                          Admin Dashboard
+                        </span>
+                        <span className="text-[10px] uppercase font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded">
+                          Manage
+                        </span>
+                      </button>
+                    )}
+                  </div>
+
                   <div className="border-t border-zinc-100 pt-1 px-3">
                     <button
                       onClick={() => {
                         logout();
                         setAccountMenuOpen(false);
                       }}
-                      className="w-full text-left text-xs text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 px-2 py-1.5 rounded"
+                      className="w-full text-left text-xs text-red-600 hover:bg-red-50 px-2 py-1.5 rounded-lg font-semibold transition-colors"
                     >
                       Sign Out
                     </button>
                   </div>
-                )}
-              </div>
-            )}
-          </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Primary Action: Shopping Cart Button */}
           <button

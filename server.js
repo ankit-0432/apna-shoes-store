@@ -1847,8 +1847,37 @@ function cleanSupabaseUrl(url) {
   return url.replace(/\/rest\/v1\/?$/, "").replace(/\/+$/, "");
 }
 var SUPABASE_URL = cleanSupabaseUrl(process.env.SUPABASE_URL);
-var SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY && !process.env.SUPABASE_SERVICE_ROLE_KEY.includes("your-") ? process.env.SUPABASE_SERVICE_ROLE_KEY : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6eHl4aGVmanhzeWxkcXNkdmJwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MTgwMzM3MSwiZXhwIjoyMTA3Mzc5MzcxfQ.d54TM6NO-Y6ht8BuRM9W_JqG5OOq6fKoeh-3GkO2tT4";
-var SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY && !process.env.SUPABASE_ANON_KEY.includes("your-") ? process.env.SUPABASE_ANON_KEY : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6eHl4aGVmanhzeWxkcXNkdmJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MDMzNzEsImV4cCI6MjEwNzM3OTM3MX0.QJPQAOxF6vZwTE18sGDoO4QfwO64k0FVOWP3B1tXeYA";
+function getJwtRef(token) {
+  try {
+    if (!token) return null;
+    const parts = token.split(".");
+    if (parts.length >= 2) {
+      const payload = JSON.parse(Buffer.from(parts[1], "base64").toString("utf8"));
+      return payload.ref || null;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+function cleanSupabaseKey(key, fallback) {
+  if (!key || key.includes("your-") || key.length < 40) {
+    return fallback;
+  }
+  const ref = getJwtRef(key);
+  if (ref && ref !== "fzxyxhefjxsyldqsdvbp") {
+    return fallback;
+  }
+  return key;
+}
+var SUPABASE_SERVICE_ROLE_KEY = cleanSupabaseKey(
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6eHl4aGVmanhzeWxkcXNkdmJwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MTgwMzM3MSwiZXhwIjoyMTA3Mzc5MzcxfQ.d54TM6NO-Y6ht8BuRM9W_JqG5OOq6fKoeh-3GkO2tT4"
+);
+var SUPABASE_ANON_KEY = cleanSupabaseKey(
+  process.env.SUPABASE_ANON_KEY,
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6eHl4aGVmanhzeWxkcXNkdmJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MDMzNzEsImV4cCI6MjEwNzM3OTM3MX0.QJPQAOxF6vZwTE18sGDoO4QfwO64k0FVOWP3B1tXeYA"
+);
 var supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   auth: {
     persistSession: false,
@@ -1864,7 +1893,7 @@ async function getSupabaseStatus() {
   try {
     for (const table of targetTables) {
       try {
-        const { count, error } = await supabaseAdmin.from(table).select("*", { count: "exact", head: true });
+        const { count, data, error } = await supabaseAdmin.from(table).select("*", { count: "exact" }).limit(1);
         if (error) {
           anyTableMissing = true;
           if (error.code === "PGRST205") {
@@ -1873,7 +1902,7 @@ async function getSupabaseStatus() {
             tablesResult[table] = { exists: false, error: error.message || "Table not found" };
           }
         } else {
-          tablesResult[table] = { exists: true, rowCount: count ?? 0 };
+          tablesResult[table] = { exists: true, rowCount: count ?? data?.length ?? 0 };
         }
       } catch (tableErr) {
         tablesResult[table] = { exists: false, error: tableErr.message };
@@ -1903,9 +1932,15 @@ async function getSupabaseStatus() {
   }
 }
 function getSqlSchema() {
-  const schemaPath = path.resolve(__dirname, "../database/schema.sql");
-  if (fs.existsSync(schemaPath)) {
-    return fs.readFileSync(schemaPath, "utf-8");
+  const candidatePaths = [
+    path.resolve(process.cwd(), "database/schema.sql"),
+    path.resolve(__dirname, "database/schema.sql"),
+    path.resolve(__dirname, "../database/schema.sql")
+  ];
+  for (const schemaPath of candidatePaths) {
+    if (fs.existsSync(schemaPath)) {
+      return fs.readFileSync(schemaPath, "utf-8");
+    }
   }
   return "-- Schema file not found";
 }
@@ -2090,12 +2125,50 @@ async function syncStoreToSupabase(storeData) {
 // server/db.ts
 var __filename2 = fileURLToPath2(import.meta.url);
 var __dirname2 = path2.dirname(__filename2);
-var DATA_DIR = path2.resolve(__dirname2, "../data");
-var DB_FILE = path2.join(DATA_DIR, "store.json");
+function resolveDataStorage() {
+  const candidateDirs = [
+    path2.resolve(process.cwd(), "data"),
+    path2.resolve(__dirname2, "data"),
+    path2.resolve(__dirname2, "../data")
+  ];
+  for (const dir of candidateDirs) {
+    if (dir === "/data" || dir === "\\data") continue;
+    try {
+      if (!fs2.existsSync(dir)) {
+        fs2.mkdirSync(dir, { recursive: true });
+      }
+      fs2.accessSync(dir, fs2.constants.W_OK);
+      return { dataDir: dir, dbFile: path2.join(dir, "store.json") };
+    } catch {
+    }
+  }
+  const tmpDir = path2.resolve(process.env.TMPDIR || "/tmp", "apna-shoes-data");
+  const tmpFile = path2.join(tmpDir, "store.json");
+  try {
+    if (!fs2.existsSync(tmpDir)) {
+      fs2.mkdirSync(tmpDir, { recursive: true });
+    }
+    const localStore = path2.resolve(process.cwd(), "data", "store.json");
+    if (fs2.existsSync(localStore) && !fs2.existsSync(tmpFile)) {
+      try {
+        fs2.copyFileSync(localStore, tmpFile);
+      } catch {
+      }
+    }
+  } catch (err) {
+    console.warn("[DB] Could not create fallback tmp data dir:", err);
+  }
+  return { dataDir: tmpDir, dbFile: tmpFile };
+}
+var { dataDir: DATA_DIR, dbFile: DB_FILE } = resolveDataStorage();
 var db;
 function initDb() {
   if (!fs2.existsSync(DATA_DIR)) {
-    fs2.mkdirSync(DATA_DIR, { recursive: true });
+    try {
+      fs2.mkdirSync(DATA_DIR, { recursive: true });
+    } catch (err) {
+      console.warn("[DB] Could not create DATA_DIR in initDb:", err);
+    }
   }
   if (fs2.existsSync(DB_FILE)) {
     try {
@@ -2353,7 +2426,10 @@ var DB = {
     return db.orders;
   },
   getOrderById(id) {
-    return db.orders.find((o) => o.id === id || o.orderNumber === id);
+    const clean = id.trim();
+    return db.orders.find(
+      (o) => o.id === clean || o.orderNumber.toLowerCase() === clean.toLowerCase() || o.shipment?.awbCode && o.shipment.awbCode.toLowerCase() === clean.toLowerCase()
+    );
   },
   getUserOrders(emailOrPhone) {
     const query = emailOrPhone.toLowerCase().trim();
@@ -2432,43 +2508,63 @@ var DB = {
     saveDb();
     return order;
   },
-  createShipment(orderId, courierName = "Shiprocket \u2014 Delhivery Surface", customAwb) {
+  createShipment(orderId, courierName = "Shiprocket \u2014 Delhivery Air", customAwb, customTrackingUrl, estimatedDelivery, customStatus) {
     const order = db.orders.find((o) => o.id === orderId || o.orderNumber === orderId);
     if (!order) return null;
     const awbCode = customAwb?.trim() ? customAwb.trim() : `${Math.floor(1e10 + Math.random() * 9e10)}`;
-    const shipmentId = `SR-${courierName.substring(0, 3).toUpperCase()}-${Date.now().toString().slice(-6)}`;
-    const estDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1e3).toISOString();
+    const shipmentId = order.shipment?.shipmentId || `SR-${courierName.substring(0, 3).toUpperCase()}-${Date.now().toString().slice(-6)}`;
+    const estDate = estimatedDelivery || order.shipment?.estimatedDelivery || new Date(Date.now() + 3 * 24 * 60 * 60 * 1e3).toISOString();
+    let trackingUrl = customTrackingUrl?.trim();
+    if (!trackingUrl) {
+      const lowerCourier = courierName.toLowerCase();
+      if (lowerCourier.includes("delhivery")) {
+        trackingUrl = `https://www.delhivery.com/track/package/${awbCode}`;
+      } else if (lowerCourier.includes("bluedart") || lowerCourier.includes("blue dart")) {
+        trackingUrl = `https://www.bluedart.com/tracking?trackNumber=${awbCode}`;
+      } else if (lowerCourier.includes("dtdc")) {
+        trackingUrl = `https://www.dtdc.in/tracking/shipment-tracking.asp?strCnno=${awbCode}`;
+      } else if (lowerCourier.includes("shadowfax")) {
+        trackingUrl = `https://tracker.shadowfax.in/#/track/${awbCode}`;
+      } else if (lowerCourier.includes("xpressbees")) {
+        trackingUrl = `https://www.xpressbees.com/track?awb=${awbCode}`;
+      } else {
+        trackingUrl = `https://shiprocket.co/tracking/${awbCode}`;
+      }
+    }
+    const currentEvents = order.shipment?.events || [];
+    const newEvent = {
+      id: `ev-${Date.now()}`,
+      statusCode: "AWB_CONFIRMED",
+      statusTitle: "Airway Bill (AWB) Confirmed & Assigned",
+      location: "Apna Shoes Noida Central Warehouse",
+      timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+      description: `Dispatched via ${courierName}. Airway Bill Tracking Number: ${awbCode}`
+    };
     const shipment = {
-      id: `ship-${Date.now()}`,
+      id: order.shipment?.id || `ship-${Date.now()}`,
       orderId: order.id,
       courierName,
       shipmentId,
       awbCode,
-      status: "manifested",
-      trackingUrl: `https://shiprocket.co/tracking/${awbCode}`,
-      pickupScheduledAt: new Date(Date.now() + 12 * 60 * 60 * 1e3).toISOString(),
+      status: customStatus || (order.shipment?.status === "delivered" ? "delivered" : "manifested"),
+      trackingUrl,
+      pickupScheduledAt: order.shipment?.pickupScheduledAt || new Date(Date.now() + 6 * 60 * 60 * 1e3).toISOString(),
       estimatedDelivery: estDate,
-      events: [
-        {
-          id: `ev-${Date.now()}`,
-          statusCode: "MF",
-          statusTitle: "Manifest Generated",
-          location: "Apna Shoes Warehouse Noida",
-          timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-          description: `Shipment booked with ${courierName}. AWB: ${awbCode}`
-        }
-      ]
+      actualDelivery: order.shipment?.actualDelivery,
+      events: [...currentEvents, newEvent]
     };
     order.shipment = shipment;
-    order.orderStatus = "shipped";
+    if (order.orderStatus === "order_placed" || order.orderStatus === "confirmed" || order.orderStatus === "processing" || order.orderStatus === "packed") {
+      order.orderStatus = "shipped";
+    }
     order.updatedAt = (/* @__PURE__ */ new Date()).toISOString();
     DB.recordNotification(
       "whatsapp",
       order.customerPhone,
-      `Order Dispatched: ${order.orderNumber}`,
-      `Your APNA SHOES order ${order.orderNumber} has shipped via ${courierName}! Tracking AWB: ${awbCode}. Track here: ${shipment.trackingUrl}`
+      `AWB Confirmed: ${order.orderNumber}`,
+      `Your APNA SHOES order ${order.orderNumber} has been confirmed with Airway Bill (AWB) ${awbCode} via ${courierName}. Track here: ${shipment.trackingUrl}`
     );
-    DB.logAudit("ADMIN", "SHIPMENT_CREATED", { orderNumber: order.orderNumber, awbCode });
+    DB.logAudit("ADMIN", "AWB_CONFIRMED", { orderNumber: order.orderNumber, awbCode, courierName });
     saveDb();
     return order;
   },
@@ -3012,8 +3108,15 @@ async function startServer() {
   });
   app.post("/api/orders/:id/shipment", (req, res) => {
     try {
-      const { courierName, awbCode } = req.body;
-      const updated = DB.createShipment(req.params.id, courierName, awbCode);
+      const { courierName, awbCode, trackingUrl, estimatedDelivery, status } = req.body;
+      const updated = DB.createShipment(
+        req.params.id,
+        courierName,
+        awbCode,
+        trackingUrl,
+        estimatedDelivery,
+        status
+      );
       if (!updated) {
         return res.status(404).json({ success: false, error: "Order not found" });
       }

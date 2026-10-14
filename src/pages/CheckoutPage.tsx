@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   MapPin,
   Lock,
@@ -24,23 +24,34 @@ interface CheckoutPageProps {
 
 export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onOrderSuccess, onNavigate }) => {
   const { items, subtotal, discountAmount, shippingFee, totalAmount, appliedCoupon, clearCart } = useCart();
-  const { user } = useAuth();
+  const { user, openLoginModal } = useAuth();
   const { config } = useStoreConfig();
 
   // Form State
   const [formData, setFormData] = useState({
-    name: user?.name || 'Rahul Sharma',
-    phone: user?.phone || '+91 98112 34567',
-    email: user?.email || 'rahul.sharma@example.com',
-    flatHouse: 'Flat 402, Tower B, Green Meadows',
-    streetLocality: 'Sector 62',
-    landmark: 'Near Fortis Hospital',
-    city: 'Noida',
-    state: 'Uttar Pradesh',
-    pincode: '201301',
+    name: user?.name || '',
+    phone: user?.phone || '',
+    email: user?.email || '',
+    flatHouse: user?.id === 'usr-customer-1' ? 'Flat 402, Tower B, Green Meadows' : '',
+    streetLocality: user?.id === 'usr-customer-1' ? 'Sector 62' : '',
+    landmark: user?.id === 'usr-customer-1' ? 'Near Fortis Hospital' : '',
+    city: user?.id === 'usr-customer-1' ? 'Noida' : '',
+    state: user?.id === 'usr-customer-1' ? 'Uttar Pradesh' : '',
+    pincode: user?.id === 'usr-customer-1' ? '201301' : '',
     deliveryInstructions: 'Leave package with security gate if unavailable',
     sameBilling: true,
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        phone: user.phone || prev.phone || '',
+        email: user.email || prev.email || '',
+      }));
+    }
+  }, [user]);
 
   const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>('razorpay');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -213,6 +224,49 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onOrderSuccess, onNa
         <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{errorMessage}</span>
+        </div>
+      )}
+
+      {/* Account Verification Card */}
+      {!user ? (
+        <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
+            <div>
+              <p className="font-bold text-amber-950">You are checking out as a Guest</p>
+              <p className="text-amber-800 text-[11px]">
+                Sign in with your Mobile Number & OTP to save your address and track this order in your account.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => openLoginModal('checkout', 'Verify mobile number with OTP to link your order')}
+            className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer shrink-0"
+          >
+            Sign In with Mobile OTP
+          </button>
+        </div>
+      ) : (
+        <div className="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <div>
+              <p className="font-bold text-emerald-950">
+                Verified Customer Account: {user.name} ({user.phone || user.email})
+              </p>
+              <p className="text-emerald-800 text-[11px]">
+                This order will be private and safely linked to your mobile number.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => openLoginModal('checkout', 'Switch to another mobile number')}
+            className="text-[11px] font-bold text-emerald-800 hover:underline"
+          >
+            Switch Account
+          </button>
         </div>
       )}
 

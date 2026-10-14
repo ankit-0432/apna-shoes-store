@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StoreConfigProvider, useStoreConfig } from './context/StoreConfigContext.js';
-import { AuthProvider } from './context/AuthContext.js';
+import { AuthProvider, useAuth } from './context/AuthContext.js';
 import { CartProvider, useCart } from './context/CartContext.js';
 import { Header } from './components/common/Header.js';
 import { Footer } from './components/common/Footer.js';
@@ -16,12 +16,14 @@ import { ReturnsPage } from './pages/ReturnsPage.js';
 import { PoliciesPage } from './pages/PoliciesPage.js';
 import { AdminPortal } from './pages/admin/AdminPortal.js';
 import { AdminSecretModal } from './components/common/AdminSecretModal.js';
+import { MobileOtpModal } from './components/common/MobileOtpModal.js';
 import { api } from './services/api.js';
 import { Product, Order } from './types/store.js';
 
 function MainApp() {
   const { config } = useStoreConfig();
   const { toastMessage } = useCart();
+  const { user, isLoginModalOpen, openLoginModal, closeLoginModal } = useAuth();
 
   const [currentView, setCurrentView] = useState<string>('home');
   const [viewParam, setViewParam] = useState<string | undefined>(undefined);
@@ -212,12 +214,27 @@ function MainApp() {
 
       {/* Slide-out Cart Drawer */}
       <CartDrawer
-        onCheckout={() => handleNavigate('checkout')}
+        onCheckout={() => {
+          if (!user) {
+            openLoginModal('checkout', 'Please enter your mobile number and OTP to proceed with checkout');
+          } else {
+            handleNavigate('checkout');
+          }
+        }}
         onNavigate={handleNavigate}
       />
 
       {/* Global Footer */}
       <Footer onNavigate={handleNavigate} />
+
+      {/* Mobile OTP Authentication Modal */}
+      <MobileOtpModal
+        isOpen={isLoginModalOpen}
+        onClose={closeLoginModal}
+        onSuccess={(target) => {
+          if (target) handleNavigate(target);
+        }}
+      />
 
       {/* Stealth Staff & Admin Gateway Modal */}
       <AdminSecretModal

@@ -149,7 +149,7 @@ async function startServer() {
           const originalPrice = parseFloat(parts[5]) || sellingPrice * 1.5;
           const badge = parts[8] || 'New Drop';
           const imgField = parts[9] || '';
-          const images = imgField ? imgField.split(';').map(u => u.trim()).filter(Boolean) : [];
+          const images = imgField ? imgField.split(';').map((u: string) => u.trim()).filter(Boolean) : [];
 
           DB.saveProduct({
             sku,
@@ -347,8 +347,15 @@ async function startServer() {
 
   app.post('/api/orders/:id/shipment', (req: Request, res: Response) => {
     try {
-      const { courierName, awbCode } = req.body;
-      const updated = DB.createShipment(req.params.id, courierName, awbCode);
+      const { courierName, awbCode, trackingUrl, estimatedDelivery, status } = req.body;
+      const updated = DB.createShipment(
+        req.params.id,
+        courierName,
+        awbCode,
+        trackingUrl,
+        estimatedDelivery,
+        status
+      );
       if (!updated) {
         return res.status(404).json({ success: false, error: 'Order not found' });
       }
@@ -407,6 +414,60 @@ async function startServer() {
     }
   });
 
+  // --- MOBILE NUMBER OTP AUTHENTICATION ---
+  app.post('/api/auth/send-otp', (req: Request, res: Response) => {
+    try {
+      const { phone } = req.body;
+      if (!phone || typeof phone !== 'string' || phone.replace(/\D/g, '').length < 10) {
+        return res.status(400).json({ success: false, error: 'Please enter a valid 10-digit mobile number' });
+      }
+      const otp = DB.createOtp(phone);
+      DB.recordNotification(
+        'sms',
+        phone,
+        'OTP Verification',
+        `Your APNA SHOES verification code is ${otp}. Valid for 10 minutes. Do not share with anyone.`
+      );
+      res.json({
+        success: true,
+        message: `OTP sent successfully to ${phone}`,
+        demoOtp: otp, // Provides instant testing preview & 1-click auto-fill
+      });
+    } catch (e: any) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+
+  app.post('/api/auth/verify-otp', (req: Request, res: Response) => {
+    try {
+      const { phone, otp, name, email } = req.body;
+      if (!phone || !otp) {
+        return res.status(400).json({ success: false, error: 'Phone and OTP code are required' });
+      }
+      const isValid = DB.verifyOtp(phone, otp);
+      if (!isValid) {
+        return res.status(400).json({ success: false, error: 'Incorrect or expired OTP. Please try again or use 1234.' });
+      }
+
+      const cleanDigits = phone.replace(/\D/g, '');
+      const user = {
+        id: `usr-${cleanDigits}`,
+        phone,
+        name: name?.trim() || `Customer (${cleanDigits.slice(-4)})`,
+        email: email?.trim() || `${cleanDigits}@apnashoes.in`,
+        role: 'customer' as const,
+      };
+
+      res.json({
+        success: true,
+        message: 'Mobile number verified successfully!',
+        data: user,
+      });
+    } catch (e: any) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+
   // --- 7-DAY RETURNS & REFUNDS ---
   app.get('/api/returns', (_req: Request, res: Response) => {
     try {
@@ -416,10 +477,23 @@ async function startServer() {
     }
   });
 
+  app.get('/api/returns/user/:query', (req: Request, res: Response) => {
+    try {
+      const returns = DB.getUserReturns(req.params.query);
+      res.json({ success: true, data: returns });
+    } catch (e: any) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+
   app.post('/api/returns', (req: Request, res: Response) => {
     try {
       const returnReq = DB.createReturnRequest(req.body);
-      res.json({ success: true, data: returnReq, message: 'Return request submitted. Doorstep pickup scheduled within 48h.' });
+      res.json({
+        success: true,
+        data: returnReq,
+        message: 'Return request submitted. Doorstep pickup scheduled within 24–48h.',
+      });
     } catch (e: any) {
       res.status(400).json({ success: false, error: e.message });
     }
@@ -427,8 +501,16 @@ async function startServer() {
 
   app.post('/api/returns/:id/status', (req: Request, res: Response) => {
     try {
-      const { status, adminNotes } = req.body;
-      const updated = DB.updateReturnStatus(req.params.id, status, adminNotes);
+      const { status, adminNotes, reverseCourier, reverseAwb, pickupDate, refundTransactionId } = req.body;
+      const updated = DB.updateReturnStatus(
+        req.params.id,
+        status,
+        adminNotes,
+        reverseCourier,
+        reverseAwb,
+        pickupDate,
+        refundTransactionId
+      );
       if (!updated) {
         return res.status(404).json({ success: false, error: 'Return request not found' });
       }

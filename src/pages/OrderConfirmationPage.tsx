@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { CheckCircle2, Truck, FileText, ArrowRight, RotateCcw, MessageSquare, MapPin, Copy, Check, Clock, PackageCheck, AlertCircle } from 'lucide-react';
+import { CheckCircle2, Truck, FileText, ArrowRight, RotateCcw, MessageSquare, MapPin, Copy, Check, Clock, PackageCheck, AlertCircle, RefreshCw, ExternalLink } from 'lucide-react';
 import { Order } from '../types/store.js';
 import { InvoiceModal } from '../components/common/InvoiceModal.js';
 import { SneakerGraphic } from '../components/common/SneakerGraphic.js';
+import { api } from '../services/api.js';
 
 interface OrderConfirmationPageProps {
   order: Order;
@@ -10,16 +11,31 @@ interface OrderConfirmationPageProps {
 }
 
 export const OrderConfirmationPage: React.FC<OrderConfirmationPageProps> = ({ order, onNavigate }) => {
+  const [currentOrder, setCurrentOrder] = useState<Order>(order);
   const [showInvoice, setShowInvoice] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
+  const [copiedAwb, setCopiedAwb] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleCopyCode = () => {
-    navigator.clipboard.writeText(order.orderNumber);
+    navigator.clipboard.writeText(currentOrder.orderNumber);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
-  const hasAWB = Boolean(order.shipment?.awbCode);
+  const handleRefreshOrder = async () => {
+    setRefreshing(true);
+    try {
+      const refreshed = await api.getOrder(currentOrder.id);
+      setCurrentOrder(refreshed);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const hasAWB = Boolean(currentOrder.shipment?.awbCode);
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8">
@@ -98,13 +114,13 @@ export const OrderConfirmationPage: React.FC<OrderConfirmationPageProps> = ({ or
         </div>
 
         {/* AWB NUMBER STATUS DISPLAY */}
-        <div className={`p-5 rounded-2xl border ${hasAWB ? 'bg-emerald-50/80 border-emerald-200' : 'bg-amber-50/80 border-amber-200'} space-y-2`}>
-          <div className="flex items-center justify-between">
+        <div className={`p-5 rounded-2xl border ${hasAWB ? 'bg-emerald-50/80 border-emerald-200' : 'bg-amber-50/80 border-amber-200'} space-y-3`}>
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5">
               {hasAWB ? (
                 <>
                   <PackageCheck className="w-4 h-4 text-emerald-700" />
-                  <span className="text-emerald-900">AWB Tracking Number Confirmed by Admin</span>
+                  <span className="text-emerald-900">Airway Bill (AWB) Confirmed by Admin</span>
                 </>
               ) : (
                 <>
@@ -114,29 +130,67 @@ export const OrderConfirmationPage: React.FC<OrderConfirmationPageProps> = ({ or
               )}
             </span>
 
-            <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${hasAWB ? 'bg-emerald-200 text-emerald-900' : 'bg-amber-200 text-amber-900'}`}>
-              {hasAWB ? 'DISPATCHED' : 'IN REVIEW'}
-            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleRefreshOrder}
+                disabled={refreshing}
+                className="px-2 py-1 rounded bg-white/80 hover:bg-white text-zinc-700 text-[10.5px] font-bold border border-zinc-200 flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
+                title="Check if Admin has assigned AWB"
+              >
+                <RefreshCw className={`w-3 h-3 ${refreshing ? 'animate-spin text-orange-600' : ''}`} />
+                <span>{refreshing ? 'Checking...' : 'Refresh Status'}</span>
+              </button>
+              <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${hasAWB ? 'bg-emerald-200 text-emerald-900' : 'bg-amber-200 text-amber-900'}`}>
+                {hasAWB ? 'DISPATCHED' : 'IN REVIEW'}
+              </span>
+            </div>
           </div>
 
           {hasAWB ? (
-            <div className="pt-1">
-              <div className="flex flex-col sm:flex-row sm:items-baseline gap-2">
-                <span className="text-xs text-zinc-600">Airway Bill (AWB) Code:</span>
-                <span className="font-mono text-base font-black text-emerald-950 bg-white px-2 py-0.5 rounded border border-emerald-200 inline-block">
-                  {order.shipment?.awbCode}
-                </span>
-                <span className="text-xs text-zinc-500">
-                  via {order.shipment?.courierName || 'Shiprocket Delhivery Express'}
-                </span>
+            <div className="pt-1 space-y-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs text-zinc-600">Airway Bill (AWB) No:</span>
+                  <span className="font-mono text-lg font-black text-emerald-950 bg-white px-2.5 py-0.5 rounded-lg border border-emerald-300 inline-block shadow-2xs">
+                    {currentOrder.shipment?.awbCode}
+                  </span>
+                  <button
+                    onClick={() => {
+                      if (currentOrder.shipment?.awbCode) {
+                        navigator.clipboard.writeText(currentOrder.shipment.awbCode);
+                        setCopiedAwb(true);
+                        setTimeout(() => setCopiedAwb(false), 2000);
+                      }
+                    }}
+                    className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                  >
+                    {copiedAwb ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedAwb ? 'Copied!' : 'Copy AWB'}</span>
+                  </button>
+                  <span className="text-xs text-zinc-500">
+                    via <strong>{currentOrder.shipment?.courierName || 'Shiprocket Delhivery Express'}</strong>
+                  </span>
+                </div>
+
+                {currentOrder.shipment?.trackingUrl && (
+                  <a
+                    href={currentOrder.shipment.trackingUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold flex items-center gap-1 transition-colors shrink-0 shadow-2xs"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Carrier Live Tracking</span>
+                  </a>
+                )}
               </div>
-              <p className="text-[11px] text-emerald-800 mt-1">
+              <p className="text-[11px] text-emerald-800">
                 Your package is manifested and ready for pickup from our central logistics hub.
               </p>
             </div>
           ) : (
             <p className="text-xs text-amber-900 leading-relaxed">
-              Your unique order <strong className="font-mono font-bold">{order.orderNumber}</strong> has been logged in our system. Once our warehouse administrator confirms and verifies your shoe inventory, your official <strong>AWB NO. (Airway Bill Number)</strong> will be generated and displayed right here within <strong>less than 24 hours</strong>. You will also receive an SMS and WhatsApp notification on <strong>{order.customerPhone}</strong>.
+              Your unique order <strong className="font-mono font-bold">{currentOrder.orderNumber}</strong> has been logged in our system. Once our warehouse administrator confirms and verifies your shoe inventory, your official <strong>AWB NO. (Airway Bill Number)</strong> will be generated and displayed right here within <strong>less than 24 hours</strong>. You will also receive an SMS and WhatsApp notification on <strong>{currentOrder.customerPhone}</strong>.
             </p>
           )}
         </div>

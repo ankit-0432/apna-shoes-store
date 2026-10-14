@@ -198,14 +198,44 @@ export const api = {
     return json.data;
   },
 
-  async createShipment(orderId: string, courierName?: string, awbCode?: string): Promise<Order> {
+  async createShipment(
+    orderId: string,
+    courierName?: string,
+    awbCode?: string,
+    trackingUrl?: string,
+    estimatedDelivery?: string,
+    status?: string
+  ): Promise<Order> {
     const res = await fetch(`${API_BASE}/orders/${orderId}/shipment`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ courierName, awbCode }),
+      body: JSON.stringify({ courierName, awbCode, trackingUrl, estimatedDelivery, status }),
     });
     const json = await res.json();
     if (!json.success) throw new Error(json.error || 'Failed to generate shipment');
+    return json.data;
+  },
+
+  // AUTHENTICATION (MOBILE + OTP)
+  async sendOtp(phone: string): Promise<{ success: boolean; message: string; demoOtp?: string }> {
+    const res = await fetch(`${API_BASE}/auth/send-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone }),
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Failed to send OTP');
+    return json;
+  },
+
+  async verifyOtp(phone: string, otp: string, name?: string, email?: string): Promise<any> {
+    const res = await fetch(`${API_BASE}/auth/verify-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, otp, name, email }),
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Invalid OTP code');
     return json.data;
   },
 
@@ -217,11 +247,36 @@ export const api = {
     return json.data;
   },
 
+  async getUserReturns(query: string): Promise<ReturnRequest[]> {
+    const res = await fetch(`${API_BASE}/returns/user/${encodeURIComponent(query)}`);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Failed to fetch user returns');
+    return json.data;
+  },
+
   async createReturn(data: {
     orderId: string;
     reason: string;
     reasonDetails: string;
     photoUrl?: string;
+    itemsToReturn?: Array<{
+      itemId?: string;
+      productName: string;
+      size: string;
+      quantity: number;
+      image?: string;
+      price?: number;
+    }>;
+    returnType?: 'refund' | 'size_exchange';
+    desiredSize?: string;
+    payoutDetails?: {
+      method: 'upi' | 'bank_transfer';
+      upiId?: string;
+      accountNumber?: string;
+      ifsc?: string;
+      accountHolder?: string;
+    };
+    pickupAddress?: string;
   }): Promise<ReturnRequest> {
     const res = await fetch(`${API_BASE}/returns`, {
       method: 'POST',
@@ -233,11 +288,21 @@ export const api = {
     return json.data;
   },
 
-  async updateReturnStatus(id: string, status: string, adminNotes?: string): Promise<ReturnRequest> {
+  async updateReturnStatus(
+    id: string,
+    status: string,
+    adminNotes?: string,
+    extra?: {
+      reverseCourier?: string;
+      reverseAwb?: string;
+      pickupDate?: string;
+      refundTransactionId?: string;
+    }
+  ): Promise<ReturnRequest> {
     const res = await fetch(`${API_BASE}/returns/${id}/status`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status, adminNotes }),
+      body: JSON.stringify({ status, adminNotes, ...extra }),
     });
     const json = await res.json();
     if (!json.success) throw new Error(json.error || 'Failed to update return');

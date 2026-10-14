@@ -187,6 +187,26 @@ export interface Order {
 
 export interface ReturnRequest {
   id: string;
+  itemsToReturn?: Array<{
+    itemId?: string;
+    productName: string;
+    size: string;
+    quantity: number;
+    image?: string;
+    price?: number;
+  }>;
+  returnType?: 'refund' | 'size_exchange';
+  desiredSize?: string;
+  payoutDetails?: {
+    method: 'upi' | 'bank_transfer';
+    upiId?: string;
+    accountNumber?: string;
+    ifsc?: string;
+    accountHolder?: string;
+  };
+  reverseCourier?: string;
+  reverseAwb?: string;
+  pickupAddress?: string;
   orderId: string;
   orderNumber: string;
   customerName: string;

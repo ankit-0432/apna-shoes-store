@@ -5,10 +5,12 @@ export const SUPABASE_URL =
   import.meta.env.VITE_SUPABASE_URL || 'https://fzxyxhefjxsyldqsdvbp.supabase.co';
 
 export const SUPABASE_ANON_KEY =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
   import.meta.env.VITE_SUPABASE_ANON_KEY ||
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6eHl4aGVmanhzeWxkcXNkdmJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MDMzNzEsImV4cCI6MjEwNzM3OTM3MX0.QJPQAOxF6vZwTE18sGDoO4QfwO64k0FVOWP3B1tXeYA';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+export { createClient };
 
 /**
  * Checks connection status to Supabase from the browser

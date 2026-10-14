@@ -206,7 +206,7 @@
           "size": "UK 7",
           "colorName": "Apex Black / Solar Flare",
           "colorHex": "#FF5A1F",
-          "stockQuantity": 28
+          "stockQuantity": 26
         },
         {
           "id": "v-3-3",
@@ -4327,6 +4327,134 @@
       "customerEmail": "admin@apnashoes.in",
       "customerPhone": "+91 98765 00000",
       "shippingAddress": {
+        "id": "addr-1791915698447",
+        "name": "Super Admin",
+        "phone": "+91 98765 00000",
+        "email": "admin@apnashoes.in",
+        "flatHouse": "Flat 402, Tower B, Green Meadows",
+        "streetLocality": "Sector 62",
+        "landmark": "Near Fortis Hospital",
+        "city": "Noida",
+        "state": "Uttar Pradesh",
+        "pincode": "201301",
+        "country": "India",
+        "addressType": "home",
+        "deliveryInstructions": "Leave package with security gate if unavailable"
+      },
+      "billingAddress": {
+        "id": "addr-1791915698447",
+        "name": "Super Admin",
+        "phone": "+91 98765 00000",
+        "email": "admin@apnashoes.in",
+        "flatHouse": "Flat 402, Tower B, Green Meadows",
+        "streetLocality": "Sector 62",
+        "landmark": "Near Fortis Hospital",
+        "city": "Noida",
+        "state": "Uttar Pradesh",
+        "pincode": "201301",
+        "country": "India",
+        "addressType": "home",
+        "deliveryInstructions": "Leave package with security gate if unavailable"
+      },
+      "items": [
+        {
+          "id": "prod-3-UK 7-Apex Black / Solar Flare",
+          "productId": "prod-3",
+          "variantId": "v-3-2",
+          "productName": "Apna Aero Run V2 Performance",
+          "sku": "APNA-RN-03-UK7",
+          "size": "UK 7",
+          "color": "Apex Black / Solar Flare",
+          "unitPrice": 1599,
+          "quantity": 1,
+          "totalPrice": 1599,
+          "image": "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=800&q=80",
+          "graphicType": "aero-runner"
+        }
+      ],
+      "subtotal": 1599,
+      "discountAmount": 0,
+      "taxAmount": 243.92,
+      "shippingFee": 0,
+      "totalAmount": 1599,
+      "paymentMethod": "cod",
+      "paymentStatus": "pending",
+      "orderStatus": "shipped",
+      "id": "ord-1791915700378",
+      "orderNumber": "APNA-2026-9656",
+      "createdAt": "2026-10-13T18:21:40.378Z",
+      "updatedAt": "2026-10-13T18:30:35.462Z"
+    },
+    {
+      "customerName": "Rahul Sharma",
+      "customerEmail": "rahul.sharma@example.com",
+      "customerPhone": "+91 98112 34567",
+      "shippingAddress": {
+        "id": "addr-1791822791998",
+        "name": "Rahul Sharma",
+        "phone": "+91 98112 34567",
+        "email": "rahul.sharma@example.com",
+        "flatHouse": "Flat 402, Tower B, Green Meadows",
+        "streetLocality": "Sector 62",
+        "landmark": "Near Fortis Hospital",
+        "city": "Noida",
+        "state": "Uttar Pradesh",
+        "pincode": "201301",
+        "country": "India",
+        "addressType": "home",
+        "deliveryInstructions": "Leave package with security gate if unavailable"
+      },
+      "billingAddress": {
+        "id": "addr-1791822791998",
+        "name": "Rahul Sharma",
+        "phone": "+91 98112 34567",
+        "email": "rahul.sharma@example.com",
+        "flatHouse": "Flat 402, Tower B, Green Meadows",
+        "streetLocality": "Sector 62",
+        "landmark": "Near Fortis Hospital",
+        "city": "Noida",
+        "state": "Uttar Pradesh",
+        "pincode": "201301",
+        "country": "India",
+        "addressType": "home",
+        "deliveryInstructions": "Leave package with security gate if unavailable"
+      },
+      "items": [
+        {
+          "id": "prod-3-UK 7-Apex Black / Solar Flare",
+          "productId": "prod-3",
+          "variantId": "v-3-2",
+          "productName": "Apna Aero Run V2 Performance",
+          "sku": "APNA-RN-03-UK7",
+          "size": "UK 7",
+          "color": "Apex Black / Solar Flare",
+          "unitPrice": 1599,
+          "quantity": 1,
+          "totalPrice": 1599,
+          "image": "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=800&q=80",
+          "graphicType": "aero-runner"
+        }
+      ],
+      "subtotal": 1599,
+      "discountAmount": 0,
+      "taxAmount": 243.92,
+      "shippingFee": 0,
+      "totalAmount": 1599,
+      "paymentMethod": "razorpay",
+      "paymentStatus": "paid",
+      "orderStatus": "order_placed",
+      "razorpayOrderId": "order_ae83467c2c2c7486",
+      "razorpayPaymentId": "pay_eiz1xb1b",
+      "id": "ord-1791822793539",
+      "orderNumber": "APNA-2026-1145",
+      "createdAt": "2026-10-12T16:33:13.539Z",
+      "updatedAt": "2026-10-12T16:33:13.539Z"
+    },
+    {
+      "customerName": "Super Admin",
+      "customerEmail": "admin@apnashoes.in",
+      "customerPhone": "+91 98765 00000",
+      "shippingAddress": {
         "id": "addr-1791745467120",
         "name": "Super Admin",
         "phone": "+91 98765 00000",
@@ -4569,7 +4697,7 @@
       "totalAmount": 1349.1,
       "paymentMethod": "razorpay",
       "paymentStatus": "paid",
-      "orderStatus": "order_placed",
+      "orderStatus": "shipped",
       "razorpayOrderId": "order_Nxd894210",
       "razorpayPaymentId": "pay_Nxd8949982",
       "deliveredAt": "2026-03-27T14:30:00Z",
@@ -4579,9 +4707,10 @@
         "orderId": "ord-101",
         "courierName": "Shiprocket — Delhivery Air",
         "shipmentId": "SR-DEL-9842109",
-        "awbCode": "784290123491",
+        "awbCode": "DELHIVERY-784290123",
         "status": "delivered",
-        "trackingUrl": "https://shiprocket.co/tracking/784290123491",
+        "trackingUrl": "https://www.delhivery.com/track/package/DELHIVERY-784290123",
+        "pickupScheduledAt": "2026-10-14T00:36:28.535Z",
         "estimatedDelivery": "2026-03-27T18:00:00Z",
         "actualDelivery": "2026-03-27T14:30:00Z",
         "events": [
@@ -4616,11 +4745,19 @@
             "location": "Apna Shoes Warehouse Noida",
             "timestamp": "2026-03-25T16:00:00Z",
             "description": "Shipment collected from vendor warehouse"
+          },
+          {
+            "id": "ev-1791916588535",
+            "statusCode": "AWB_CONFIRMED",
+            "statusTitle": "Airway Bill (AWB) Confirmed & Assigned",
+            "location": "Apna Shoes Noida Central Warehouse",
+            "timestamp": "2026-10-13T18:36:28.535Z",
+            "description": "Dispatched via Shiprocket — Delhivery Air. Airway Bill Tracking Number: DELHIVERY-784290123"
           }
         ]
       },
       "createdAt": "2026-03-25T11:20:00Z",
-      "updatedAt": "2026-10-11T18:56:03.923Z"
+      "updatedAt": "2026-10-13T18:36:28.535Z"
     },
     {
       "id": "ord-102",
@@ -4932,6 +5069,66 @@
     }
   },
   "auditLogs": [
+    {
+      "id": "audit-1791916588536",
+      "timestamp": "2026-10-13T18:36:28.536Z",
+      "actor": "ADMIN",
+      "action": "AWB_CONFIRMED",
+      "details": {
+        "orderNumber": "APNA-2026-7842",
+        "awbCode": "DELHIVERY-784290123",
+        "courierName": "Shiprocket — Delhivery Air"
+      }
+    },
+    {
+      "id": "audit-1791916235462",
+      "timestamp": "2026-10-13T18:30:35.462Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_ORDER_STATUS",
+      "details": {
+        "orderNumber": "APNA-2026-9656",
+        "status": "shipped"
+      }
+    },
+    {
+      "id": "audit-1791915737672",
+      "timestamp": "2026-10-13T18:22:17.672Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_ORDER_STATUS",
+      "details": {
+        "orderNumber": "APNA-2026-9656",
+        "status": "confirmed"
+      }
+    },
+    {
+      "id": "audit-1791915700378",
+      "timestamp": "2026-10-13T18:21:40.378Z",
+      "actor": "SYSTEM",
+      "action": "ORDER_CREATED",
+      "details": {
+        "orderNumber": "APNA-2026-9656",
+        "total": 1599
+      }
+    },
+    {
+      "id": "audit-1791823350529",
+      "timestamp": "2026-10-12T16:42:30.529Z",
+      "actor": "USER",
+      "action": "NEWSLETTER_SUBSCRIBE",
+      "details": {
+        "email": "ankit_shoes@gmail.com"
+      }
+    },
+    {
+      "id": "audit-1791822793539",
+      "timestamp": "2026-10-12T16:33:13.539Z",
+      "actor": "SYSTEM",
+      "action": "ORDER_CREATED",
+      "details": {
+        "orderNumber": "APNA-2026-1145",
+        "total": 1599
+      }
+    },
     {
       "id": "audit-1791745469175",
       "timestamp": "2026-10-11T19:04:29.175Z",
@@ -5371,6 +5568,30 @@
   ],
   "notifications": [
     {
+      "id": "notif-1791916588535",
+      "timestamp": "2026-10-13T18:36:28.535Z",
+      "channel": "whatsapp",
+      "recipient": "+91 98112 34567",
+      "title": "AWB Confirmed: APNA-2026-7842",
+      "message": "Your APNA SHOES order APNA-2026-7842 has been confirmed with Airway Bill (AWB) DELHIVERY-784290123 via Shiprocket — Delhivery Air. Track here: https://www.delhivery.com/track/package/DELHIVERY-784290123"
+    },
+    {
+      "id": "notif-1791915700378",
+      "timestamp": "2026-10-13T18:21:40.378Z",
+      "channel": "whatsapp",
+      "recipient": "+91 98765 00000",
+      "title": "Order Placed: APNA-2026-9656",
+      "message": "Namaste Super Admin! Your order APNA-2026-9656 for APNA SHOES is placed successfully. Total: ₹1599. We are packing your fresh sneakers!"
+    },
+    {
+      "id": "notif-1791822793539",
+      "timestamp": "2026-10-12T16:33:13.539Z",
+      "channel": "whatsapp",
+      "recipient": "+91 98112 34567",
+      "title": "Order Placed: APNA-2026-1145",
+      "message": "Namaste Rahul Sharma! Your order APNA-2026-1145 for APNA SHOES is placed successfully. Total: ₹1599. We are packing your fresh sneakers!"
+    },
+    {
       "id": "notif-1791745469175",
       "timestamp": "2026-10-11T19:04:29.175Z",
       "channel": "whatsapp",
@@ -5403,5 +5624,13 @@
       "message": "Namaste Rahul Sharma! Your order APNA-2026-4532 for APNA SHOES is placed successfully. Total: ₹1299. We are packing your fresh sneakers!"
     }
   ],
-  "deletedProductIds": []
+  "deletedProductIds": [],
+  "subscribers": [
+    {
+      "id": "sub-1791823350529",
+      "email": "ankit_shoes@gmail.com",
+      "subscribedAt": "2026-10-12T16:42:30.529Z",
+      "source": "footer_test"
+    }
+  ]
 }
