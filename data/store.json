@@ -1,6 +1,115 @@
 {
   "products": [
     {
+      "id": "prod-1792038663976",
+      "sku": "APNA-ESM0",
+      "name": "Apna Ultra Boost Neon",
+      "slug": "apna-ultra-boost-neon",
+      "brand": "APNA SHOES",
+      "description": "",
+      "gender": "men",
+      "categorySlug": "running-shoes",
+      "originalPrice": 3299,
+      "sellingPrice": 1799,
+      "discountPercentage": 45,
+      "variants": [
+        {
+          "id": "v-prod-1792038663976-1",
+          "sku": "APNA-ESM0-UK7",
+          "size": "UK 7",
+          "colorName": "Black / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-prod-1792038663976-2",
+          "sku": "APNA-ESM0-UK8",
+          "size": "UK 8",
+          "colorName": "Black / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-prod-1792038663976-3",
+          "sku": "APNA-ESM0-UK9",
+          "size": "UK 9",
+          "colorName": "Black / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 15
+        }
+      ],
+      "images": [],
+      "graphicType": "air-glide",
+      "badge": "Trending Now",
+      "rating": 4.7,
+      "reviewCount": 1,
+      "specifications": {},
+      "weightGrams": 700,
+      "dimensionsCm": {
+        "length": 32,
+        "width": 20,
+        "height": 12
+      },
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-10-15T04:31:03.976Z"
+    },
+    {
+      "id": "prod-1792038256006",
+      "sku": "APNA-SRZU",
+      "name": "Test Sneaker 2026",
+      "slug": "test-sneaker-2026",
+      "brand": "APNA SHOES",
+      "description": "",
+      "gender": "men",
+      "categorySlug": "mens-sneakers",
+      "originalPrice": 2999,
+      "sellingPrice": 1999,
+      "discountPercentage": 33,
+      "variants": [
+        {
+          "id": "v-prod-1792038256006-1",
+          "sku": "APNA-SRZU-UK7",
+          "size": "UK 7",
+          "colorName": "Black / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 20
+        },
+        {
+          "id": "v-prod-1792038256006-2",
+          "sku": "APNA-SRZU-UK8",
+          "size": "UK 8",
+          "colorName": "Black / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 25
+        },
+        {
+          "id": "v-prod-1792038256006-3",
+          "sku": "APNA-SRZU-UK9",
+          "size": "UK 9",
+          "colorName": "Black / Orange",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 15
+        }
+      ],
+      "images": [],
+      "graphicType": "air-glide",
+      "rating": 4.7,
+      "reviewCount": 1,
+      "specifications": {},
+      "weightGrams": 700,
+      "dimensionsCm": {
+        "length": 32,
+        "width": 20,
+        "height": 12
+      },
+      "isActive": true,
+      "isFeatured": false,
+      "returnEligible": true,
+      "createdAt": "2026-10-15T04:24:16.006Z"
+    },
+    {
       "id": "prod-1",
       "sku": "APNA-AG-01",
       "name": "Apna Air Glide 01 Sneaker",
@@ -5069,6 +5178,26 @@
     }
   },
   "auditLogs": [
+    {
+      "id": "audit-1792038663976",
+      "timestamp": "2026-10-15T04:31:03.976Z",
+      "actor": "ADMIN",
+      "action": "CREATE_PRODUCT",
+      "details": {
+        "id": "prod-1792038663976",
+        "name": "Apna Ultra Boost Neon"
+      }
+    },
+    {
+      "id": "audit-1792038256006",
+      "timestamp": "2026-10-15T04:24:16.006Z",
+      "actor": "ADMIN",
+      "action": "CREATE_PRODUCT",
+      "details": {
+        "id": "prod-1792038256006",
+        "name": "Test Sneaker 2026"
+      }
+    },
     {
       "id": "audit-1791916588536",
       "timestamp": "2026-10-13T18:36:28.536Z",

@@ -19,6 +19,7 @@ import { AdminSecretModal } from './components/common/AdminSecretModal.js';
 import { MobileOtpModal } from './components/common/MobileOtpModal.js';
 import { api } from './services/api.js';
 import './services/firebase.js';
+import { subscribeToLiveProducts, seedProductsToFirestoreIfEmpty } from './services/firebaseSync.js';
 import { Product, Order } from './types/store.js';
 
 function MainApp() {
@@ -61,7 +62,7 @@ function MainApp() {
     };
   }, []);
 
-  // Load catalog on mount
+  // Load catalog on mount & seed Firestore
   useEffect(() => {
     const loadCatalog = async () => {
       try {
@@ -70,6 +71,8 @@ function MainApp() {
         if (data.length > 0 && !selectedProduct) {
           setSelectedProduct(data[0]);
         }
+        // Seed initial products to Firestore if empty
+        seedProductsToFirestoreIfEmpty(data).catch(() => {});
       } catch (err) {
         console.error('Failed to load initial catalog:', err);
       } finally {
@@ -77,6 +80,46 @@ function MainApp() {
       }
     };
     loadCatalog();
+  }, []);
+
+  // Real-time Firestore stream listener for live product changes
+  useEffect(() => {
+    const unsub = subscribeToLiveProducts((liveProducts) => {
+      if (liveProducts && liveProducts.length > 0) {
+        setProducts(liveProducts);
+      }
+    });
+    return () => unsub();
+  }, []);
+
+  // Listen to instantaneous client-side product updates
+  useEffect(() => {
+    const handleProductSaved = (e: any) => {
+      const saved = e.detail as Product;
+      if (!saved || !saved.id) return;
+      setProducts((prev) => {
+        const idx = prev.findIndex((p) => p.id === saved.id);
+        if (idx !== -1) {
+          const copy = [...prev];
+          copy[idx] = saved;
+          return copy;
+        }
+        return [saved, ...prev];
+      });
+    };
+
+    const handleProductDeleted = (e: any) => {
+      const id = e.detail as string;
+      if (!id) return;
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+    };
+
+    window.addEventListener('apna:product-saved', handleProductSaved);
+    window.addEventListener('apna:product-deleted', handleProductDeleted);
+    return () => {
+      window.removeEventListener('apna:product-saved', handleProductSaved);
+      window.removeEventListener('apna:product-deleted', handleProductDeleted);
+    };
   }, []);
 
   const handleNavigate = (view: string, param?: string) => {
@@ -118,9 +161,27 @@ function MainApp() {
     setCurrentView('order-confirmation');
   };
 
-  // If in admin view, render AdminPortal with separate layout
+  // If in admin view, render AdminPortal with live product callbacks
   if (currentView === 'admin') {
-    return <AdminPortal onNavigateHome={() => setCurrentView('home')} />;
+    return (
+      <AdminPortal
+        onNavigateHome={() => setCurrentView('home')}
+        onProductUpdated={(saved) => {
+          setProducts((prev) => {
+            const idx = prev.findIndex((p) => p.id === saved.id);
+            if (idx !== -1) {
+              const copy = [...prev];
+              copy[idx] = saved;
+              return copy;
+            }
+            return [saved, ...prev];
+          });
+        }}
+        onProductDeleted={(deletedId) => {
+          setProducts((prev) => prev.filter((p) => p.id !== deletedId));
+        }}
+      />
+    );
   }
 
   return (

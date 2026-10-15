@@ -37,7 +37,12 @@ import {
   Clock,
 } from 'lucide-react';
 import { api } from '../../services/api.js';
-import { syncOrderToFirestore, syncReturnToFirestore } from '../../services/firebaseSync.js';
+import {
+  syncOrderToFirestore,
+  syncReturnToFirestore,
+  syncProductToFirestore,
+  deleteProductFromFirestore,
+} from '../../services/firebaseSync.js';
 import { useAuth } from '../../context/AuthContext.js';
 import { useStoreConfig } from '../../context/StoreConfigContext.js';
 import { Product, Order, ReturnRequest, StoreCMSConfig, FlipkartMapping, HeroBanner } from '../../types/store.js';
@@ -138,9 +143,15 @@ const DEFAULT_5_BANNERS: HeroBanner[] = [
 
 interface AdminPortalProps {
   onNavigateHome: () => void;
+  onProductUpdated?: (product: Product) => void;
+  onProductDeleted?: (productId: string) => void;
 }
 
-export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigateHome }) => {
+export const AdminPortal: React.FC<AdminPortalProps> = ({
+  onNavigateHome,
+  onProductUpdated,
+  onProductDeleted,
+}) => {
   const { user, isAdmin, loginAsDemoAdmin, loginAsDemoCustomer, logout } = useAuth();
   const { config, updateConfig } = useStoreConfig();
 
@@ -275,32 +286,72 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigateHome }) => {
   };
 
   // Handle Product Save (Updating Photos, Prices, and Context data)
+  const [isSavingProduct, setIsSavingProduct] = useState(false);
+
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingProduct?.name || !editingProduct?.sellingPrice) return;
+    if (!editingProduct?.name?.trim()) {
+      showFeedback('Please enter a footwear name.', 'error');
+      return;
+    }
+    const sellingPrice = Number(editingProduct.sellingPrice);
+    if (!sellingPrice || sellingPrice <= 0) {
+      showFeedback('Please enter a valid selling price greater than ₹0.', 'error');
+      return;
+    }
+
+    setIsSavingProduct(true);
     try {
-      const originalPrice = Number(editingProduct.originalPrice) || Number(editingProduct.sellingPrice) * 1.5;
-      const sellingPrice = Number(editingProduct.sellingPrice);
+      const originalPrice =
+        Number(editingProduct.originalPrice) && Number(editingProduct.originalPrice) > sellingPrice
+          ? Number(editingProduct.originalPrice)
+          : Math.round(sellingPrice * 1.5);
       const discountPercentage = Math.round((1 - sellingPrice / originalPrice) * 100);
 
-      await api.saveProduct({
+      // Default high-quality photo if none provided so the shoe is never blank
+      const images =
+        editingProduct.images && editingProduct.images.length > 0
+          ? editingProduct.images
+          : ['https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80'];
+
+      const payload = {
         ...editingProduct,
+        id: editingProduct.id || `prod-${Date.now()}`,
+        name: editingProduct.name.trim(),
         sellingPrice,
         originalPrice,
         discountPercentage,
-        images: editingProduct.images || [],
-      } as any);
+        images,
+        isActive: true,
+      };
 
-      showFeedback(`Saved footwear "${editingProduct.name}" with photos & pricing!`);
+      const savedProduct = await api.saveProduct(payload as any);
+
+      // Live Firestore sync immediately
+      await syncProductToFirestore(savedProduct).catch((err) => {
+        console.warn('[Firebase] Product live sync notice:', err);
+      });
+
+      // Update parent App.tsx state immediately
+      if (onProductUpdated) {
+        onProductUpdated(savedProduct);
+      }
+
+      // Dispatch global event for instant multi-tab / customer view sync
+      window.dispatchEvent(new CustomEvent('apna:product-saved', { detail: savedProduct }));
+
+      showFeedback(`🎉 "${savedProduct.name}" is now LIVE! All customers can see it immediately.`, 'success');
       setEditingProduct(null);
       setNewImageUrl('');
       fetchAdminData();
     } catch (err: any) {
       showFeedback(err.message || 'Error saving product', 'error');
+    } finally {
+      setIsSavingProduct(false);
     }
   };
 
-  // Photo Upload Handler (Local file to Data URL)
+  // Photo Upload Handler (Local file to Data URL with canvas compression)
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -311,15 +362,37 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigateHome }) => {
     }
 
     const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result as string;
-      if (editingProduct) {
-        setEditingProduct({
-          ...editingProduct,
-          images: [...(editingProduct.images || []), dataUrl],
-        });
-        showFeedback('Photo uploaded successfully!');
-      }
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxDim = 1200;
+        let width = img.width;
+        let height = img.height;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+
+        if (editingProduct) {
+          setEditingProduct({
+            ...editingProduct,
+            images: [...(editingProduct.images || []), compressedDataUrl],
+          });
+          showFeedback('Photo uploaded and optimized successfully!');
+        }
+      };
+      img.src = event.target?.result as string;
     };
     reader.readAsDataURL(file);
   };
@@ -364,6 +437,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigateHome }) => {
     if (!deleteCandidate) return;
     try {
       await api.deleteProduct(deleteCandidate.id);
+      await deleteProductFromFirestore(deleteCandidate.id).catch(() => {});
+      if (onProductDeleted) onProductDeleted(deleteCandidate.id);
+      window.dispatchEvent(new CustomEvent('apna:product-deleted', { detail: deleteCandidate.id }));
       showFeedback(`Deleted "${deleteCandidate.name}" (${deleteCandidate.sku}) from catalog.`);
       if (editingProduct?.id === deleteCandidate.id) {
         setEditingProduct(null);
@@ -989,7 +1065,7 @@ APNA-WN-SAMPLE,"Apna Metro Low Women",womens-sneakers,women,1299,2199,41%,20,"Tr
                         categorySlug: 'mens-sneakers',
                         badge: 'New Drop',
                         graphicType: 'air-glide',
-                        images: [],
+                        images: ['https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80'],
                         variants: [
                           { id: `v-${Date.now()}-1`, sku: `APNA-NEW-UK7`, size: 'UK 7', colorName: 'Jet Black / Solar Orange', colorHex: '#FF5A1F', stockQuantity: 20 },
                           { id: `v-${Date.now()}-2`, sku: `APNA-NEW-UK8`, size: 'UK 8', colorName: 'Jet Black / Solar Orange', colorHex: '#FF5A1F', stockQuantity: 25 },
@@ -1002,10 +1078,10 @@ APNA-WN-SAMPLE,"Apna Metro Low Women",womens-sneakers,women,1299,2199,41%,20,"Tr
                         },
                       })
                     }
-                    className="px-4 py-2 bg-zinc-950 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow hover:bg-zinc-800 transition-colors"
+                    className="px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
                   >
-                    <Plus className="w-4 h-4 text-orange-500" />
-                    <span>Add New Footwear</span>
+                    <Plus className="w-4 h-4 text-white" />
+                    <span>+ Add New Footwear</span>
                   </button>
                 </div>
               </div>
@@ -2761,10 +2837,20 @@ APNA-WN-SAMPLE,"Apna Metro Low Women",womens-sneakers,women,1299,2199,41%,20,"Tr
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2.5 bg-zinc-950 hover:bg-zinc-900 text-white rounded-xl font-bold flex items-center gap-1.5 shadow-sm text-xs"
+                    disabled={isSavingProduct}
+                    className="px-6 py-2.5 bg-orange-600 hover:bg-orange-500 text-white rounded-xl font-bold flex items-center gap-1.5 shadow-sm text-xs cursor-pointer disabled:opacity-50"
                   >
-                    <Check className="w-4 h-4 text-orange-500" />
-                    <span>Save Footwear Changes</span>
+                    {isSavingProduct ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>Publishing to Live Store...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Check className="w-4 h-4 text-white" />
+                        <span>Save & Publish Shoe to Store</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
