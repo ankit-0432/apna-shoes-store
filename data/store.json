@@ -1,6 +1,68 @@
 {
   "products": [
     {
+      "id": "shopify-8433238671423",
+      "sku": "APNA-SHP-8433238671423",
+      "name": "TEST APMNA SHOES",
+      "slug": "test-apmna-shoes",
+      "brand": "My Store",
+      "description": "D2C Growth & Unit Economics:",
+      "gender": "unisex",
+      "categorySlug": "mens-sneakers",
+      "originalPrice": 1449,
+      "sellingPrice": 999,
+      "discountPercentage": 31,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/44133447958591",
+          "sku": "SHP-8433238671423-1",
+          "size": "UK 6",
+          "colorName": "Classic Roster",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 30
+        },
+        {
+          "id": "gid://shopify/ProductVariant/44133447991359",
+          "sku": "SHP-8433238671423-2",
+          "size": "UK 5",
+          "colorName": "Classic Roster",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 0
+        },
+        {
+          "id": "gid://shopify/ProductVariant/44133448024127",
+          "sku": "SHP-8433238671423-3",
+          "size": "UK 9",
+          "colorName": "Classic Roster",
+          "colorHex": "#FF5A1F",
+          "stockQuantity": 0
+        }
+      ],
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0687/7737/7855/files/ROSTER.jpg?v=1792173935"
+      ],
+      "graphicType": "air-glide",
+      "badge": "New Drop",
+      "rating": 4.9,
+      "reviewCount": 38,
+      "specifications": {
+        "Source": "Shopify Storefront Connected",
+        "Shopify Store": "apna-shoes-store.myshopify.com",
+        "Sole": "High-Traction EVA Cushion",
+        "Upper": "Engineered Sport Fabric"
+      },
+      "weightGrams": 650,
+      "dimensionsCm": {
+        "length": 32,
+        "width": 20,
+        "height": 12
+      },
+      "isActive": true,
+      "isFeatured": true,
+      "returnEligible": true,
+      "createdAt": "2026-10-19T19:20:12.635Z"
+    },
+    {
       "id": "prod-1792038663976",
       "sku": "APNA-ESM0",
       "name": "Apna Ultra Boost Neon",
@@ -4492,7 +4554,28 @@
       "id": "ord-1791915700378",
       "orderNumber": "APNA-2026-9656",
       "createdAt": "2026-10-13T18:21:40.378Z",
-      "updatedAt": "2026-10-13T18:30:35.462Z"
+      "updatedAt": "2026-10-16T18:01:03.463Z",
+      "shipment": {
+        "id": "ship-1792173663463",
+        "orderId": "ord-1791915700378",
+        "courierName": "Shiprocket — Delhivery Air",
+        "shipmentId": "SR-SHI-663463",
+        "awbCode": "DELHIVERY-394762988",
+        "status": "manifested",
+        "trackingUrl": "https://www.delhivery.com/track/package/DELHIVERY-394762988",
+        "pickupScheduledAt": "2026-10-17T00:01:03.463Z",
+        "estimatedDelivery": "2026-10-19T00:00:00.000Z",
+        "events": [
+          {
+            "id": "ev-1792173663463",
+            "statusCode": "AWB_CONFIRMED",
+            "statusTitle": "Airway Bill (AWB) Confirmed & Assigned",
+            "location": "Apna Shoes Noida Central Warehouse",
+            "timestamp": "2026-10-16T18:01:03.463Z",
+            "description": "Dispatched via Shiprocket — Delhivery Air. Airway Bill Tracking Number: DELHIVERY-394762988"
+          }
+        ]
+      }
     },
     {
       "customerName": "Rahul Sharma",
@@ -5179,6 +5262,46 @@
   },
   "auditLogs": [
     {
+      "id": "audit-1792437612635",
+      "timestamp": "2026-10-19T19:20:12.635Z",
+      "actor": "ADMIN",
+      "action": "UPDATE_PRODUCT",
+      "details": {
+        "id": "shopify-8433238671423",
+        "name": "TEST APMNA SHOES"
+      }
+    },
+    {
+      "id": "audit-1792175712922",
+      "timestamp": "2026-10-16T18:35:12.922Z",
+      "actor": "ADMIN",
+      "action": "CREATE_PRODUCT",
+      "details": {
+        "id": "shopify-8433238671423",
+        "name": "TEST APMNA SHOES"
+      }
+    },
+    {
+      "id": "audit-1792175652888",
+      "timestamp": "2026-10-16T18:34:12.888Z",
+      "actor": "ADMIN",
+      "action": "SHOPIFY_SYNC_PRODUCTS",
+      "details": {
+        "count": 1
+      }
+    },
+    {
+      "id": "audit-1792173663463",
+      "timestamp": "2026-10-16T18:01:03.463Z",
+      "actor": "ADMIN",
+      "action": "AWB_CONFIRMED",
+      "details": {
+        "orderNumber": "APNA-2026-9656",
+        "awbCode": "DELHIVERY-394762988",
+        "courierName": "Shiprocket — Delhivery Air"
+      }
+    },
+    {
       "id": "audit-1792038663976",
       "timestamp": "2026-10-15T04:31:03.976Z",
       "actor": "ADMIN",
@@ -5696,6 +5819,14 @@
     }
   ],
   "notifications": [
+    {
+      "id": "notif-1792173663463",
+      "timestamp": "2026-10-16T18:01:03.463Z",
+      "channel": "whatsapp",
+      "recipient": "+91 98765 00000",
+      "title": "AWB Confirmed: APNA-2026-9656",
+      "message": "Your APNA SHOES order APNA-2026-9656 has been confirmed with Airway Bill (AWB) DELHIVERY-394762988 via Shiprocket — Delhivery Air. Track here: https://www.delhivery.com/track/package/DELHIVERY-394762988"
+    },
     {
       "id": "notif-1791916588535",
       "timestamp": "2026-10-13T18:36:28.535Z",

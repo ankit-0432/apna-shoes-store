@@ -24,7 +24,17 @@ interface CheckoutPageProps {
 }
 
 export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onOrderSuccess, onNavigate }) => {
-  const { items, subtotal, discountAmount, shippingFee, totalAmount, appliedCoupon, clearCart } = useCart();
+  const {
+    items,
+    subtotal,
+    discountAmount,
+    shippingFee,
+    totalAmount,
+    appliedCoupon,
+    clearCart,
+    proceedToShopifyCheckout,
+    isCheckingOut,
+  } = useCart();
   const { user, openLoginModal } = useAuth();
   const { config } = useStoreConfig();
 
@@ -574,7 +584,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onOrderSuccess, onNa
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-4 px-4 rounded-xl text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 hover:opacity-95 active:scale-98 disabled:opacity-50"
+            className="w-full py-4 px-4 rounded-xl text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 hover:opacity-95 active:scale-98 disabled:opacity-50 cursor-pointer"
             style={{ backgroundColor: config.brandPrimaryColor || '#FF5A1F' }}
           >
             {isSubmitting ? (
@@ -590,6 +600,23 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onOrderSuccess, onNa
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
+          </button>
+
+          {/* Alternate: Shopify Storefront Hosted Checkout */}
+          <div className="relative flex py-1 items-center">
+            <div className="flex-grow border-t border-zinc-200"></div>
+            <span className="flex-shrink mx-3 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">or</span>
+            <div className="flex-grow border-t border-zinc-200"></div>
+          </div>
+
+          <button
+            type="button"
+            disabled={isCheckingOut}
+            onClick={() => proceedToShopifyCheckout()}
+            className="w-full py-3.5 px-4 rounded-xl text-zinc-900 bg-zinc-100 hover:bg-zinc-200 font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer border border-zinc-300 disabled:opacity-50"
+          >
+            <span>🛍️ Complete on Shopify Secure Checkout (COD & All Cards)</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
 
           {/* 7-Day Return & Cancellation Disclosure */}

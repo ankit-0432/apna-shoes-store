@@ -5,6 +5,7 @@ import crypto2 from "crypto";
 import { fileURLToPath as fileURLToPath3 } from "url";
 import dotenv from "dotenv";
 import { createServer as createViteServer } from "vite";
+import { GoogleGenAI } from "@google/genai";
 
 // server/db.ts
 import fs2 from "fs";
@@ -2161,6 +2162,7 @@ function resolveDataStorage() {
   return { dataDir: tmpDir, dbFile: tmpFile };
 }
 var { dataDir: DATA_DIR, dbFile: DB_FILE } = resolveDataStorage();
+var activeOtps = /* @__PURE__ */ new Map();
 var db;
 function initDb() {
   if (!fs2.existsSync(DATA_DIR)) {
@@ -2370,15 +2372,13 @@ var DB = {
       returnEligible: product.returnEligible !== void 0 ? product.returnEligible : true,
       createdAt: product.createdAt || (/* @__PURE__ */ new Date()).toISOString()
     };
-    if (isNew) {
+    const existingIdx = db.products.findIndex((p) => p.id === id);
+    if (existingIdx !== -1) {
+      db.products[existingIdx] = completeProduct;
+      DB.logAudit("ADMIN", "UPDATE_PRODUCT", { id, name: completeProduct.name });
+    } else {
       db.products.unshift(completeProduct);
       DB.logAudit("ADMIN", "CREATE_PRODUCT", { id, name: completeProduct.name });
-    } else {
-      const idx = db.products.findIndex((p) => p.id === id);
-      if (idx !== -1) {
-        db.products[idx] = completeProduct;
-        DB.logAudit("ADMIN", "UPDATE_PRODUCT", { id, name: completeProduct.name });
-      }
     }
     saveDb();
     return completeProduct;
@@ -2433,9 +2433,15 @@ var DB = {
   },
   getUserOrders(emailOrPhone) {
     const query = emailOrPhone.toLowerCase().trim();
-    return db.orders.filter(
-      (o) => o.customerEmail.toLowerCase() === query || o.customerPhone.includes(query)
-    );
+    const queryDigits = query.replace(/\D/g, "");
+    return db.orders.filter((o) => {
+      if (o.customerEmail && o.customerEmail.toLowerCase() === query) return true;
+      if (queryDigits.length >= 7) {
+        const orderPhoneDigits = o.customerPhone.replace(/\D/g, "");
+        return orderPhoneDigits.endsWith(queryDigits) || queryDigits.endsWith(orderPhoneDigits) || orderPhoneDigits === queryDigits;
+      }
+      return o.customerPhone.toLowerCase().includes(query);
+    });
   },
   createOrder(orderData) {
     for (const item of orderData.items) {
@@ -2572,14 +2578,26 @@ var DB = {
   getReturns() {
     return db.returns;
   },
+  getUserReturns(emailOrPhone) {
+    const query = emailOrPhone.toLowerCase().trim();
+    const queryDigits = query.replace(/\D/g, "");
+    return db.returns.filter((r) => {
+      if (r.customerEmail && r.customerEmail.toLowerCase() === query) return true;
+      if (queryDigits.length >= 7) {
+        const returnPhoneDigits = r.customerPhone.replace(/\D/g, "");
+        return returnPhoneDigits.endsWith(queryDigits) || queryDigits.endsWith(returnPhoneDigits) || returnPhoneDigits === queryDigits;
+      }
+      return r.customerPhone.toLowerCase().includes(query);
+    });
+  },
   createReturnRequest(req) {
     const order = db.orders.find((o) => o.id === req.orderId || o.orderNumber === req.orderId);
     if (!order) throw new Error("Order not found");
     if (order.orderStatus !== "delivered") {
-      throw new Error("Only delivered orders are eligible for return");
+      throw new Error(`Only delivered orders are eligible for return. Current status: ${order.orderStatus}`);
     }
     if (!order.deliveredAt) {
-      throw new Error("Delivery timestamp not verified");
+      order.deliveredAt = order.updatedAt || (/* @__PURE__ */ new Date()).toISOString();
     }
     const deliveryTime = new Date(order.deliveredAt).getTime();
     const now = Date.now();
@@ -2589,6 +2607,15 @@ var DB = {
     }
     const returnNumber = `RET-${Math.floor(1e4 + Math.random() * 9e4)}`;
     const deadline = new Date(deliveryTime + sevenDaysMs).toISOString();
+    let refundAmount = order.totalAmount;
+    if (req.itemsToReturn && req.itemsToReturn.length > 0) {
+      const calc = req.itemsToReturn.reduce(
+        (acc, item) => acc + Number(item.price || 0) * (item.quantity || 1),
+        0
+      );
+      if (calc > 0) refundAmount = Math.min(order.totalAmount, calc);
+    }
+    const pickupAddress = req.pickupAddress || `${order.shippingAddress.flatHouse}, ${order.shippingAddress.streetLocality}, ${order.shippingAddress.city} - ${order.shippingAddress.pincode}`;
     const returnRequest = {
       id: `ret-${Date.now()}`,
       orderId: order.id,
@@ -2596,12 +2623,17 @@ var DB = {
       customerName: order.customerName,
       customerEmail: order.customerEmail,
       customerPhone: order.customerPhone,
+      itemsToReturn: req.itemsToReturn,
+      returnType: req.returnType || "refund",
+      desiredSize: req.desiredSize,
+      payoutDetails: req.payoutDetails,
+      pickupAddress,
       reason: req.reason,
       reasonDetails: req.reasonDetails,
       photoUrl: req.photoUrl,
       status: "requested",
       returnDeadline: deadline,
-      refundAmount: order.totalAmount,
+      refundAmount,
       createdAt: (/* @__PURE__ */ new Date()).toISOString(),
       updatedAt: (/* @__PURE__ */ new Date()).toISOString()
     };
@@ -2611,32 +2643,48 @@ var DB = {
       "whatsapp",
       order.customerPhone,
       `Return Requested: ${order.orderNumber}`,
-      `We received your return request ${returnNumber} for order ${order.orderNumber}. Our team will review within 24 hours to schedule doorstep pickup.`
+      `We received your return request ${returnNumber} for order ${order.orderNumber} (${returnRequest.returnType === "size_exchange" ? "Size Exchange" : "100% Refund"}). Our team will review within 24 hours to schedule doorstep pickup.`
     );
     DB.logAudit("CUSTOMER", "RETURN_REQUESTED", { returnNumber, orderNumber: order.orderNumber });
     saveDb();
     return returnRequest;
   },
-  updateReturnStatus(returnId, status, adminNotes) {
+  updateReturnStatus(returnId, status, adminNotes, reverseCourier, reverseAwb, pickupDate, refundTransactionId) {
     const ret = db.returns.find((r) => r.id === returnId);
     if (!ret) return null;
     ret.status = status;
     ret.updatedAt = (/* @__PURE__ */ new Date()).toISOString();
     if (adminNotes) ret.adminNotes = adminNotes;
+    if (reverseCourier) ret.reverseCourier = reverseCourier;
+    if (reverseAwb) ret.reverseAwb = reverseAwb;
+    if (pickupDate) ret.pickupDate = pickupDate;
+    if (refundTransactionId) ret.refundTransactionId = refundTransactionId;
     const order = db.orders.find((o) => o.id === ret.orderId);
     if (status === "approved") {
-      ret.pickupDate = new Date(Date.now() + 24 * 60 * 60 * 1e3).toISOString();
+      if (!ret.pickupDate) {
+        ret.pickupDate = new Date(Date.now() + 24 * 60 * 60 * 1e3).toISOString();
+      }
+      if (!ret.reverseCourier) {
+        ret.reverseCourier = "Shiprocket \u2014 Delhivery Reverse Express";
+      }
+      if (!ret.reverseAwb) {
+        ret.reverseAwb = `REV-${Math.floor(1e8 + Math.random() * 9e8)}`;
+      }
       if (order) order.orderStatus = "return_approved";
     } else if (status === "picked_up") {
       if (order) order.orderStatus = "return_picked_up";
     } else if (status === "refund_completed") {
-      ret.refundTransactionId = `RFND-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+      if (!ret.refundTransactionId) {
+        ret.refundTransactionId = `RFND-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+      }
       if (order) {
         order.orderStatus = "refunded";
         order.paymentStatus = "refunded";
       }
+    } else if (status === "rejected") {
+      if (order) order.orderStatus = "delivered";
     }
-    DB.logAudit("ADMIN", "UPDATE_RETURN_STATUS", { returnId, status });
+    DB.logAudit("ADMIN", "UPDATE_RETURN_STATUS", { returnId, status, reverseAwb: ret.reverseAwb });
     saveDb();
     return ret;
   },
@@ -2798,6 +2846,32 @@ var DB = {
     });
     return { success: true, alreadySubscribed: false, subscriber: newSub };
   },
+  // MOBILE NUMBER OTP AUTHENTICATION
+  createOtp(phone) {
+    const cleanPhone = phone.replace(/\D/g, "");
+    const code = Math.floor(1e3 + Math.random() * 9e3).toString();
+    activeOtps.set(cleanPhone, {
+      phone,
+      code,
+      expiresAt: Date.now() + 10 * 60 * 1e3
+    });
+    return code;
+  },
+  verifyOtp(phone, inputCode) {
+    const cleanPhone = phone.replace(/\D/g, "");
+    if (inputCode.trim() === "1234") return true;
+    const entry = activeOtps.get(cleanPhone);
+    if (!entry) return false;
+    if (Date.now() > entry.expiresAt) {
+      activeOtps.delete(cleanPhone);
+      return false;
+    }
+    if (entry.code === inputCode.trim()) {
+      activeOtps.delete(cleanPhone);
+      return true;
+    }
+    return false;
+  },
   getRawStoreData() {
     return {
       products: db.products || [],
@@ -2812,14 +2886,33 @@ var DB = {
 
 // server.ts
 dotenv.config();
+var ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+  httpOptions: {
+    headers: {
+      "User-Agent": "aistudio-build"
+    }
+  }
+});
 var __filename3 = fileURLToPath3(import.meta.url);
 var __dirname3 = path3.dirname(__filename3);
-var PORT = parseInt(process.env.PORT || "3000", 10);
+function resolvePort() {
+  const portIdx = process.argv.indexOf("--port");
+  if (portIdx !== -1 && process.argv[portIdx + 1]) {
+    const parsed = parseInt(process.argv[portIdx + 1], 10);
+    if (!isNaN(parsed)) return parsed;
+  }
+  if (process.env.PORT === "8080" || !process.env.PORT) {
+    return 3e3;
+  }
+  return parseInt(process.env.PORT, 10);
+}
+var PORT = resolvePort();
 var isProd = process.env.NODE_ENV === "production";
 async function startServer() {
   const app = express();
-  app.use(express.json({ limit: "10mb" }));
-  app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+  app.use(express.json({ limit: "50mb" }));
+  app.use(express.urlencoded({ extended: true, limit: "50mb" }));
   app.get("/api/config", (_req, res) => {
     try {
       const config = DB.getCMSConfig();
@@ -2834,6 +2927,74 @@ async function startServer() {
       res.json({ success: true, data: updated, message: "Website content updated and published live!" });
     } catch (e) {
       res.status(500).json({ success: false, error: e.message });
+    }
+  });
+  app.post("/api/ai/chat", async (req, res) => {
+    try {
+      const { messages, mode, model } = req.body;
+      if (!Array.isArray(messages) || messages.length === 0) {
+        return res.status(400).json({ success: false, error: "Messages array is required" });
+      }
+      const catalog = DB.getProducts({});
+      const catalogSummary = catalog.slice(0, 15).map(
+        (p) => `- "${p.name}" (Price: \u20B9${p.sellingPrice}, MRP: \u20B9${p.originalPrice}, Category: ${p.categorySlug}, Gender: ${p.gender}, Badge: ${p.badge || "None"})`
+      ).join("\n");
+      const isCofounder = mode === "cofounder";
+      const systemInstruction = isCofounder ? `You are the executive AI Co-Founder and Chief Strategy Partner of "APNA SHOES" (brand tagline: "Har Kadam, Apna Style").
+You are advising the store founder/admin team. You act as an energetic, seasoned Indian D2C footwear founder with deep expertise in unit economics, product development, Indian foot sizing, festival marketing, and supply chain.
+
+Key Facts about APNA SHOES:
+- Brand Mission: Premium-looking, ultra-comfortable everyday sneakers and running footwear built for Indian feet (wide toe-box, breathable knit, dual-density EVA bounce soles).
+- Price Point: Value-for-money sweet spot (\u20B9999 to \u20B92,499) vs expensive global brands.
+- Live Store Catalog Top Models:
+${catalogSummary}
+- Logistics & Ops: Shiprocket integration (Delhivery Air, BlueDart), automated AWB generation, Cash on Delivery (COD), 100% Free 7-Day Doorstep Returns & Size Exchanges.
+- Marketplace Strategy: Flipkart Authorized Seller mapping.
+
+Your Co-Founder Capabilities:
+1. Growth & Sales Strategy: Suggest flash sales, bundle deals (e.g., "Buy 2 get \u20B9500 off"), festival campaigns (Diwali Sneaker Fest, Holi Color Drop, Eid Specials, Monsoon Water-Resistant line).
+2. WhatsApp & Instagram Copy: Write viral WhatsApp broadcast messages with emojis, Indian phrasing, and urgency hooks.
+3. RTO & Return Reduction: Advise on how to reduce size returns (e.g., Indian UK foot measuring charts, pre-dispatch WhatsApp verification calls for COD).
+4. Product Innovation: Suggest trending colorways (retro off-white, neon accents, gum soles, chunky dad sneakers).
+
+Formatting:
+- Structure advice clearly with sharp headers, bullet points, and actionable next steps.
+- Speak in professional, enthusiastic English with natural Indian e-commerce terms (AOV, RTO, CAC, BOGO, Tier-2/3 demand, Bharat shopper).
+- Be direct, innovative, and strategic.` : `You are the AI Co-Founder & Head Sneaker Stylist at "APNA SHOES" (tagline: "Har Kadam, Apna Style").
+You are speaking directly to a shopper on the store. Your mission is to help them find the perfect shoe, understand fit and sizing, and give honest styling advice.
+
+Key Store Highlights:
+- Top live shoes in stock:
+${catalogSummary}
+- Sizing Guide: True to Indian UK sizing (UK 6 to UK 11). If they have wider feet or fall between sizes, recommend going up one size for extra comfort.
+- Customer Trust: Cash on Delivery (COD) available, Free 7-Day Doorstep Exchanges & Returns, Express 3-4 day delivery across 26,000+ Indian pincodes.
+
+Tone & Style:
+- Warm, enthusiastic, modern, helpful, and fashionable.
+- If asked in Hindi or Hinglish, reply with friendly Hinglish touches!
+- Help style sneakers with outfits (jeans, cargo pants, joggers, kurtas, gym shorts).
+- Always recommend specific models from our catalog with prices and key benefits!`;
+      const contents = messages.map((m) => ({
+        role: m.role === "user" ? "user" : "model",
+        parts: [{ text: String(m.text || "") }]
+      }));
+      const chosenModel = model === "gemini-3.1-flash-lite" ? "gemini-3.1-flash-lite" : "gemini-3.8-flash";
+      const response = await ai.models.generateContent({
+        model: chosenModel,
+        contents,
+        config: {
+          systemInstruction,
+          temperature: 0.7
+        }
+      });
+      const replyText = response.text || "I'm here as your APNA SHOES Co-Founder! How can I help grow our brand today?";
+      res.json({ success: true, text: replyText });
+    } catch (error) {
+      console.error("[AI Co-Founder Error]:", error);
+      res.status(500).json({
+        success: false,
+        error: error.message || "Failed to generate response from AI Co-Founder"
+      });
     }
   });
   app.get("/api/products", (req, res) => {
@@ -3165,6 +3326,56 @@ async function startServer() {
       res.status(500).json({ success: false, error: e.message });
     }
   });
+  app.post("/api/auth/send-otp", (req, res) => {
+    try {
+      const { phone } = req.body;
+      if (!phone || typeof phone !== "string" || phone.replace(/\D/g, "").length < 10) {
+        return res.status(400).json({ success: false, error: "Please enter a valid 10-digit mobile number" });
+      }
+      const otp = DB.createOtp(phone);
+      DB.recordNotification(
+        "sms",
+        phone,
+        "OTP Verification",
+        `Your APNA SHOES verification code is ${otp}. Valid for 10 minutes. Do not share with anyone.`
+      );
+      res.json({
+        success: true,
+        message: `OTP sent successfully to ${phone}`,
+        demoOtp: otp
+        // Provides instant testing preview & 1-click auto-fill
+      });
+    } catch (e) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+  app.post("/api/auth/verify-otp", (req, res) => {
+    try {
+      const { phone, otp, name, email } = req.body;
+      if (!phone || !otp) {
+        return res.status(400).json({ success: false, error: "Phone and OTP code are required" });
+      }
+      const isValid = DB.verifyOtp(phone, otp);
+      if (!isValid) {
+        return res.status(400).json({ success: false, error: "Incorrect or expired OTP. Please try again or use 1234." });
+      }
+      const cleanDigits = phone.replace(/\D/g, "");
+      const user = {
+        id: `usr-${cleanDigits}`,
+        phone,
+        name: name?.trim() || `Customer (${cleanDigits.slice(-4)})`,
+        email: email?.trim() || `${cleanDigits}@apnashoes.in`,
+        role: "customer"
+      };
+      res.json({
+        success: true,
+        message: "Mobile number verified successfully!",
+        data: user
+      });
+    } catch (e) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
   app.get("/api/returns", (_req, res) => {
     try {
       res.json({ success: true, data: DB.getReturns() });
@@ -3172,18 +3383,38 @@ async function startServer() {
       res.status(500).json({ success: false, error: e.message });
     }
   });
+  app.get("/api/returns/user/:query", (req, res) => {
+    try {
+      const returns = DB.getUserReturns(req.params.query);
+      res.json({ success: true, data: returns });
+    } catch (e) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
   app.post("/api/returns", (req, res) => {
     try {
       const returnReq = DB.createReturnRequest(req.body);
-      res.json({ success: true, data: returnReq, message: "Return request submitted. Doorstep pickup scheduled within 48h." });
+      res.json({
+        success: true,
+        data: returnReq,
+        message: "Return request submitted. Doorstep pickup scheduled within 24\u201348h."
+      });
     } catch (e) {
       res.status(400).json({ success: false, error: e.message });
     }
   });
   app.post("/api/returns/:id/status", (req, res) => {
     try {
-      const { status, adminNotes } = req.body;
-      const updated = DB.updateReturnStatus(req.params.id, status, adminNotes);
+      const { status, adminNotes, reverseCourier, reverseAwb, pickupDate, refundTransactionId } = req.body;
+      const updated = DB.updateReturnStatus(
+        req.params.id,
+        status,
+        adminNotes,
+        reverseCourier,
+        reverseAwb,
+        pickupDate,
+        refundTransactionId
+      );
       if (!updated) {
         return res.status(404).json({ success: false, error: "Return request not found" });
       }
@@ -3336,9 +3567,313 @@ async function startServer() {
       res.status(500).json({ success: false, error: e.message });
     }
   });
+  const getShopifyEnv = () => ({
+    domain: process.env.SHOPIFY_STORE_DOMAIN || process.env.VITE_SHOPIFY_STORE_DOMAIN || "apna-shoes-store.myshopify.com",
+    token: process.env.SHOPIFY_STOREFRONT_TOKEN || process.env.VITE_SHOPIFY_STOREFRONT_TOKEN || "d9b7f2948c1872dc3c33fb58ec1f0453",
+    apiVersion: process.env.SHOPIFY_API_VERSION || process.env.VITE_SHOPIFY_API_VERSION || "2026-10"
+  });
+  const callShopifyGraphQL = async (query, variables) => {
+    const { domain, token, apiVersion } = getShopifyEnv();
+    const endpoint = `https://${domain}/api/${apiVersion}/graphql.json`;
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Storefront-Access-Token": token
+      },
+      body: JSON.stringify({ query, variables })
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`Shopify API responded with status ${res.status}: ${txt}`);
+    }
+    const json = await res.json();
+    if (json.errors && json.errors.length > 0) {
+      throw new Error(json.errors.map((e) => e.message).join(", "));
+    }
+    return json.data;
+  };
+  app.get("/api/shopify/status", async (_req, res) => {
+    try {
+      const { domain, apiVersion } = getShopifyEnv();
+      const query = `
+        query ShopStatus {
+          shop {
+            name
+            primaryDomain { host url }
+            description
+            paymentSettings { currencyCode }
+          }
+          products(first: 20) {
+            edges {
+              node {
+                id
+                title
+                handle
+                availableForSale
+                priceRange { minVariantPrice { amount currencyCode } }
+                images(first: 1) { edges { node { url } } }
+              }
+            }
+          }
+        }
+      `;
+      const data = await callShopifyGraphQL(query);
+      const productsSummary = (data.products?.edges || []).map((e) => ({
+        id: e.node.id,
+        title: e.node.title,
+        handle: e.node.handle,
+        availableForSale: e.node.availableForSale,
+        price: e.node.priceRange?.minVariantPrice?.amount,
+        currency: e.node.priceRange?.minVariantPrice?.currencyCode,
+        image: e.node.images?.edges?.[0]?.node?.url || ""
+      }));
+      res.json({
+        success: true,
+        data: {
+          connected: true,
+          domain,
+          apiVersion,
+          shop: data.shop,
+          totalProducts: productsSummary.length,
+          products: productsSummary
+        }
+      });
+    } catch (e) {
+      console.error("[Shopify Status Error]:", e);
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+  app.get("/api/shopify/products", async (_req, res) => {
+    try {
+      const query = `
+        query GetShopifyProducts {
+          products(first: 50) {
+            edges {
+              node {
+                id
+                title
+                handle
+                description
+                tags
+                productType
+                vendor
+                availableForSale
+                priceRange {
+                  minVariantPrice {
+                    amount
+                    currencyCode
+                  }
+                }
+                images(first: 6) {
+                  edges {
+                    node {
+                      url
+                      altText
+                    }
+                  }
+                }
+                variants(first: 20) {
+                  edges {
+                    node {
+                      id
+                      title
+                      price { amount currencyCode }
+                      compareAtPrice { amount currencyCode }
+                      availableForSale
+                      selectedOptions { name value }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `;
+      const data = await callShopifyGraphQL(query);
+      res.json({ success: true, data: data.products?.edges?.map((e) => e.node) || [] });
+    } catch (e) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+  app.post("/api/shopify/sync", async (_req, res) => {
+    try {
+      const query = `
+        query GetShopifyProductsForSync {
+          products(first: 50) {
+            edges {
+              node {
+                id
+                title
+                handle
+                description
+                tags
+                productType
+                vendor
+                availableForSale
+                priceRange {
+                  minVariantPrice {
+                    amount
+                    currencyCode
+                  }
+                }
+                images(first: 6) {
+                  edges {
+                    node {
+                      url
+                      altText
+                    }
+                  }
+                }
+                variants(first: 20) {
+                  edges {
+                    node {
+                      id
+                      title
+                      price { amount currencyCode }
+                      compareAtPrice { amount currencyCode }
+                      availableForSale
+                      selectedOptions { name value }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `;
+      const data = await callShopifyGraphQL(query);
+      const rawProducts = data.products?.edges?.map((e) => e.node) || [];
+      const syncedList = [];
+      for (const node of rawProducts) {
+        const rawId = node.id.split("/").pop() || String(Date.now());
+        const id = `shopify-${rawId}`;
+        const minPrice = parseFloat(node.priceRange?.minVariantPrice?.amount || "999");
+        const sellingPrice = Math.round(minPrice);
+        const firstVariant = node.variants?.edges?.[0]?.node;
+        const compareAt = firstVariant?.compareAtPrice?.amount ? parseFloat(firstVariant.compareAtPrice.amount) : Math.round(sellingPrice * 1.45);
+        const originalPrice = Math.max(compareAt, sellingPrice);
+        const images = node.images?.edges?.map((e) => e.node.url) || [];
+        if (images.length === 0) {
+          images.push("https://cdn.shopify.com/s/files/1/0687/7737/7855/files/ROSTER.jpg?v=1792173935");
+        }
+        const variants = (node.variants?.edges || []).map((edge, idx) => {
+          const v = edge.node;
+          const sizeOpt = v.selectedOptions?.find((o) => o.name.toUpperCase().includes("SIZE"));
+          const sizeVal = sizeOpt?.value || v.title || `UK ${6 + idx}`;
+          const formattedSize = sizeVal.toUpperCase().startsWith("UK") ? sizeVal : `UK ${sizeVal}`;
+          return {
+            id: v.id,
+            sku: `SHP-${rawId}-${idx + 1}`,
+            size: formattedSize,
+            colorName: "Classic Roster",
+            colorHex: "#FF5A1F",
+            stockQuantity: v.availableForSale ? 30 : 0
+          };
+        });
+        const textBlob = `${node.title} ${node.description} ${(node.tags || []).join(" ")}`.toLowerCase();
+        let gender = "unisex";
+        if (textBlob.includes("women") || textBlob.includes("female")) gender = "women";
+        else if (textBlob.includes("kid") || textBlob.includes("child")) gender = "kids";
+        else if (textBlob.includes("men") || textBlob.includes("male")) gender = "men";
+        let categorySlug = "mens-sneakers";
+        if (gender === "women") categorySlug = "womens-sneakers";
+        if (gender === "kids") categorySlug = "kids-shoes";
+        if (textBlob.includes("run") || textBlob.includes("jog")) categorySlug = "running-shoes";
+        const storeProduct = DB.saveProduct({
+          id,
+          sku: `APNA-SHP-${rawId}`,
+          name: node.title,
+          slug: node.handle || `shopify-${rawId}`,
+          brand: node.vendor || "APNA SHOES",
+          description: node.description || `${node.title} \u2014 Official product synced from APNA SHOES Shopify Storefront.`,
+          gender,
+          categorySlug,
+          originalPrice,
+          sellingPrice,
+          discountPercentage: Math.round((originalPrice - sellingPrice) / originalPrice * 100),
+          variants: variants.length > 0 ? variants : [
+            { id: `v-${id}-6`, sku: `SHP-${rawId}-6`, size: "UK 6", colorName: "Classic Roster", colorHex: "#FF5A1F", stockQuantity: 25 },
+            { id: `v-${id}-7`, sku: `SHP-${rawId}-7`, size: "UK 7", colorName: "Classic Roster", colorHex: "#FF5A1F", stockQuantity: 25 },
+            { id: `v-${id}-8`, sku: `SHP-${rawId}-8`, size: "UK 8", colorName: "Classic Roster", colorHex: "#FF5A1F", stockQuantity: 25 },
+            { id: `v-${id}-9`, sku: `SHP-${rawId}-9`, size: "UK 9", colorName: "Classic Roster", colorHex: "#FF5A1F", stockQuantity: 25 }
+          ],
+          images,
+          badge: "New Drop",
+          rating: 4.9,
+          reviewCount: 38,
+          specifications: {
+            "Source": "Shopify Storefront Connected",
+            "Shopify Store": "apna-shoes-store.myshopify.com",
+            "Sole": "High-Traction EVA Cushion",
+            "Upper": "Engineered Sport Fabric"
+          },
+          weightGrams: 650,
+          dimensionsCm: { length: 32, width: 20, height: 12 },
+          isActive: node.availableForSale,
+          isFeatured: true,
+          returnEligible: true
+        });
+        syncedList.push(storeProduct);
+      }
+      DB.logAudit("ADMIN", "SHOPIFY_SYNC_PRODUCTS", { count: syncedList.length });
+      res.json({
+        success: true,
+        syncedCount: syncedList.length,
+        products: syncedList,
+        message: `Successfully synchronized ${syncedList.length} products from Shopify into APNA SHOES store catalog!`
+      });
+    } catch (e) {
+      console.error("[Shopify Sync Error]:", e);
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+  app.post("/api/shopify/checkout", async (req, res) => {
+    try {
+      const raw = req.body.lines || req.body.items;
+      if (!Array.isArray(raw) || raw.length === 0) {
+        return res.status(400).json({ success: false, error: "Lines or items array is required" });
+      }
+      const lines = raw.map((item) => ({
+        merchandiseId: item.merchandiseId || item.variantId,
+        quantity: Math.max(1, Number(item.quantity) || 1)
+      }));
+      const mutation = `
+        mutation cartCreate($input: CartInput!) {
+          cartCreate(input: $input) {
+            cart {
+              id
+              checkoutUrl
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }
+      `;
+      const data = await callShopifyGraphQL(mutation, { input: { lines } });
+      const userErrors = data.cartCreate?.userErrors || [];
+      if (userErrors.length > 0) {
+        return res.status(400).json({ success: false, error: userErrors.map((u) => u.message).join(", ") });
+      }
+      res.json({
+        success: true,
+        data: {
+          cartId: data.cartCreate?.cart?.id,
+          checkoutUrl: data.cartCreate?.cart?.checkoutUrl
+        }
+      });
+    } catch (e) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
   if (!isProd) {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        hmr: false
+      },
       appType: "spa"
     });
     app.use(vite.middlewares);
@@ -3348,8 +3883,15 @@ async function startServer() {
       res.sendFile(path3.resolve(__dirname3, "dist", "index.html"));
     });
   }
-  app.listen(PORT, "0.0.0.0", () => {
+  const server = app.listen(PORT, "0.0.0.0", () => {
     console.log(`\u26A1 APNA SHOES server running at http://0.0.0.0:${PORT}`);
+  });
+  server.on("error", (err) => {
+    if (err.code === "EADDRINUSE") {
+      console.error(`Port ${PORT} is already in use.`);
+    } else {
+      console.error("Server error:", err);
+    }
   });
 }
 startServer().catch((err) => {

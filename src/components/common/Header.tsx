@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Search, User as UserIcon, Menu, X, ShieldCheck, Truck, RotateCcw, Phone } from 'lucide-react';
+import { ShoppingBag, Search, User as UserIcon, Menu, X, ShieldCheck, Truck, RotateCcw, Phone, Sparkles } from 'lucide-react';
 import { useCart } from '../../context/CartContext.js';
 import { useStoreConfig } from '../../context/StoreConfigContext.js';
 import { useAuth } from '../../context/AuthContext.js';
@@ -162,7 +162,18 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, currentView }) => {
         </nav>
 
         {/* Zone 3: 1 Primary Action & Utilities */}
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-2.5 shrink-0">
+          {/* AI Co-Founder Launcher */}
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('apna:open-ai-cofounder'))}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-xs hover:shadow transition-all cursor-pointer"
+            title="Chat with APNA SHOES AI Co-Founder"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-200 animate-pulse" />
+            <span className="hidden sm:inline">AI Co-Founder</span>
+            <span className="sm:hidden text-[10px]">AI Co-Pilot</span>
+          </button>
+
           {/* Search Trigger */}
           <button
             onClick={() => setSearchOpen(true)}

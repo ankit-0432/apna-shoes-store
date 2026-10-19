@@ -1,6 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types/store.js';
 import { onAuthObserver, firebaseSignOut } from '../services/firebaseAuth.js';
+import {
+  shopifyCustomerLogin,
+  shopifyCustomerRegister,
+  shopifyCustomerLogout,
+  fetchShopifyCustomerProfile,
+  ShopifyCustomerProfile,
+} from '../services/shopify.js';
 
 interface AuthContextType {
   user: User | null;
@@ -16,6 +23,19 @@ interface AuthContextType {
   redirectAfterLogin: string | null;
   openLoginModal: (redirectAfter?: string, reasonMessage?: string) => void;
   closeLoginModal: () => void;
+  // Shopify Customer Account Support
+  shopifyCustomer: ShopifyCustomerProfile | null;
+  isShopifyAuthLoading: boolean;
+  loginWithShopify: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  registerWithShopify: (params: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    phone?: string;
+  }) => Promise<{ success: boolean; error?: string }>;
+  logoutFromShopify: () => Promise<void>;
+  refreshShopifyCustomer: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -32,6 +52,12 @@ const AuthContext = createContext<AuthContextType>({
   redirectAfterLogin: null,
   openLoginModal: () => {},
   closeLoginModal: () => {},
+  shopifyCustomer: null,
+  isShopifyAuthLoading: false,
+  loginWithShopify: async () => ({ success: false }),
+  registerWithShopify: async () => ({ success: false }),
+  logoutFromShopify: async () => {},
+  refreshShopifyCustomer: async () => {},
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -40,10 +66,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const stored = localStorage.getItem('apna_user');
       if (stored) return JSON.parse(stored);
     } catch (e) {}
-    // If not stored in localStorage, start as guest (no default orders leaked)
     return null;
   });
 
+  const [shopifyCustomer, setShopifyCustomer] = useState<ShopifyCustomerProfile | null>(null);
+  const [isShopifyAuthLoading, setIsShopifyAuthLoading] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [loginReasonMessage, setLoginReasonMessage] = useState<string | null>(null);
   const [redirectAfterLogin, setRedirectAfterLogin] = useState<string | null>(null);
@@ -78,6 +105,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => unsub();
   }, []);
 
+  // Restore Shopify Customer Session on mount
+  useEffect(() => {
+    const token = localStorage.getItem('shopify_customer_token');
+    if (token) {
+      setIsShopifyAuthLoading(true);
+      fetchShopifyCustomerProfile(token)
+        .then((profile) => {
+          if (profile) {
+            setShopifyCustomer(profile);
+            setUser({
+              id: profile.id,
+              name: profile.displayName || `${profile.firstName} ${profile.lastName}`.trim(),
+              email: profile.email,
+              phone: profile.phone || '',
+              role: 'customer',
+            });
+          } else {
+            localStorage.removeItem('shopify_customer_token');
+          }
+        })
+        .catch(() => {
+          localStorage.removeItem('shopify_customer_token');
+        })
+        .finally(() => setIsShopifyAuthLoading(false));
+    }
+  }, []);
+
   const openLoginModal = (redirectAfter?: string, reasonMessage?: string) => {
     setRedirectAfterLogin(redirectAfter || null);
     setLoginReasonMessage(reasonMessage || null);
@@ -87,6 +141,66 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const closeLoginModal = () => {
     setIsLoginModalOpen(false);
     setLoginReasonMessage(null);
+  };
+
+  const loginWithShopify = async (email: string, password: string) => {
+    setIsShopifyAuthLoading(true);
+    try {
+      const { accessToken } = await shopifyCustomerLogin(email, password);
+      localStorage.setItem('shopify_customer_token', accessToken);
+      const profile = await fetchShopifyCustomerProfile(accessToken);
+      if (profile) {
+        setShopifyCustomer(profile);
+        setUser({
+          id: profile.id,
+          name: profile.displayName || `${profile.firstName} ${profile.lastName}`.trim(),
+          email: profile.email,
+          phone: profile.phone || '',
+          role: 'customer',
+        });
+      }
+      closeLoginModal();
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Shopify customer login failed' };
+    } finally {
+      setIsShopifyAuthLoading(false);
+    }
+  };
+
+  const registerWithShopify = async (params: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    phone?: string;
+  }) => {
+    setIsShopifyAuthLoading(true);
+    try {
+      await shopifyCustomerRegister(params);
+      return await loginWithShopify(params.email, params.password);
+    } catch (err: any) {
+      setIsShopifyAuthLoading(false);
+      return { success: false, error: err.message || 'Shopify customer registration failed' };
+    }
+  };
+
+  const logoutFromShopify = async () => {
+    const token = localStorage.getItem('shopify_customer_token');
+    if (token) {
+      await shopifyCustomerLogout(token).catch(() => {});
+      localStorage.removeItem('shopify_customer_token');
+    }
+    setShopifyCustomer(null);
+    logout();
+  };
+
+  const refreshShopifyCustomer = async () => {
+    const token = localStorage.getItem('shopify_customer_token');
+    if (token) {
+      const profile = await fetchShopifyCustomerProfile(token);
+      if (profile) setShopifyCustomer(profile);
+    }
   };
 
   const loginWithPhone = (phone: string, name?: string, email?: string) => {
@@ -126,7 +240,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     closeLoginModal();
   };
 
-  // Demo user Rahul Sharma with existing sample orders
   const loginAsDemoCustomer = () => {
     const customerUser: User = {
       id: 'usr-customer-1',
@@ -139,7 +252,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     closeLoginModal();
   };
 
-  // Brand-new demo user with 0 orders for testing zero-state
   const loginAsDemoNewCustomer = () => {
     const newCustomerUser: User = {
       id: 'usr-new-customer',
@@ -154,6 +266,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = () => {
     firebaseSignOut().catch(() => {});
+    localStorage.removeItem('shopify_customer_token');
+    setShopifyCustomer(null);
     setUser(null);
   };
 
@@ -173,6 +287,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         redirectAfterLogin,
         openLoginModal,
         closeLoginModal,
+        shopifyCustomer,
+        isShopifyAuthLoading,
+        loginWithShopify,
+        registerWithShopify,
+        logoutFromShopify,
+        refreshShopifyCustomer,
       }}
     >
       {children}

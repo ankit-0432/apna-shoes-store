@@ -4,15 +4,40 @@ import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { createServer as createViteServer } from 'vite';
+import { GoogleGenAI } from '@google/genai';
 import { DB } from './server/db.js';
 import { getSupabaseStatus, syncStoreToSupabase, getSqlSchema } from './server/supabase.js';
 
 dotenv.config();
 
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+  httpOptions: {
+    headers: {
+      'User-Agent': 'aistudio-build',
+    },
+  },
+});
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const PORT = parseInt(process.env.PORT || '3000', 10);
+
+function resolvePort(): number {
+  const portIdx = process.argv.indexOf('--port');
+  if (portIdx !== -1 && process.argv[portIdx + 1]) {
+    const parsed = parseInt(process.argv[portIdx + 1], 10);
+    if (!isNaN(parsed)) return parsed;
+  }
+  // In container environments, Cloud Run sets PORT=8080 which is reserved by Nginx.
+  // The applet dev server must always run on port 3000.
+  if (process.env.PORT === '8080' || !process.env.PORT) {
+    return 3000;
+  }
+  return parseInt(process.env.PORT, 10);
+}
+
+const PORT = resolvePort();
 const isProd = process.env.NODE_ENV === 'production';
 
 async function startServer() {
@@ -41,6 +66,87 @@ async function startServer() {
       res.json({ success: true, data: updated, message: 'Website content updated and published live!' });
     } catch (e: any) {
       res.status(500).json({ success: false, error: e.message });
+    }
+  });
+
+  // --- GEMINI AI CO-FOUNDER & SNEAKER STYLIST CHAT ---
+  app.post('/api/ai/chat', async (req: Request, res: Response) => {
+    try {
+      const { messages, mode, model } = req.body;
+      if (!Array.isArray(messages) || messages.length === 0) {
+        return res.status(400).json({ success: false, error: 'Messages array is required' });
+      }
+
+      // Collect live catalog context
+      const catalog = DB.getProducts({});
+      const catalogSummary = catalog.slice(0, 15).map(p => 
+        `- "${p.name}" (Price: ₹${p.sellingPrice}, MRP: ₹${p.originalPrice}, Category: ${p.categorySlug}, Gender: ${p.gender}, Badge: ${p.badge || 'None'})`
+      ).join('\n');
+
+      const isCofounder = mode === 'cofounder';
+      const systemInstruction = isCofounder
+        ? `You are the executive AI Co-Founder and Chief Strategy Partner of "APNA SHOES" (brand tagline: "Har Kadam, Apna Style").
+You are advising the store founder/admin team. You act as an energetic, seasoned Indian D2C footwear founder with deep expertise in unit economics, product development, Indian foot sizing, festival marketing, and supply chain.
+
+Key Facts about APNA SHOES:
+- Brand Mission: Premium-looking, ultra-comfortable everyday sneakers and running footwear built for Indian feet (wide toe-box, breathable knit, dual-density EVA bounce soles).
+- Price Point: Value-for-money sweet spot (₹999 to ₹2,499) vs expensive global brands.
+- Live Store Catalog Top Models:
+${catalogSummary}
+- Logistics & Ops: Shiprocket integration (Delhivery Air, BlueDart), automated AWB generation, Cash on Delivery (COD), 100% Free 7-Day Doorstep Returns & Size Exchanges.
+- Marketplace Strategy: Flipkart Authorized Seller mapping.
+
+Your Co-Founder Capabilities:
+1. Growth & Sales Strategy: Suggest flash sales, bundle deals (e.g., "Buy 2 get ₹500 off"), festival campaigns (Diwali Sneaker Fest, Holi Color Drop, Eid Specials, Monsoon Water-Resistant line).
+2. WhatsApp & Instagram Copy: Write viral WhatsApp broadcast messages with emojis, Indian phrasing, and urgency hooks.
+3. RTO & Return Reduction: Advise on how to reduce size returns (e.g., Indian UK foot measuring charts, pre-dispatch WhatsApp verification calls for COD).
+4. Product Innovation: Suggest trending colorways (retro off-white, neon accents, gum soles, chunky dad sneakers).
+
+Formatting:
+- Structure advice clearly with sharp headers, bullet points, and actionable next steps.
+- Speak in professional, enthusiastic English with natural Indian e-commerce terms (AOV, RTO, CAC, BOGO, Tier-2/3 demand, Bharat shopper).
+- Be direct, innovative, and strategic.`
+        : `You are the AI Co-Founder & Head Sneaker Stylist at "APNA SHOES" (tagline: "Har Kadam, Apna Style").
+You are speaking directly to a shopper on the store. Your mission is to help them find the perfect shoe, understand fit and sizing, and give honest styling advice.
+
+Key Store Highlights:
+- Top live shoes in stock:
+${catalogSummary}
+- Sizing Guide: True to Indian UK sizing (UK 6 to UK 11). If they have wider feet or fall between sizes, recommend going up one size for extra comfort.
+- Customer Trust: Cash on Delivery (COD) available, Free 7-Day Doorstep Exchanges & Returns, Express 3-4 day delivery across 26,000+ Indian pincodes.
+
+Tone & Style:
+- Warm, enthusiastic, modern, helpful, and fashionable.
+- If asked in Hindi or Hinglish, reply with friendly Hinglish touches!
+- Help style sneakers with outfits (jeans, cargo pants, joggers, kurtas, gym shorts).
+- Always recommend specific models from our catalog with prices and key benefits!`;
+
+      // Format conversation history for @google/genai
+      const contents = messages.map((m: any) => ({
+        role: m.role === 'user' ? 'user' : 'model',
+        parts: [{ text: String(m.text || '') }],
+      }));
+
+      // Model selection: 'gemini-3.8-flash' default for general & multi-turn, or 'gemini-3.1-flash-lite' for fast
+      const chosenModel = model === 'gemini-3.1-flash-lite' ? 'gemini-3.1-flash-lite' : 'gemini-3.8-flash';
+
+      const response = await ai.models.generateContent({
+        model: chosenModel,
+        contents,
+        config: {
+          systemInstruction,
+          temperature: 0.7,
+        },
+      });
+
+      const replyText = response.text || "I'm here as your APNA SHOES Co-Founder! How can I help grow our brand today?";
+      res.json({ success: true, text: replyText });
+    } catch (error: any) {
+      console.error('[AI Co-Founder Error]:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Failed to generate response from AI Co-Founder',
+      });
     }
   });
 
@@ -692,13 +798,340 @@ async function startServer() {
     }
   });
 
+  // --- SHOPIFY STOREFRONT API ROUTES ---
+  const getShopifyEnv = () => ({
+    domain: process.env.SHOPIFY_STORE_DOMAIN || process.env.VITE_SHOPIFY_STORE_DOMAIN || 'apna-shoes-store.myshopify.com',
+    token: process.env.SHOPIFY_STOREFRONT_TOKEN || process.env.VITE_SHOPIFY_STOREFRONT_TOKEN || 'd9b7f2948c1872dc3c33fb58ec1f0453',
+    apiVersion: process.env.SHOPIFY_API_VERSION || process.env.VITE_SHOPIFY_API_VERSION || '2026-10',
+  });
+
+  const callShopifyGraphQL = async (query: string, variables?: any) => {
+    const { domain, token, apiVersion } = getShopifyEnv();
+    const endpoint = `https://${domain}/api/${apiVersion}/graphql.json`;
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': token,
+      },
+      body: JSON.stringify({ query, variables }),
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`Shopify API responded with status ${res.status}: ${txt}`);
+    }
+    const json: any = await res.json();
+    if (json.errors && json.errors.length > 0) {
+      throw new Error(json.errors.map((e: any) => e.message).join(', '));
+    }
+    return json.data;
+  };
+
+  app.get('/api/shopify/status', async (_req: Request, res: Response) => {
+    try {
+      const { domain, apiVersion } = getShopifyEnv();
+      const query = `
+        query ShopStatus {
+          shop {
+            name
+            primaryDomain { host url }
+            description
+            paymentSettings { currencyCode }
+          }
+          products(first: 20) {
+            edges {
+              node {
+                id
+                title
+                handle
+                availableForSale
+                priceRange { minVariantPrice { amount currencyCode } }
+                images(first: 1) { edges { node { url } } }
+              }
+            }
+          }
+        }
+      `;
+      const data = await callShopifyGraphQL(query);
+      const productsSummary = (data.products?.edges || []).map((e: any) => ({
+        id: e.node.id,
+        title: e.node.title,
+        handle: e.node.handle,
+        availableForSale: e.node.availableForSale,
+        price: e.node.priceRange?.minVariantPrice?.amount,
+        currency: e.node.priceRange?.minVariantPrice?.currencyCode,
+        image: e.node.images?.edges?.[0]?.node?.url || '',
+      }));
+
+      res.json({
+        success: true,
+        data: {
+          connected: true,
+          domain,
+          apiVersion,
+          shop: data.shop,
+          totalProducts: productsSummary.length,
+          products: productsSummary,
+        },
+      });
+    } catch (e: any) {
+      console.error('[Shopify Status Error]:', e);
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+
+  app.get('/api/shopify/products', async (_req: Request, res: Response) => {
+    try {
+      const query = `
+        query GetShopifyProducts {
+          products(first: 50) {
+            edges {
+              node {
+                id
+                title
+                handle
+                description
+                tags
+                productType
+                vendor
+                availableForSale
+                priceRange {
+                  minVariantPrice {
+                    amount
+                    currencyCode
+                  }
+                }
+                images(first: 6) {
+                  edges {
+                    node {
+                      url
+                      altText
+                    }
+                  }
+                }
+                variants(first: 20) {
+                  edges {
+                    node {
+                      id
+                      title
+                      price { amount currencyCode }
+                      compareAtPrice { amount currencyCode }
+                      availableForSale
+                      selectedOptions { name value }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `;
+      const data = await callShopifyGraphQL(query);
+      res.json({ success: true, data: data.products?.edges?.map((e: any) => e.node) || [] });
+    } catch (e: any) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+
+  app.post('/api/shopify/sync', async (_req: Request, res: Response) => {
+    try {
+      const query = `
+        query GetShopifyProductsForSync {
+          products(first: 50) {
+            edges {
+              node {
+                id
+                title
+                handle
+                description
+                tags
+                productType
+                vendor
+                availableForSale
+                priceRange {
+                  minVariantPrice {
+                    amount
+                    currencyCode
+                  }
+                }
+                images(first: 6) {
+                  edges {
+                    node {
+                      url
+                      altText
+                    }
+                  }
+                }
+                variants(first: 20) {
+                  edges {
+                    node {
+                      id
+                      title
+                      price { amount currencyCode }
+                      compareAtPrice { amount currencyCode }
+                      availableForSale
+                      selectedOptions { name value }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `;
+      const data = await callShopifyGraphQL(query);
+      const rawProducts = data.products?.edges?.map((e: any) => e.node) || [];
+      const syncedList = [];
+
+      for (const node of rawProducts) {
+        const rawId = node.id.split('/').pop() || String(Date.now());
+        const id = `shopify-${rawId}`;
+        const minPrice = parseFloat(node.priceRange?.minVariantPrice?.amount || '999');
+        const sellingPrice = Math.round(minPrice);
+        const firstVariant = node.variants?.edges?.[0]?.node;
+        const compareAt = firstVariant?.compareAtPrice?.amount
+          ? parseFloat(firstVariant.compareAtPrice.amount)
+          : Math.round(sellingPrice * 1.45);
+        const originalPrice = Math.max(compareAt, sellingPrice);
+
+        const images = node.images?.edges?.map((e: any) => e.node.url) || [];
+        if (images.length === 0) {
+          images.push('https://cdn.shopify.com/s/files/1/0687/7737/7855/files/ROSTER.jpg?v=1792173935');
+        }
+
+        const variants = (node.variants?.edges || []).map((edge: any, idx: number) => {
+          const v = edge.node;
+          const sizeOpt = v.selectedOptions?.find((o: any) => o.name.toUpperCase().includes('SIZE'));
+          const sizeVal = sizeOpt?.value || v.title || `UK ${6 + idx}`;
+          const formattedSize = sizeVal.toUpperCase().startsWith('UK') ? sizeVal : `UK ${sizeVal}`;
+          return {
+            id: v.id,
+            sku: `SHP-${rawId}-${idx + 1}`,
+            size: formattedSize,
+            colorName: 'Classic Roster',
+            colorHex: '#FF5A1F',
+            stockQuantity: v.availableForSale ? 30 : 0,
+          };
+        });
+
+        const textBlob = `${node.title} ${node.description} ${(node.tags || []).join(' ')}`.toLowerCase();
+        let gender: 'men' | 'women' | 'kids' | 'unisex' = 'unisex';
+        if (textBlob.includes('women') || textBlob.includes('female')) gender = 'women';
+        else if (textBlob.includes('kid') || textBlob.includes('child')) gender = 'kids';
+        else if (textBlob.includes('men') || textBlob.includes('male')) gender = 'men';
+
+        let categorySlug = 'mens-sneakers';
+        if (gender === 'women') categorySlug = 'womens-sneakers';
+        if (gender === 'kids') categorySlug = 'kids-shoes';
+        if (textBlob.includes('run') || textBlob.includes('jog')) categorySlug = 'running-shoes';
+
+        const storeProduct = DB.saveProduct({
+          id,
+          sku: `APNA-SHP-${rawId}`,
+          name: node.title,
+          slug: node.handle || `shopify-${rawId}`,
+          brand: node.vendor || 'APNA SHOES',
+          description: node.description || `${node.title} — Official product synced from APNA SHOES Shopify Storefront.`,
+          gender,
+          categorySlug,
+          originalPrice,
+          sellingPrice,
+          discountPercentage: Math.round(((originalPrice - sellingPrice) / originalPrice) * 100),
+          variants: variants.length > 0 ? variants : [
+            { id: `v-${id}-6`, sku: `SHP-${rawId}-6`, size: 'UK 6', colorName: 'Classic Roster', colorHex: '#FF5A1F', stockQuantity: 25 },
+            { id: `v-${id}-7`, sku: `SHP-${rawId}-7`, size: 'UK 7', colorName: 'Classic Roster', colorHex: '#FF5A1F', stockQuantity: 25 },
+            { id: `v-${id}-8`, sku: `SHP-${rawId}-8`, size: 'UK 8', colorName: 'Classic Roster', colorHex: '#FF5A1F', stockQuantity: 25 },
+            { id: `v-${id}-9`, sku: `SHP-${rawId}-9`, size: 'UK 9', colorName: 'Classic Roster', colorHex: '#FF5A1F', stockQuantity: 25 },
+          ],
+          images,
+          badge: 'New Drop',
+          rating: 4.9,
+          reviewCount: 38,
+          specifications: {
+            'Source': 'Shopify Storefront Connected',
+            'Shopify Store': 'apna-shoes-store.myshopify.com',
+            'Sole': 'High-Traction EVA Cushion',
+            'Upper': 'Engineered Sport Fabric',
+          },
+          weightGrams: 650,
+          dimensionsCm: { length: 32, width: 20, height: 12 },
+          isActive: node.availableForSale,
+          isFeatured: true,
+          returnEligible: true,
+        });
+
+        syncedList.push(storeProduct);
+      }
+
+      DB.logAudit('ADMIN', 'SHOPIFY_SYNC_PRODUCTS', { count: syncedList.length });
+
+      res.json({
+        success: true,
+        syncedCount: syncedList.length,
+        products: syncedList,
+        message: `Successfully synchronized ${syncedList.length} products from Shopify into APNA SHOES store catalog!`,
+      });
+    } catch (e: any) {
+      console.error('[Shopify Sync Error]:', e);
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+
+  app.post('/api/shopify/checkout', async (req: Request, res: Response) => {
+    try {
+      const raw = req.body.lines || req.body.items;
+      if (!Array.isArray(raw) || raw.length === 0) {
+        return res.status(400).json({ success: false, error: 'Lines or items array is required' });
+      }
+
+      const lines = raw.map((item: any) => ({
+        merchandiseId: item.merchandiseId || item.variantId,
+        quantity: Math.max(1, Number(item.quantity) || 1),
+      }));
+
+      const mutation = `
+        mutation cartCreate($input: CartInput!) {
+          cartCreate(input: $input) {
+            cart {
+              id
+              checkoutUrl
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }
+      `;
+
+      const data = await callShopifyGraphQL(mutation, { input: { lines } });
+      const userErrors = data.cartCreate?.userErrors || [];
+      if (userErrors.length > 0) {
+        return res.status(400).json({ success: false, error: userErrors.map((u: any) => u.message).join(', ') });
+      }
+
+      res.json({
+        success: true,
+        data: {
+          cartId: data.cartCreate?.cart?.id,
+          checkoutUrl: data.cartCreate?.cart?.checkoutUrl,
+        },
+      });
+    } catch (e: any) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+
 
   // ==========================================
   // VITE OR STATIC FRONTEND SERVING
   // ==========================================
   if (!isProd) {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        hmr: false,
+      },
       appType: 'spa',
     });
     app.use(vite.middlewares);
@@ -709,8 +1142,16 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`⚡ APNA SHOES server running at http://0.0.0.0:${PORT}`);
+  });
+
+  server.on('error', (err: any) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`Port ${PORT} is already in use.`);
+    } else {
+      console.error('Server error:', err);
+    }
   });
 }
 

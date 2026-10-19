@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Trash2, Plus, Minus, ArrowRight, Tag, Truck } from 'lucide-react';
+import { X, Trash2, Plus, Minus, ArrowRight, Tag, Truck, RefreshCw, Store } from 'lucide-react';
 import { useCart } from '../../context/CartContext.js';
 import { useStoreConfig } from '../../context/StoreConfigContext.js';
 import { SneakerGraphic } from './SneakerGraphic.js';
@@ -24,6 +24,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onCheckout, onNavigate }
     couponError,
     applyCoupon,
     removeCoupon,
+    isCheckingOut,
+    proceedToShopifyCheckout,
   } = useCart();
   const { config } = useStoreConfig();
   const [couponInput, setCouponInput] = useState('');
@@ -250,23 +252,44 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onCheckout, onNavigate }
                 <p className="text-[10px] text-zinc-400">Inclusive of all Indian taxes (18% GST)</p>
               </div>
 
-              {/* Checkout Button */}
+              {/* Primary: Direct Shopify Secure Checkout */}
+              <button
+                onClick={async () => {
+                  await proceedToShopifyCheckout();
+                }}
+                disabled={isCheckingOut}
+                className="w-full py-3.5 px-4 rounded-xl text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 hover:opacity-95 active:scale-98 cursor-pointer disabled:opacity-50"
+                style={{ backgroundColor: config.brandPrimaryColor || '#FF5A1F' }}
+              >
+                {isCheckingOut ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                    <span>Redirecting to Shopify Checkout...</span>
+                  </>
+                ) : (
+                  <>
+                    <Store className="w-4 h-4" />
+                    <span>Proceed to Shopify Checkout</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+
+              {/* Secondary: In-Store Instant Checkout Option */}
               <button
                 onClick={() => {
                   setIsDrawerOpen(false);
                   onCheckout();
                 }}
-                className="w-full py-3.5 px-4 rounded-xl text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 hover:opacity-95 active:scale-98"
-                style={{ backgroundColor: config.brandPrimaryColor || '#FF5A1F' }}
+                className="w-full py-2.5 px-4 rounded-xl text-zinc-700 hover:text-zinc-950 bg-zinc-100 hover:bg-zinc-200 font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <span>Proceed to Checkout</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>Express In-Store Checkout</span>
               </button>
 
               <div className="text-center text-[10px] text-zinc-400 flex items-center justify-center gap-2">
-                <span>🔒 256-Bit Razorpay & COD Security</span>
+                <span>🔒 Official Shopify Checkout & COD</span>
                 <span>·</span>
-                <span>7-Day Return Guarantee</span>
+                <span>7-Day Doorstep Guarantee</span>
               </div>
             </div>
           )}

@@ -332,15 +332,13 @@ export const DB = {
       createdAt: product.createdAt || new Date().toISOString(),
     };
 
-    if (isNew) {
+    const existingIdx = db.products.findIndex(p => p.id === id);
+    if (existingIdx !== -1) {
+      db.products[existingIdx] = completeProduct;
+      DB.logAudit('ADMIN', 'UPDATE_PRODUCT', { id, name: completeProduct.name });
+    } else {
       db.products.unshift(completeProduct);
       DB.logAudit('ADMIN', 'CREATE_PRODUCT', { id, name: completeProduct.name });
-    } else {
-      const idx = db.products.findIndex(p => p.id === id);
-      if (idx !== -1) {
-        db.products[idx] = completeProduct;
-        DB.logAudit('ADMIN', 'UPDATE_PRODUCT', { id, name: completeProduct.name });
-      }
     }
     saveDb();
     return completeProduct;

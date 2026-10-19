@@ -409,5 +409,57 @@ export const api = {
     if (!json.success) throw new Error(json.error || 'Failed to load schema');
     return json.data;
   },
+
+  // GEMINI AI CO-FOUNDER & SNEAKER STYLIST
+  async sendAiChat(
+    messages: Array<{ role: 'user' | 'model'; text: string }>,
+    mode: 'cofounder' | 'stylist' = 'cofounder',
+    model: string = 'gemini-3.8-flash'
+  ): Promise<{ text: string }> {
+    const res = await fetch(`${API_BASE}/ai/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages, mode, model }),
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'AI Co-Founder service encountered an error');
+    return { text: json.text };
+  },
+
+  // SHOPIFY STOREFRONT INTEGRATION
+  async getShopifyStatus() {
+    const res = await fetch(`${API_BASE}/shopify/status`);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Failed to fetch Shopify status');
+    return json.data;
+  },
+
+  async getShopifyProducts() {
+    const res = await fetch(`${API_BASE}/shopify/products`);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Failed to fetch Shopify products');
+    return json.data;
+  },
+
+  async syncShopifyProducts() {
+    const res = await fetch(`${API_BASE}/shopify/sync`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Failed to sync Shopify products');
+    return json;
+  },
+
+  async createShopifyCheckout(lines: Array<{ merchandiseId: string; quantity: number }>) {
+    const res = await fetch(`${API_BASE}/shopify/checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lines }),
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Failed to create Shopify checkout');
+    return json.data;
+  },
 };
 

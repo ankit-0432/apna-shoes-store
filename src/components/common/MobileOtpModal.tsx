@@ -10,6 +10,8 @@ import {
   User,
   Mail,
   Lock,
+  Store,
+  KeyRound,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.js';
 import { api } from '../../services/api.js';
@@ -17,7 +19,6 @@ import {
   setupRecaptcha,
   sendFirebasePhoneOtp,
   confirmFirebasePhoneOtp,
-  resetRecaptcha,
 } from '../../services/firebaseAuth.js';
 import { ConfirmationResult } from 'firebase/auth';
 
@@ -34,8 +35,23 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
     loginAsDemoNewCustomer,
     loginReasonMessage,
     redirectAfterLogin,
+    loginWithShopify,
+    registerWithShopify,
+    isShopifyAuthLoading,
   } = useAuth();
 
+  const [authTab, setAuthTab] = useState<'shopify' | 'phone'>('shopify');
+  const [shopifyMode, setShopifyMode] = useState<'login' | 'register'>('login');
+
+  // Shopify form fields
+  const [shopifyEmail, setShopifyEmail] = useState('');
+  const [shopifyPassword, setShopifyPassword] = useState('');
+  const [shopifyFirstName, setShopifyFirstName] = useState('');
+  const [shopifyLastName, setShopifyLastName] = useState('');
+  const [shopifyPhone, setShopifyPhone] = useState('');
+  const [shopifyLoading, setShopifyLoading] = useState(false);
+
+  // Phone OTP fields
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otpCode, setOtpCode] = useState('');
@@ -46,18 +62,15 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
   const [error, setError] = useState<string | null>(null);
   const [demoCodeHint, setDemoCodeHint] = useState<string | null>('1234');
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
-  const [isFirebasePhoneActive, setIsFirebasePhoneActive] = useState(false);
-  const [isSparkPlanNotice, setIsSparkPlanNotice] = useState(false);
   const [timer, setTimer] = useState(30);
 
   useEffect(() => {
     if (isOpen) {
-      setStep('phone');
       setError(null);
+      setStep('phone');
       setOtpCode('');
+      setShopifyPassword('');
       setConfirmationResult(null);
-      setIsFirebasePhoneActive(false);
-      setIsSparkPlanNotice(false);
       setTimer(30);
     }
   }, [isOpen]);
@@ -72,6 +85,58 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
 
   if (!isOpen) return null;
 
+  // Handle Shopify Login & Registration
+  const handleShopifySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!shopifyEmail.trim() || !shopifyEmail.includes('@')) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    if (!shopifyPassword || shopifyPassword.length < 5) {
+      setError('Password must be at least 5 characters');
+      return;
+    }
+
+    setShopifyLoading(true);
+    try {
+      if (shopifyMode === 'login') {
+        const res = await loginWithShopify(shopifyEmail.trim(), shopifyPassword);
+        if (res.success) {
+          onClose();
+          if (onSuccess) onSuccess(redirectAfterLogin);
+        } else {
+          setError(res.error || 'Invalid email or password');
+        }
+      } else {
+        if (!shopifyFirstName.trim()) {
+          setError('Please enter your first name');
+          setShopifyLoading(false);
+          return;
+        }
+        const res = await registerWithShopify({
+          firstName: shopifyFirstName.trim(),
+          lastName: shopifyLastName.trim() || 'Customer',
+          email: shopifyEmail.trim(),
+          password: shopifyPassword,
+          phone: shopifyPhone.trim() || undefined,
+        });
+        if (res.success) {
+          onClose();
+          if (onSuccess) onSuccess(redirectAfterLogin);
+        } else {
+          setError(res.error || 'Failed to create Shopify customer account');
+        }
+      }
+    } catch (err: any) {
+      setError(err.message || 'Shopify account authentication failed');
+    } finally {
+      setShopifyLoading(false);
+    }
+  };
+
+  // Handle Phone OTP
   const handleSendOtp = async (targetPhone?: string) => {
     const raw = (targetPhone || phoneNumber).replace(/\D/g, '');
     if (raw.length < 10) {
@@ -84,37 +149,22 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
     setIsSending(true);
 
     try {
-      // 1. Initialize Firebase Invisible reCAPTCHA on the submit button
-      const verifier = setupRecaptcha('sign-in-button', 'invisible', () => {
-        console.log('[Firebase Auth] Invisible reCAPTCHA solved');
-      });
-
-      // 2. Try sending SMS via Firebase Phone Auth
+      const verifier = setupRecaptcha('sign-in-button', 'invisible', () => {});
       try {
         const confirmation = await sendFirebasePhoneOtp(clean, verifier);
         setConfirmationResult(confirmation);
-        setIsFirebasePhoneActive(true);
-        setIsSparkPlanNotice(false);
         setDemoCodeHint(null);
         setStep('otp');
         setTimer(60);
       } catch (fbErr: any) {
-        await resetRecaptcha();
-        if (fbErr?.code === 'auth/billing-not-enabled') {
-          setIsSparkPlanNotice(true);
-        }
+        // Fallback to local OTP
         const res = await api.sendOtp(clean);
-        if (res.demoOtp) {
-          setDemoCodeHint(res.demoOtp);
-        } else {
-          setDemoCodeHint('1234');
-        }
-        setIsFirebasePhoneActive(false);
+        setDemoCodeHint(res.demoOtp || (res as any).demoCode || '1234');
         setStep('otp');
         setTimer(30);
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to send OTP. Please try again.');
+      setError(err.message || 'Failed to send verification code.');
     } finally {
       setIsSending(false);
     }
@@ -130,22 +180,18 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
     setIsVerifying(true);
     setError(null);
 
-    // If real Firebase Phone Confirmation session is active, verify with Firebase
     if (confirmationResult) {
       try {
         const fbUser = await confirmFirebasePhoneOtp(otpCode.trim(), confirmationResult);
         loginWithPhone(fbUser.phoneNumber || phoneNumber, customerName, customerEmail);
         onClose();
-        if (onSuccess) {
-          onSuccess(redirectAfterLogin);
-        }
+        if (onSuccess) onSuccess(redirectAfterLogin);
         return;
       } catch (fbErr: any) {
-        console.warn('[Firebase Auth] Firebase OTP confirmation error:', fbErr);
+        console.warn('[Firebase Auth] OTP confirmation error:', fbErr);
       }
     }
 
-    // Fallback to server verification
     try {
       const verifiedUser = await api.verifyOtp(
         phoneNumber,
@@ -153,29 +199,14 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
         customerName.trim() || undefined,
         customerEmail.trim() || undefined
       );
-
       loginWithPhone(phoneNumber, verifiedUser?.name || customerName, verifiedUser?.email || customerEmail);
       onClose();
-      if (onSuccess) {
-        onSuccess(redirectAfterLogin);
-      }
+      if (onSuccess) onSuccess(redirectAfterLogin);
     } catch (err: any) {
       setError(err.message || 'Incorrect verification code. Please check SMS.');
     } finally {
       setIsVerifying(false);
     }
-  };
-
-  const handleQuickDemoCustomer = () => {
-    loginAsDemoCustomer();
-    onClose();
-    if (onSuccess) onSuccess(redirectAfterLogin);
-  };
-
-  const handleQuickNewCustomer = () => {
-    loginAsDemoNewCustomer();
-    onClose();
-    if (onSuccess) onSuccess(redirectAfterLogin);
   };
 
   return (
@@ -185,26 +216,60 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
         <div className="bg-gradient-to-r from-orange-600 to-amber-600 px-6 pt-6 pb-5 text-white relative">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+            className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
 
           <div className="flex items-center gap-2 mb-2">
-            <span className="px-2 py-0.5 rounded-full bg-white/20 text-white font-bold text-[10px] tracking-wider uppercase">
-              Secure Sign In
+            <span className="px-2 py-0.5 rounded-full bg-white/20 text-white font-bold text-[10px] tracking-wider uppercase flex items-center gap-1">
+              <Store className="w-3 h-3" />
+              <span>Shopify Headless Store</span>
             </span>
           </div>
 
           <h2 className="text-xl font-black font-display tracking-tight flex items-center gap-2">
-            <Phone className="w-5 h-5" />
-            <span>Mobile OTP Login</span>
+            <span>Customer Account & Sign In</span>
           </h2>
           <p className="text-xs text-orange-100 mt-1">
             {loginReasonMessage ||
-              'Sign in with your mobile number to view only your orders, track shipments, and request returns.'}
+              'Access your saved addresses, tracking, and seamless checkout on apna-shoes-store.myshopify.com'}
           </p>
+        </div>
+
+        {/* Tab Switcher: Shopify Account vs Mobile OTP */}
+        <div className="flex border-b border-zinc-200 bg-zinc-50 p-1">
+          <button
+            type="button"
+            onClick={() => {
+              setAuthTab('shopify');
+              setError(null);
+            }}
+            className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              authTab === 'shopify'
+                ? 'bg-white text-zinc-950 shadow-xs'
+                : 'text-zinc-500 hover:text-zinc-900'
+            }`}
+          >
+            <Store className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Shopify Account</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setAuthTab('phone');
+              setError(null);
+            }}
+            className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              authTab === 'phone'
+                ? 'bg-white text-zinc-950 shadow-xs'
+                : 'text-zinc-500 hover:text-zinc-900'
+            }`}
+          >
+            <Phone className="w-3.5 h-3.5 text-orange-600" />
+            <span>Fast Mobile OTP</span>
+          </button>
         </div>
 
         {/* Form Body */}
@@ -216,227 +281,252 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
             </div>
           )}
 
-          {step === 'phone' ? (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-zinc-800 mb-1.5">
-                  Enter 10-Digit Mobile Number
-                </label>
-                <div className="relative flex items-center">
-                  <div className="absolute left-3 flex items-center gap-1.5 text-zinc-500 font-bold text-xs pointer-events-none border-r border-zinc-200 pr-2">
-                    <span className="text-sm">🇮🇳</span>
-                    <span>+91</span>
-                  </div>
-                  <input
-                    type="tel"
-                    maxLength={10}
-                    placeholder="98765 43210"
-                    value={phoneNumber.replace(/^\+91\s*/, '').replace(/\s+/g, '')}
-                    onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleSendOtp();
-                    }}
-                    autoFocus
-                    className="w-full pl-20 pr-4 py-3 bg-zinc-50 border border-zinc-300 rounded-xl text-sm font-semibold tracking-wider text-zinc-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white"
-                  />
-                </div>
-                <p className="text-[11px] text-zinc-400 mt-1">
-                  We'll send an instant 4-digit verification code to this number.
-                </p>
+          {/* TAB 1: SHOPIFY CUSTOMER ACCOUNT */}
+          {authTab === 'shopify' && (
+            <form onSubmit={handleShopifySubmit} className="space-y-4">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-zinc-700">
+                  {shopifyMode === 'login' ? 'Sign In with Shopify' : 'Create New Shopify Account'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShopifyMode(shopifyMode === 'login' ? 'register' : 'login');
+                    setError(null);
+                  }}
+                  className="text-orange-600 font-bold hover:underline cursor-pointer text-[11px]"
+                >
+                  {shopifyMode === 'login' ? 'Create an Account' : 'Already have account?'}
+                </button>
               </div>
 
+              {shopifyMode === 'register' && (
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[11px] font-bold text-zinc-600 mb-1">First Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Rahul"
+                      value={shopifyFirstName}
+                      onChange={(e) => setShopifyFirstName(e.target.value)}
+                      required
+                      className="w-full px-3 py-2 bg-zinc-50 border border-zinc-300 rounded-xl text-xs font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-zinc-600 mb-1">Last Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Sharma"
+                      value={shopifyLastName}
+                      onChange={(e) => setShopifyLastName(e.target.value)}
+                      className="w-full px-3 py-2 bg-zinc-50 border border-zinc-300 rounded-xl text-xs font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-[11px] font-bold text-zinc-600 mb-1">Email Address</label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-zinc-400 absolute left-3 top-2.5 pointer-events-none" />
+                  <input
+                    type="email"
+                    placeholder="you@example.com"
+                    value={shopifyEmail}
+                    onChange={(e) => setShopifyEmail(e.target.value)}
+                    required
+                    className="w-full pl-9 pr-3 py-2.5 bg-zinc-50 border border-zinc-300 rounded-xl text-xs font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-zinc-600 mb-1">Password</label>
+                <div className="relative">
+                  <KeyRound className="w-4 h-4 text-zinc-400 absolute left-3 top-2.5 pointer-events-none" />
+                  <input
+                    type="password"
+                    placeholder="Enter account password"
+                    value={shopifyPassword}
+                    onChange={(e) => setShopifyPassword(e.target.value)}
+                    required
+                    className="w-full pl-9 pr-3 py-2.5 bg-zinc-50 border border-zinc-300 rounded-xl text-xs font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white"
+                  />
+                </div>
+              </div>
+
+              {shopifyMode === 'register' && (
+                <div>
+                  <label className="block text-[11px] font-bold text-zinc-600 mb-1">Mobile Phone (Optional)</label>
+                  <input
+                    type="tel"
+                    placeholder="+91 98765 43210"
+                    value={shopifyPhone}
+                    onChange={(e) => setShopifyPhone(e.target.value)}
+                    className="w-full px-3 py-2.5 bg-zinc-50 border border-zinc-300 rounded-xl text-xs font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white"
+                  />
+                </div>
+              )}
+
               <button
-                type="button"
-                id="sign-in-button"
-                onClick={() => handleSendOtp()}
-                disabled={isSending || phoneNumber.replace(/\D/g, '').length < 10}
-                className="w-full py-3.5 px-4 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                type="submit"
+                disabled={shopifyLoading || isShopifyAuthLoading}
+                className="w-full py-3 px-4 rounded-xl bg-zinc-950 hover:bg-zinc-800 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
               >
-                {isSending ? (
+                {shopifyLoading || isShopifyAuthLoading ? (
                   <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Verifying with reCAPTCHA & Sending SMS...</span>
+                    <RefreshCw className="w-4 h-4 animate-spin text-orange-400" />
+                    <span>Connecting to Shopify...</span>
+                  </>
+                ) : shopifyMode === 'login' ? (
+                  <>
+                    <span>Sign In to Shopify Account</span>
+                    <ArrowRight className="w-4 h-4" />
                   </>
                 ) : (
                   <>
-                    <span>Get OTP via SMS</span>
+                    <span>Create Shopify Account</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
               </button>
 
-              {/* Firebase reCAPTCHA Invisible/Widget container */}
-              <div id="recaptcha-container" className="flex justify-center my-1" />
-
-              {/* Demo Fast-Login Pills for Testing */}
-              <div className="pt-3 border-t border-zinc-100 space-y-2">
-                <span className="text-[10.5px] font-bold text-zinc-400 uppercase tracking-wider block">
-                  ⚡ Quick Test Options
+              <div className="pt-2 border-t border-zinc-100 flex items-center justify-between text-[11px] text-zinc-400">
+                <span className="flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Shopify Storefront API Verified</span>
                 </span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={handleQuickNewCustomer}
-                    className="p-2.5 rounded-xl border border-dashed border-zinc-300 hover:border-orange-400 hover:bg-orange-50/50 text-left transition-colors cursor-pointer"
-                  >
-                    <span className="text-xs font-bold text-zinc-900 block flex items-center gap-1">
-                      <Sparkles className="w-3.5 h-3.5 text-orange-600" />
-                      <span>New Customer (0 Orders)</span>
-                    </span>
-                    <span className="text-[10px] text-zinc-500">Test fresh clean account</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleQuickDemoCustomer}
-                    className="p-2.5 rounded-xl border border-dashed border-zinc-300 hover:border-blue-400 hover:bg-blue-50/50 text-left transition-colors cursor-pointer"
-                  >
-                    <span className="text-xs font-bold text-zinc-900 block flex items-center gap-1">
-                      <User className="w-3.5 h-3.5 text-blue-600" />
-                      <span>Rahul Sharma (Sample Orders)</span>
-                    </span>
-                    <span className="text-[10px] text-zinc-500">Test existing order tracking</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <form onSubmit={handleVerifyOtp} className="space-y-4">
-              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-emerald-900 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>SMS sent to {phoneNumber}</span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      resetRecaptcha().catch(() => {});
-                      setStep('phone');
-                    }}
-                    className="text-[11px] font-bold text-emerald-700 hover:underline"
-                  >
-                    Change
-                  </button>
-                </div>
-
-                {isSparkPlanNotice && (
-                  <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-900 leading-snug space-y-1">
-                    <div className="font-bold flex items-center gap-1.5 text-amber-950">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                      <span>Firebase Spark Plan Notice</span>
-                    </div>
-                    <p className="text-[10.5px] text-amber-800">
-                      Real telco SMS in Firebase requires the Blaze (pay-as-you-go) plan or Firebase test numbers. We generated your instant verification code below so you can proceed smoothly!
-                    </p>
-                  </div>
-                )}
-
-                {isFirebasePhoneActive ? (
-                  <p className="text-[11px] text-emerald-800">
-                    Firebase Phone Auth SMS dispatched via invisible reCAPTCHA. Please check your phone for the 6-digit verification code.
-                  </p>
-                ) : (
-                  <div className="flex items-center justify-between pt-1 border-t border-emerald-200">
-                    <span className="text-[11px] text-emerald-800">
-                      Verification Code:{' '}
-                      <strong className="font-mono bg-emerald-200 text-emerald-950 px-1.5 py-0.5 rounded">
-                        {demoCodeHint || '1234'}
-                      </strong>
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setOtpCode(demoCodeHint || '1234')}
-                      className="text-[11px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded shadow-2xs border border-emerald-300 hover:bg-emerald-100 transition-colors cursor-pointer"
-                    >
-                      Auto-Fill OTP
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-zinc-800 mb-1.5">
-                  Enter Verification Code (OTP)
-                </label>
-                <input
-                  type="text"
-                  maxLength={6}
-                  placeholder={isFirebasePhoneActive ? "6-digit SMS code" : "e.g. 1234"}
-                  value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                  autoFocus
-                  className="w-full text-center tracking-[0.4em] text-xl font-mono font-bold py-3 px-4 bg-zinc-50 border border-zinc-300 rounded-xl text-zinc-950 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white"
-                />
-              </div>
-
-              <div className="space-y-2 pt-1 border-t border-zinc-100">
-                <span className="text-[11px] font-semibold text-zinc-600 block">
-                  Customer Details (Optional for new users)
-                </span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <div className="relative">
-                    <User className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-3 pointer-events-none" />
-                    <input
-                      type="text"
-                      placeholder="Your Full Name"
-                      value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
-                      className="w-full pl-8 pr-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-orange-500"
-                    />
-                  </div>
-                  <div className="relative">
-                    <Mail className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-3 pointer-events-none" />
-                    <input
-                      type="email"
-                      placeholder="Email (for receipts)"
-                      value={customerEmail}
-                      onChange={(e) => setCustomerEmail(e.target.value)}
-                      className="w-full pl-8 pr-3 py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-orange-500"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isVerifying || !otpCode.trim()}
-                className="w-full py-3.5 px-4 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                {isVerifying ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Verifying OTP...</span>
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>Verify & Continue</span>
-                  </>
-                )}
-              </button>
-
-              <div className="text-center">
-                {timer > 0 ? (
-                  <span className="text-[11px] text-zinc-400">
-                    Resend OTP in <strong className="text-zinc-600">{timer}s</strong>
-                  </span>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => handleSendOtp()}
-                    className="text-[11px] text-orange-600 hover:underline font-bold"
-                  >
-                    Resend Verification Code
-                  </button>
-                )}
+                <span className="font-mono text-[10px]">apna-shoes-store</span>
               </div>
             </form>
           )}
 
-          <div className="text-center text-[10.5px] text-zinc-400 flex items-center justify-center gap-1.5 pt-2">
-            <Lock className="w-3 h-3 text-emerald-600" />
-            <span>Strict privacy — your orders are visible only on your phone number</span>
+          {/* TAB 2: MOBILE OTP LOGIN */}
+          {authTab === 'phone' && (
+            <>
+              {step === 'phone' ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-zinc-800 mb-1.5">
+                      Enter 10-Digit Mobile Number
+                    </label>
+                    <div className="relative flex items-center">
+                      <div className="absolute left-3 flex items-center gap-1.5 text-zinc-500 font-bold text-xs pointer-events-none border-r border-zinc-200 pr-2">
+                        <span className="text-sm">🇮🇳</span>
+                        <span>+91</span>
+                      </div>
+                      <input
+                        type="tel"
+                        maxLength={10}
+                        placeholder="98765 43210"
+                        value={phoneNumber.replace(/^\+91\s*/, '').replace(/\s+/g, '')}
+                        onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleSendOtp();
+                        }}
+                        autoFocus
+                        className="w-full pl-20 pr-4 py-3 bg-zinc-50 border border-zinc-300 rounded-xl text-sm font-semibold tracking-wider text-zinc-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    id="sign-in-button"
+                    onClick={() => handleSendOtp()}
+                    disabled={isSending || phoneNumber.replace(/\D/g, '').length < 10}
+                    className="w-full py-3.5 px-4 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                  >
+                    {isSending ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>Sending OTP SMS...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Send Verification Code</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleVerifyOtp} className="space-y-4">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-zinc-600">
+                      Code sent to <strong className="text-zinc-900">{phoneNumber}</strong>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setStep('phone')}
+                      className="text-orange-600 font-bold hover:underline"
+                    >
+                      Change
+                    </button>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-zinc-800 mb-1.5">
+                      Enter 4 or 6-Digit OTP
+                    </label>
+                    <input
+                      type="text"
+                      maxLength={6}
+                      placeholder="• • • •"
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                      autoFocus
+                      className="w-full px-4 py-3 bg-zinc-50 border border-zinc-300 rounded-xl text-center text-lg font-black tracking-widest text-zinc-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isVerifying || !otpCode.trim()}
+                    className="w-full py-3.5 px-4 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                  >
+                    {isVerifying ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>Verifying OTP...</span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>Verify & Continue</span>
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+            </>
+          )}
+
+          {/* Quick Demo Logins */}
+          <div className="pt-2 border-t border-zinc-100 flex items-center justify-center gap-2 text-xs">
+            <span className="text-zinc-400 text-[11px]">Quick Demo:</span>
+            <button
+              type="button"
+              onClick={() => {
+                loginAsDemoCustomer();
+                onClose();
+                if (onSuccess) onSuccess(redirectAfterLogin);
+              }}
+              className="px-2 py-1 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-md text-[10px] font-semibold"
+            >
+              Demo Rahul
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                loginAsDemoNewCustomer();
+                onClose();
+                if (onSuccess) onSuccess(redirectAfterLogin);
+              }}
+              className="px-2 py-1 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-md text-[10px] font-semibold"
+            >
+              New User
+            </button>
           </div>
         </div>
       </div>

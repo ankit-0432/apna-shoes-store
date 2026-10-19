@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { CartItem, Product, Coupon } from '../types/store.js';
 import { useStoreConfig } from './StoreConfigContext.js';
 import { api } from '../services/api.js';
+import { createShopifyCart } from '../services/shopify.js';
 
 interface CartContextType {
   items: CartItem[];
@@ -22,6 +23,9 @@ interface CartContextType {
   removeCoupon: () => void;
   totalItemsCount: number;
   toastMessage: string | null;
+  isCheckingOut: boolean;
+  shopifyCheckoutUrl: string | null;
+  proceedToShopifyCheckout: (customerAccessToken?: string) => Promise<string | null>;
 }
 
 const CartContext = createContext<CartContextType>({
@@ -43,6 +47,9 @@ const CartContext = createContext<CartContextType>({
   removeCoupon: () => {},
   totalItemsCount: 0,
   toastMessage: null,
+  isCheckingOut: false,
+  shopifyCheckoutUrl: null,
+  proceedToShopifyCheckout: async () => null,
 });
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -78,6 +85,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [couponDiscount, setCouponDiscount] = useState<number>(0);
   const [couponError, setCouponError] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [shopifyCheckoutUrl, setShopifyCheckoutUrl] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -90,6 +99,54 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setTimeout(() => {
       setToastMessage(null);
     }, 2800);
+  };
+
+  /**
+   * Generates a live Shopify Cart with all items and redirects customer to Shopify secure checkout
+   */
+  const proceedToShopifyCheckout = async (customerAccessToken?: string): Promise<string | null> => {
+    if (items.length === 0) {
+      showToast('Your shopping bag is empty!');
+      return null;
+    }
+
+    setIsCheckingOut(true);
+    try {
+      // Map line items to Shopify variants
+      const lines = items.map((i) => {
+        const isShopifyGid =
+          typeof i.variantId === 'string' &&
+          i.variantId.startsWith('gid://shopify/ProductVariant/');
+
+        // If it already has a Shopify Variant GID, use it. Otherwise use the primary Shopify active variant.
+        const merchandiseId = isShopifyGid
+          ? i.variantId
+          : 'gid://shopify/ProductVariant/44133447958591';
+
+        return {
+          merchandiseId,
+          quantity: Math.max(1, i.quantity),
+        };
+      });
+
+      const token =
+        customerAccessToken ||
+        localStorage.getItem('shopify_customer_token') ||
+        undefined;
+
+      const cart = await createShopifyCart(lines, token);
+      setShopifyCheckoutUrl(cart.checkoutUrl);
+
+      // Redirect immediately to Shopify's secure checkout
+      window.location.href = cart.checkoutUrl;
+      return cart.checkoutUrl;
+    } catch (err: any) {
+      console.error('[Shopify Checkout Redirection Error]:', err);
+      showToast(err.message || 'Unable to open Shopify checkout. Please try again.');
+      return null;
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
 
   const addToCart = (product: Product, size: string, color: string, quantity: number = 1) => {
@@ -231,6 +288,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         removeCoupon,
         totalItemsCount,
         toastMessage,
+        isCheckingOut,
+        shopifyCheckoutUrl,
+        proceedToShopifyCheckout,
       }}
     >
       {children}

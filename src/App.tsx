@@ -17,10 +17,12 @@ import { PoliciesPage } from './pages/PoliciesPage.js';
 import { AdminPortal } from './pages/admin/AdminPortal.js';
 import { AdminSecretModal } from './components/common/AdminSecretModal.js';
 import { MobileOtpModal } from './components/common/MobileOtpModal.js';
+import { AiCoFounderModal } from './components/common/AiCoFounderModal.js';
 import { api } from './services/api.js';
 import './services/firebase.js';
 import { subscribeToLiveProducts, seedProductsToFirestoreIfEmpty } from './services/firebaseSync.js';
 import { Product, Order } from './types/store.js';
+import { fetchShopifyProducts, mapShopifyProductToStoreProduct } from './services/shopify.js';
 
 function MainApp() {
   const { config } = useStoreConfig();
@@ -62,17 +64,45 @@ function MainApp() {
     };
   }, []);
 
-  // Load catalog on mount & seed Firestore
+
+  // Load catalog on mount (Shopify Storefront API direct + local catalog) & seed Firestore
   useEffect(() => {
     const loadCatalog = async () => {
       try {
-        const data = await api.getProducts();
-        setProducts(data);
-        if (data.length > 0 && !selectedProduct) {
-          setSelectedProduct(data[0]);
+        let shopifyProducts: Product[] = [];
+        try {
+          const shopifyNodes = await fetchShopifyProducts(50);
+          if (shopifyNodes && shopifyNodes.length > 0) {
+            shopifyProducts = shopifyNodes.map(mapShopifyProductToStoreProduct);
+          }
+        } catch (shopifyErr) {
+          console.warn('[Shopify Direct Catalog] Storefront fetch notice:', shopifyErr);
         }
-        // Seed initial products to Firestore if empty
-        seedProductsToFirestoreIfEmpty(data).catch(() => {});
+
+        let backendProducts: Product[] = [];
+        try {
+          backendProducts = await api.getProducts();
+        } catch (backendErr) {
+          console.warn('[Catalog Backend] fallback notice:', backendErr);
+        }
+
+        // Merge: prioritize live Shopify products at the top
+        const mergedMap = new Map<string, Product>();
+        shopifyProducts.forEach((p) => mergedMap.set(p.id, p));
+        backendProducts.forEach((p) => {
+          if (!mergedMap.has(p.id)) {
+            mergedMap.set(p.id, p);
+          }
+        });
+
+        const combinedList = Array.from(mergedMap.values());
+        if (combinedList.length > 0) {
+          setProducts(combinedList);
+          if (!selectedProduct) {
+            setSelectedProduct(combinedList[0]);
+          }
+          seedProductsToFirestoreIfEmpty(combinedList).catch(() => {});
+        }
       } catch (err) {
         console.error('Failed to load initial catalog:', err);
       } finally {
@@ -306,6 +336,9 @@ function MainApp() {
           handleNavigate('admin');
         }}
       />
+
+      {/* 24/7 APNA SHOES AI Co-Founder & Sneaker Stylist */}
+      <AiCoFounderModal />
     </div>
   );
 }
