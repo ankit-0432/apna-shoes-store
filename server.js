@@ -1,6 +1,7 @@
 // server.ts
 import express from "express";
 import path3 from "path";
+import fs3 from "fs";
 import crypto2 from "crypto";
 import { fileURLToPath as fileURLToPath3 } from "url";
 import dotenv from "dotenv";
@@ -1647,166 +1648,8 @@ All orders placed before 3:00 PM IST are dispatched on the same business day fro
   termsContent: `Prices are inclusive of 18% GST (Goods and Services Tax). We reserve the right to verify COD orders via automated OTP or phone confirmation before warehouse fulfillment.`,
   lastUpdated: "2026-03-30T10:00:00Z"
 };
-var initialOrders = [
-  {
-    id: "ord-101",
-    orderNumber: "APNA-2026-7842",
-    customerName: "Rahul Sharma",
-    customerEmail: "rahul.sharma@example.com",
-    customerPhone: "+91 98112 34567",
-    shippingAddress: {
-      id: "addr-1",
-      name: "Rahul Sharma",
-      phone: "+91 98112 34567",
-      flatHouse: "Flat 402, Tower B, Green Meadows",
-      streetLocality: "Sector 62",
-      landmark: "Near Fortis Hospital",
-      city: "Noida",
-      state: "Uttar Pradesh",
-      pincode: "201301",
-      country: "India",
-      addressType: "home"
-    },
-    billingAddress: {
-      id: "addr-1",
-      name: "Rahul Sharma",
-      phone: "+91 98112 34567",
-      flatHouse: "Flat 402, Tower B, Green Meadows",
-      streetLocality: "Sector 62",
-      city: "Noida",
-      state: "Uttar Pradesh",
-      pincode: "201301",
-      country: "India",
-      addressType: "home"
-    },
-    items: [
-      {
-        id: "oi-1",
-        productId: "prod-1",
-        variantId: "v-APNA-AG01-3",
-        productName: "Apna Air Glide 01 Sneaker",
-        sku: "APNA-AG01-UK8",
-        size: "UK 8",
-        color: "Jet Black / Solar Orange",
-        unitPrice: 1499,
-        quantity: 1,
-        totalPrice: 1499,
-        graphicType: "air-glide"
-      }
-    ],
-    subtotal: 1499,
-    discountAmount: 149.9,
-    couponCode: "APNA10",
-    taxAmount: 242.84,
-    shippingFee: 0,
-    totalAmount: 1349.1,
-    paymentMethod: "razorpay",
-    paymentStatus: "paid",
-    orderStatus: "delivered",
-    razorpayOrderId: "order_Nxd894210",
-    razorpayPaymentId: "pay_Nxd8949982",
-    deliveredAt: "2026-03-27T14:30:00Z",
-    returnDeadline: "2026-04-03T23:59:59Z",
-    shipment: {
-      id: "ship-101",
-      orderId: "ord-101",
-      courierName: "Shiprocket \u2014 Delhivery Air",
-      shipmentId: "SR-DEL-9842109",
-      awbCode: "784290123491",
-      status: "delivered",
-      trackingUrl: "https://shiprocket.co/tracking/784290123491",
-      estimatedDelivery: "2026-03-27T18:00:00Z",
-      actualDelivery: "2026-03-27T14:30:00Z",
-      events: [
-        {
-          id: "ev-1",
-          statusCode: "DL",
-          statusTitle: "Delivered",
-          location: "Noida Sector 62 Hub",
-          timestamp: "2026-03-27T14:30:00Z",
-          description: "Package handed over to customer (Signature verified)"
-        }
-      ]
-    },
-    createdAt: "2026-03-25T11:20:00Z",
-    updatedAt: "2026-03-27T14:30:00Z"
-  },
-  {
-    id: "ord-102",
-    orderNumber: "APNA-2026-8914",
-    customerName: "Priya Iyer",
-    customerEmail: "priya.iyer@example.com",
-    customerPhone: "+91 98450 12345",
-    shippingAddress: {
-      id: "addr-2",
-      name: "Priya Iyer",
-      phone: "+91 98450 12345",
-      flatHouse: "Apartment 12A, Sobha Windfall",
-      streetLocality: "Koramangala 4th Block",
-      city: "Bengaluru",
-      state: "Karnataka",
-      pincode: "560034",
-      country: "India",
-      addressType: "home"
-    },
-    billingAddress: {
-      id: "addr-2",
-      name: "Priya Iyer",
-      phone: "+91 98450 12345",
-      flatHouse: "Apartment 12A, Sobha Windfall",
-      streetLocality: "Koramangala 4th Block",
-      city: "Bengaluru",
-      state: "Karnataka",
-      pincode: "560034",
-      country: "India",
-      addressType: "home"
-    },
-    items: [
-      {
-        id: "oi-2",
-        productId: "prod-11",
-        variantId: "v-APNA-WN04-1",
-        productName: "Apna Metro Low Women Kicks",
-        sku: "APNA-WN04-UK6",
-        size: "UK 6",
-        color: "Chalk White / Soft Amber",
-        unitPrice: 1299,
-        quantity: 1,
-        totalPrice: 1299,
-        graphicType: "retro-dunk"
-      }
-    ],
-    subtotal: 1299,
-    discountAmount: 0,
-    taxAmount: 233.82,
-    shippingFee: 0,
-    totalAmount: 1299,
-    paymentMethod: "cod",
-    paymentStatus: "pending",
-    orderStatus: "shipped",
-    createdAt: "2026-03-28T14:15:00Z",
-    updatedAt: "2026-03-29T23:10:00Z"
-  }
-];
-var initialReturns = [
-  {
-    id: "ret-101",
-    orderId: "ord-101",
-    orderNumber: "APNA-2026-7842",
-    customerName: "Rahul Sharma",
-    customerEmail: "rahul.sharma@example.com",
-    customerPhone: "+91 98112 34567",
-    reason: "wrong_size",
-    reasonDetails: "Shoe is slightly snug on the toe box. Requesting size UK 9 instead of UK 8.",
-    status: "pickup_scheduled",
-    returnDeadline: "2026-04-03T23:59:59Z",
-    pickupDate: "2026-03-31T11:00:00Z",
-    refundAmount: 1349.1,
-    adminNotes: "Size replacement approved; courier pickup assigned via Shiprocket reverse logistics.",
-    createdAt: "2026-03-28T16:00:00Z",
-    updatedAt: "2026-03-29T09:30:00Z"
-  }
-];
+var initialOrders = [];
+var initialReturns = [];
 var initialFlipkartMappings = [
   {
     id: "fk-1",
@@ -3863,6 +3706,95 @@ Tone & Style:
           cartId: data.cartCreate?.cart?.id,
           checkoutUrl: data.cartCreate?.cart?.checkoutUrl
         }
+      });
+    } catch (e) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+  app.get("/api/shopify/export-csv", (_req, res) => {
+    try {
+      const csvPath = path3.resolve(process.cwd(), "public", "apna_shoes_shopify_products.csv");
+      if (fs3.existsSync(csvPath)) {
+        res.setHeader("Content-Type", "text/csv");
+        res.setHeader("Content-Disposition", 'attachment; filename="apna_shoes_shopify_products.csv"');
+        return fs3.createReadStream(csvPath).pipe(res);
+      }
+      const dataCsvPath = path3.resolve(process.cwd(), "data", "shopify_products_export.csv");
+      if (fs3.existsSync(dataCsvPath)) {
+        res.setHeader("Content-Type", "text/csv");
+        res.setHeader("Content-Disposition", 'attachment; filename="apna_shoes_shopify_products.csv"');
+        return fs3.createReadStream(dataCsvPath).pipe(res);
+      }
+      res.status(404).json({ success: false, error: "Shopify CSV not yet generated" });
+    } catch (e) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+  app.post("/api/shopify/push-all-products", async (req, res) => {
+    try {
+      const adminToken = req.body?.adminAccessToken || process.env.SHOPIFY_ADMIN_ACCESS_TOKEN;
+      const { domain } = getShopifyEnv();
+      if (!adminToken) {
+        return res.json({
+          success: false,
+          requireAdminToken: true,
+          message: "Shopify Admin API token required for automated background push. Alternatively, use the 1-Click CSV Import file which is already generated and ready for direct upload in Shopify Admin.",
+          csvDownloadUrl: "/apna_shoes_shopify_products.csv"
+        });
+      }
+      const catalog = DB.getProducts().filter(
+        (p) => !p.id.startsWith("shopify-") && p.name !== "TEST APMNA SHOES"
+      );
+      let createdCount = 0;
+      const errors = [];
+      for (const p of catalog.slice(0, 10)) {
+        try {
+          const payload = {
+            product: {
+              title: p.name,
+              body_html: `<p>${p.description}</p><p><strong>Brand:</strong> APNA SHOES<br/><strong>Gender:</strong> ${p.gender}<br/><strong>Made in India</strong></p>`,
+              vendor: p.brand || "APNA SHOES",
+              product_type: p.categorySlug || "Footwear",
+              tags: `${p.gender}, ${p.categorySlug}, ${p.badge || ""}, APNA SHOES`,
+              images: (p.images || []).map((src) => ({ src })),
+              variants: (p.variants || []).map((v, idx) => ({
+                option1: v.size,
+                option2: v.colorName || "Standard",
+                price: String(p.sellingPrice),
+                compare_at_price: String(p.originalPrice || p.sellingPrice),
+                sku: v.sku || `${p.sku}-${idx + 1}`,
+                inventory_management: "shopify",
+                inventory_quantity: v.stockQuantity || 20
+              })),
+              options: [
+                { name: "Size", values: (p.variants || []).map((v) => v.size) },
+                { name: "Color", values: Array.from(new Set((p.variants || []).map((v) => v.colorName || "Standard"))) }
+              ]
+            }
+          };
+          const resp = await fetch(`https://${domain}/admin/api/2026-10/products.json`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Shopify-Access-Token": adminToken
+            },
+            body: JSON.stringify(payload)
+          });
+          if (resp.ok) {
+            createdCount++;
+          } else {
+            const errBody = await resp.text();
+            errors.push(`${p.name}: ${errBody.slice(0, 80)}`);
+          }
+        } catch (itemErr) {
+          errors.push(`${p.name}: ${itemErr.message}`);
+        }
+      }
+      res.json({
+        success: true,
+        createdCount,
+        errors: errors.length > 0 ? errors : void 0,
+        message: `Successfully created ${createdCount} products in Shopify Admin!`
       });
     } catch (e) {
       res.status(500).json({ success: false, error: e.message });

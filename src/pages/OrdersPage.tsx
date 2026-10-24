@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Truck, FileText, RotateCcw, AlertCircle, Clock, Copy, Check, ExternalLink, Phone, ShieldCheck } from 'lucide-react';
+import { Package, Truck, FileText, RotateCcw, AlertCircle, Clock, Copy, Check, ExternalLink, Phone, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.js';
 import { api } from '../services/api.js';
 import { Order } from '../types/store.js';
@@ -193,36 +193,36 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onNavigate }) => {
       {!user ? (
         <div className="bg-white rounded-3xl border border-zinc-200 p-10 sm:p-14 text-center space-y-4 max-w-lg mx-auto shadow-xs">
           <div className="w-14 h-14 bg-orange-50 border border-orange-200 text-orange-600 rounded-2xl flex items-center justify-center mx-auto">
-            <Phone className="w-7 h-7" />
+            <Package className="w-7 h-7" />
           </div>
           <div>
-            <h3 className="text-lg font-black text-zinc-950 font-display">Sign In to View Your Orders</h3>
+            <h3 className="text-lg font-black text-zinc-950 font-display">Sign In Required to View Orders</h3>
             <p className="text-xs text-zinc-500 mt-1.5 max-w-md mx-auto leading-relaxed">
-              To protect customer privacy, each account only displays its own orders. Please sign in with your 10-digit mobile number and OTP.
+              To protect customer privacy and security, order history and saved delivery addresses are only visible after logging in to your verified account.
             </p>
           </div>
           <button
-            onClick={() => openLoginModal('my-orders', 'Sign in with your mobile number to view your orders')}
-            className="px-6 py-3 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer inline-flex items-center gap-2"
+            onClick={() => openLoginModal('my-orders', 'Sign in to access your order history and live delivery tracking')}
+            className="px-6 py-3 bg-zinc-950 hover:bg-zinc-800 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer inline-flex items-center gap-2"
           >
-            <Phone className="w-4 h-4" />
-            <span>Sign In with Mobile OTP</span>
+            <CheckCircle2 className="w-4 h-4 text-orange-400" />
+            <span>Sign In to Your Account</span>
           </button>
         </div>
       ) : loading ? (
-        <div className="p-12 text-center text-xs text-zinc-400">Loading your orders...</div>
-      ) : orders.length === 0 ? (
+        <div className="p-12 text-center text-xs text-zinc-400">Loading your verified orders...</div>
+      ) : orders.length === 0 && shopifyOrders.length === 0 ? (
         <div className="bg-white rounded-2xl border border-zinc-200 p-12 text-center space-y-3">
           <Package className="w-10 h-10 text-zinc-300 mx-auto" />
-          <h3 className="text-base font-bold text-zinc-900">No Orders Placed on This Mobile Number</h3>
+          <h3 className="text-base font-bold text-zinc-900">No Orders Placed Yet</h3>
           <p className="text-xs text-zinc-500 max-w-sm mx-auto">
-            Logged in as <strong>{user.phone || user.name}</strong>. You have not placed any footwear orders yet.
+            Logged in as <strong>{shopifyCustomer?.email || user.phone || user.name}</strong>. No orders have been placed on this account yet.
           </p>
           <button
             onClick={() => onNavigate('all')}
             className="mt-2 px-5 py-2.5 bg-zinc-950 text-white font-bold text-xs rounded-xl hover:bg-zinc-800 transition-colors"
           >
-            Explore Catalog
+            Explore Footwear Catalog
           </button>
         </div>
       ) : (

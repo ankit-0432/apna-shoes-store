@@ -461,5 +461,14 @@ export const api = {
     if (!json.success) throw new Error(json.error || 'Failed to create Shopify checkout');
     return json.data;
   },
+
+  async pushProductsToShopify(adminAccessToken?: string) {
+    const res = await fetch(`${API_BASE}/shopify/push-all-products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ adminAccessToken }),
+    });
+    return await res.json();
+  },
 };
 

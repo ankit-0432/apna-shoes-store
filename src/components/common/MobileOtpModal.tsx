@@ -31,8 +31,6 @@ interface MobileOtpModalProps {
 export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const {
     loginWithPhone,
-    loginAsDemoCustomer,
-    loginAsDemoNewCustomer,
     loginReasonMessage,
     redirectAfterLogin,
     loginWithShopify,
@@ -60,7 +58,6 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
   const [isSending, setIsSending] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [demoCodeHint, setDemoCodeHint] = useState<string | null>('1234');
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   const [timer, setTimer] = useState(30);
 
@@ -153,13 +150,11 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
       try {
         const confirmation = await sendFirebasePhoneOtp(clean, verifier);
         setConfirmationResult(confirmation);
-        setDemoCodeHint(null);
         setStep('otp');
         setTimer(60);
       } catch (fbErr: any) {
-        // Fallback to local OTP
-        const res = await api.sendOtp(clean);
-        setDemoCodeHint(res.demoOtp || (res as any).demoCode || '1234');
+        // Fallback to local SMS OTP
+        await api.sendOtp(clean);
         setStep('otp');
         setTimer(30);
       }
@@ -502,32 +497,7 @@ export const MobileOtpModal: React.FC<MobileOtpModalProps> = ({ isOpen, onClose,
             </>
           )}
 
-          {/* Quick Demo Logins */}
-          <div className="pt-2 border-t border-zinc-100 flex items-center justify-center gap-2 text-xs">
-            <span className="text-zinc-400 text-[11px]">Quick Demo:</span>
-            <button
-              type="button"
-              onClick={() => {
-                loginAsDemoCustomer();
-                onClose();
-                if (onSuccess) onSuccess(redirectAfterLogin);
-              }}
-              className="px-2 py-1 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-md text-[10px] font-semibold"
-            >
-              Demo Rahul
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                loginAsDemoNewCustomer();
-                onClose();
-                if (onSuccess) onSuccess(redirectAfterLogin);
-              }}
-              className="px-2 py-1 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-md text-[10px] font-semibold"
-            >
-              New User
-            </button>
-          </div>
+
         </div>
       </div>
     </div>

@@ -174,6 +174,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [loadingShopify, setLoadingShopify] = useState(false);
   const [syncingShopify, setSyncingShopify] = useState(false);
   const [shopifyMessage, setShopifyMessage] = useState<string | null>(null);
+  const [adminApiToken, setAdminApiToken] = useState('');
+  const [pushingToShopify, setPushingToShopify] = useState(false);
+  const [pushResult, setPushResult] = useState<any>(null);
 
 
   // Data states
@@ -828,6 +831,25 @@ APNA-WN-SAMPLE,"Apna Metro Low Women",womens-sneakers,women,1299,2199,41%,20,"Tr
       setShopifyMessage(`Sync error: ${err.message}`);
     } finally {
       setSyncingShopify(false);
+    }
+  };
+
+  const handlePushToShopify = async () => {
+    setPushingToShopify(true);
+    setPushResult(null);
+    try {
+      const res = await api.pushProductsToShopify(adminApiToken.trim() || undefined);
+      setPushResult(res);
+      if (res.success) {
+        showFeedback(`Successfully pushed ${res.createdCount} products to Shopify!`);
+        fetchShopifyInfo();
+      } else {
+        showFeedback(res.message || 'Push failed. Please check Admin API token.', 'error');
+      }
+    } catch (err: any) {
+      showFeedback(err.message || 'Failed to push products to Shopify', 'error');
+    } finally {
+      setPushingToShopify(false);
     }
   };
 
@@ -2660,6 +2682,139 @@ APNA-WN-SAMPLE,"Apna Metro Low Women",womens-sneakers,women,1299,2199,41%,20,"Tr
                     <span>{shopifyMessage}</span>
                   </div>
                 )}
+              </div>
+
+              {/* CARD 1: EXPORT ALL SITE PRODUCTS TO SHOPIFY */}
+              <div className="bg-gradient-to-br from-zinc-900 to-zinc-950 text-white p-6 sm:p-7 rounded-2xl border border-zinc-800 shadow-lg space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-zinc-800">
+                  <div>
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase bg-orange-600 text-white">
+                      Shopify Bulk Importer
+                    </span>
+                    <h3 className="text-lg font-black mt-1 font-display flex items-center gap-2">
+                      <span>Add All 54 Shoes to Your Shopify Store</span>
+                    </h3>
+                    <p className="text-xs text-zinc-400 mt-1">
+                      Export your entire footwear catalog with photos, UK shoe sizes (5, 6, 7, 8, 9, 10), prices, and stock directly into Shopify.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Method A: Instant 1-Click CSV Upload (Official & Recommended) */}
+                  <div className="bg-zinc-800/80 p-5 rounded-xl border border-zinc-700/60 space-y-3.5 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-full bg-emerald-500 text-black text-xs font-black flex items-center justify-center">1</span>
+                        <h4 className="text-sm font-bold text-white">Instant 1-Click CSV Import (Recommended)</h4>
+                      </div>
+                      <p className="text-xs text-zinc-300 mt-2 leading-relaxed">
+                        We generated the official Shopify CSV containing all 54 footwear models, colorways, UK sizes, MRP, and Unsplash CDN photos.
+                      </p>
+                      <div className="mt-3 p-3 bg-zinc-900 rounded-lg text-[11px] text-zinc-400 space-y-1">
+                        <p><strong>Step 1:</strong> Download the pre-formatted CSV below.</p>
+                        <p><strong>Step 2:</strong> Go to <a href={`https://${shopifyStatus?.domain || 'apna-shoes-store.myshopify.com'}/admin/products`} target="_blank" rel="noopener noreferrer" className="text-orange-400 underline font-bold">Shopify Admin → Products → Import</a>.</p>
+                        <p><strong>Step 3:</strong> Upload the file and click <em>"Import products"</em>. Done!</p>
+                      </div>
+                    </div>
+
+                    <a
+                      href="/apna_shoes_shopify_products.csv"
+                      download="apna_shoes_shopify_products.csv"
+                      className="w-full py-3 px-4 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer text-center"
+                    >
+                      <Package className="w-4 h-4" />
+                      <span>Download Shopify CSV (54 Shoes & Variants)</span>
+                    </a>
+                  </div>
+
+                  {/* Method B: Automated Admin API Push */}
+                  <div className="bg-zinc-800/80 p-5 rounded-xl border border-zinc-700/60 space-y-3.5 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-full bg-orange-500 text-white text-xs font-black flex items-center justify-center">2</span>
+                        <h4 className="text-sm font-bold text-white">Auto-Push via Shopify Admin API</h4>
+                      </div>
+                      <p className="text-xs text-zinc-300 mt-2 leading-relaxed">
+                        If you created a Custom App in Shopify Admin with <code className="text-orange-400 font-mono">write_products</code> permission, enter your Admin token here:
+                      </p>
+                      <div className="mt-3 space-y-2">
+                        <input
+                          type="password"
+                          placeholder="shpat_xxxxxxxxxxxxxxxxxxxxxxxx"
+                          value={adminApiToken}
+                          onChange={(e) => setAdminApiToken(e.target.value)}
+                          className="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-xs font-mono text-white focus:outline-none focus:border-orange-500"
+                        />
+                        <p className="text-[10px] text-zinc-500">
+                          Shopify Admin → Settings → Apps and sales channels → Develop apps
+                        </p>
+                      </div>
+                    </div>
+
+                    <div>
+                      {pushResult && (
+                        <div className={`p-2.5 mb-2 rounded-lg text-xs font-semibold ${pushResult.success ? 'bg-emerald-900/60 text-emerald-200' : 'bg-red-900/60 text-red-200'}`}>
+                          {pushResult.message}
+                        </div>
+                      )}
+                      <button
+                        onClick={handlePushToShopify}
+                        disabled={pushingToShopify}
+                        className="w-full py-3 px-4 bg-zinc-700 hover:bg-zinc-600 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                      >
+                        {pushingToShopify ? (
+                          <>
+                            <RefreshCw className="w-4 h-4 animate-spin text-orange-400" />
+                            <span>Pushing Shoes to Shopify...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Store className="w-4 h-4 text-orange-400" />
+                            <span>Auto-Push All Products to Shopify</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* CARD 2: SHOPIFY REAL CUSTOMER ACCOUNTS SETUP GUIDE */}
+              <div className="bg-white p-6 rounded-2xl border border-zinc-200 shadow-xs space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b border-zinc-100">
+                  <ShieldCheck className="w-5 h-5 text-emerald-600" />
+                  <div>
+                    <h3 className="text-sm font-bold text-zinc-900">How to Enable Real Customer Login in Shopify Admin</h3>
+                    <p className="text-xs text-zinc-500">Step-by-step instructions to turn on Customer Accounts on apna-shoes-store.myshopify.com</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                  <div className="p-4 bg-zinc-50 rounded-xl border border-zinc-200 space-y-2">
+                    <span className="w-6 h-6 rounded-full bg-orange-600 text-white font-black text-xs flex items-center justify-center">1</span>
+                    <strong className="block text-zinc-900">Open Customer Accounts Settings</strong>
+                    <p className="text-zinc-600">
+                      Login to <a href="https://apna-shoes-store.myshopify.com/admin/settings/customer_accounts" target="_blank" rel="noopener noreferrer" className="text-orange-600 underline font-bold">Shopify Admin → Settings → Customer accounts</a>.
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-zinc-50 rounded-xl border border-zinc-200 space-y-2">
+                    <span className="w-6 h-6 rounded-full bg-orange-600 text-white font-black text-xs flex items-center justify-center">2</span>
+                    <strong className="block text-zinc-900">Toggle "Show Login Link" ON</strong>
+                    <p className="text-zinc-600">
+                      Check the box <strong>"Show login link in header of online store and checkout"</strong>.
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-zinc-50 rounded-xl border border-zinc-200 space-y-2">
+                    <span className="w-6 h-6 rounded-full bg-orange-600 text-white font-black text-xs flex items-center justify-center">3</span>
+                    <strong className="block text-zinc-900">Select Classic Accounts</strong>
+                    <p className="text-zinc-600">
+                      Choose <strong>"Classic customer accounts"</strong> (or New accounts). Classic accounts allow customers to log in using their email and password via Storefront API. Click <strong>Save</strong>.
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* Shopify Catalog Products View */}

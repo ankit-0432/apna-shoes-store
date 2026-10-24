@@ -35,34 +35,39 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onOrderSuccess, onNa
     proceedToShopifyCheckout,
     isCheckingOut,
   } = useCart();
-  const { user, openLoginModal } = useAuth();
+  const { user, openLoginModal, shopifyCustomer } = useAuth();
   const { config } = useStoreConfig();
 
   // Form State
   const [formData, setFormData] = useState({
-    name: user?.name || '',
-    phone: user?.phone || '',
-    email: user?.email || '',
-    flatHouse: user?.id === 'usr-customer-1' ? 'Flat 402, Tower B, Green Meadows' : '',
-    streetLocality: user?.id === 'usr-customer-1' ? 'Sector 62' : '',
-    landmark: user?.id === 'usr-customer-1' ? 'Near Fortis Hospital' : '',
-    city: user?.id === 'usr-customer-1' ? 'Noida' : '',
-    state: user?.id === 'usr-customer-1' ? 'Uttar Pradesh' : '',
-    pincode: user?.id === 'usr-customer-1' ? '201301' : '',
-    deliveryInstructions: 'Leave package with security gate if unavailable',
+    name: user?.name || (shopifyCustomer ? `${shopifyCustomer.firstName} ${shopifyCustomer.lastName}`.trim() : ''),
+    phone: user?.phone || shopifyCustomer?.phone || '',
+    email: user?.email || shopifyCustomer?.email || '',
+    flatHouse: shopifyCustomer?.defaultAddress?.address1 || '',
+    streetLocality: shopifyCustomer?.defaultAddress?.address2 || '',
+    landmark: '',
+    city: shopifyCustomer?.defaultAddress?.city || '',
+    state: shopifyCustomer?.defaultAddress?.province || '',
+    pincode: shopifyCustomer?.defaultAddress?.zip || '',
+    deliveryInstructions: '',
     sameBilling: true,
   });
 
   useEffect(() => {
-    if (user) {
+    if (user || shopifyCustomer) {
       setFormData((prev) => ({
         ...prev,
-        name: prev.name || user.name || '',
-        phone: user.phone || prev.phone || '',
-        email: user.email || prev.email || '',
+        name: prev.name || user?.name || (shopifyCustomer ? `${shopifyCustomer.firstName} ${shopifyCustomer.lastName}`.trim() : ''),
+        phone: prev.phone || user?.phone || shopifyCustomer?.phone || '',
+        email: prev.email || user?.email || shopifyCustomer?.email || '',
+        flatHouse: prev.flatHouse || shopifyCustomer?.defaultAddress?.address1 || '',
+        streetLocality: prev.streetLocality || shopifyCustomer?.defaultAddress?.address2 || '',
+        city: prev.city || shopifyCustomer?.defaultAddress?.city || '',
+        state: prev.state || shopifyCustomer?.defaultAddress?.province || '',
+        pincode: prev.pincode || shopifyCustomer?.defaultAddress?.zip || '',
       }));
     }
-  }, [user]);
+  }, [user, shopifyCustomer]);
 
   const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>('razorpay');
   const [isSubmitting, setIsSubmitting] = useState(false);

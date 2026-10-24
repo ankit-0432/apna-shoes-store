@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import path from 'path';
+import fs from 'fs';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -1116,6 +1117,107 @@ Tone & Style:
           cartId: data.cartCreate?.cart?.id,
           checkoutUrl: data.cartCreate?.cart?.checkoutUrl,
         },
+      });
+    } catch (e: any) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+
+  // Download Shopify bulk import CSV
+  app.get('/api/shopify/export-csv', (_req: Request, res: Response) => {
+    try {
+      const csvPath = path.resolve(process.cwd(), 'public', 'apna_shoes_shopify_products.csv');
+      if (fs.existsSync(csvPath)) {
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename="apna_shoes_shopify_products.csv"');
+        return fs.createReadStream(csvPath).pipe(res);
+      }
+      const dataCsvPath = path.resolve(process.cwd(), 'data', 'shopify_products_export.csv');
+      if (fs.existsSync(dataCsvPath)) {
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename="apna_shoes_shopify_products.csv"');
+        return fs.createReadStream(dataCsvPath).pipe(res);
+      }
+      res.status(404).json({ success: false, error: 'Shopify CSV not yet generated' });
+    } catch (e: any) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+
+  // Automated push to Shopify Admin API (using shpat_ Admin token if configured)
+  app.post('/api/shopify/push-all-products', async (req: Request, res: Response) => {
+    try {
+      const adminToken = req.body?.adminAccessToken || process.env.SHOPIFY_ADMIN_ACCESS_TOKEN;
+      const { domain } = getShopifyEnv();
+
+      if (!adminToken) {
+        return res.json({
+          success: false,
+          requireAdminToken: true,
+          message: 'Shopify Admin API token required for automated background push. Alternatively, use the 1-Click CSV Import file which is already generated and ready for direct upload in Shopify Admin.',
+          csvDownloadUrl: '/apna_shoes_shopify_products.csv',
+        });
+      }
+
+      // Read catalog products to push
+      const catalog = DB.getProducts().filter(
+        (p) => !p.id.startsWith('shopify-') && p.name !== 'TEST APMNA SHOES'
+      );
+
+      let createdCount = 0;
+      const errors: string[] = [];
+
+      for (const p of catalog.slice(0, 10)) { // batch push
+        try {
+          const payload = {
+            product: {
+              title: p.name,
+              body_html: `<p>${p.description}</p><p><strong>Brand:</strong> APNA SHOES<br/><strong>Gender:</strong> ${p.gender}<br/><strong>Made in India</strong></p>`,
+              vendor: p.brand || 'APNA SHOES',
+              product_type: p.categorySlug || 'Footwear',
+              tags: `${p.gender}, ${p.categorySlug}, ${p.badge || ''}, APNA SHOES`,
+              images: (p.images || []).map((src) => ({ src })),
+              variants: (p.variants || []).map((v, idx) => ({
+                option1: v.size,
+                option2: v.colorName || 'Standard',
+                price: String(p.sellingPrice),
+                compare_at_price: String(p.originalPrice || p.sellingPrice),
+                sku: v.sku || `${p.sku}-${idx + 1}`,
+                inventory_management: 'shopify',
+                inventory_quantity: v.stockQuantity || 20,
+              })),
+              options: [
+                { name: 'Size', values: (p.variants || []).map((v) => v.size) },
+                { name: 'Color', values: Array.from(new Set((p.variants || []).map((v) => v.colorName || 'Standard'))) },
+              ],
+            },
+          };
+
+          const resp = await fetch(`https://${domain}/admin/api/2026-10/products.json`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Shopify-Access-Token': adminToken,
+            },
+            body: JSON.stringify(payload),
+          });
+
+          if (resp.ok) {
+            createdCount++;
+          } else {
+            const errBody = await resp.text();
+            errors.push(`${p.name}: ${errBody.slice(0, 80)}`);
+          }
+        } catch (itemErr: any) {
+          errors.push(`${p.name}: ${itemErr.message}`);
+        }
+      }
+
+      res.json({
+        success: true,
+        createdCount,
+        errors: errors.length > 0 ? errors : undefined,
+        message: `Successfully created ${createdCount} products in Shopify Admin!`,
       });
     } catch (e: any) {
       res.status(500).json({ success: false, error: e.message });

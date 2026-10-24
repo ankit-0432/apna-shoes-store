@@ -187,13 +187,12 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, currentView }) => {
           {/* Sign In or Account Dropdown */}
           {!user ? (
             <button
-              onClick={() => openLoginModal(undefined, 'Sign in with your mobile number to view your orders and track shipments')}
+              onClick={() => openLoginModal(undefined, 'Sign in to access your orders, profile, and fast Shopify checkout')}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-zinc-100 hover:bg-orange-50 hover:text-orange-600 text-zinc-900 border border-zinc-200 transition-all cursor-pointer"
-              title="Sign in with mobile number and OTP"
+              title="Sign in to your account"
             >
-              <Phone className="w-3.5 h-3.5 text-orange-600" />
-              <span className="hidden sm:inline">Sign In / OTP</span>
-              <span className="sm:hidden text-[11px]">Sign In</span>
+              <UserIcon className="w-3.5 h-3.5 text-orange-600" />
+              <span>Sign In</span>
             </button>
           ) : (
             <div className="relative">

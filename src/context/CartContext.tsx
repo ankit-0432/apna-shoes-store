@@ -57,27 +57,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [items, setItems] = useState<CartItem[]>(() => {
     try {
       const saved = localStorage.getItem('apna_cart');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed.filter((i: any) => i && i.id !== 'ci-init-1');
+        }
+      }
     } catch (e) {}
-    // Seed an initial sneaker in cart for immediate checkout test
-    return [
-      {
-        id: 'ci-init-1',
-        productId: 'prod-1',
-        productName: 'Apna Air Glide 01 Sneaker',
-        productSlug: 'apna-air-glide-01-sneaker',
-        brand: 'APNA SHOES',
-        variantId: 'v-1-2',
-        size: 'UK 8',
-        color: 'Jet Black / Solar Orange',
-        colorHex: '#FF5A1F',
-        price: 1499,
-        originalPrice: 2799,
-        quantity: 1,
-        graphicType: 'air-glide',
-        stockAvailable: 38,
-      },
-    ];
+    return [];
   });
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);

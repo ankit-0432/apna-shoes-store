@@ -10,7 +10,7 @@ interface TrackOrderPageProps {
 }
 
 export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({ initialOrderNumber, onNavigate }) => {
-  const [query, setQuery] = useState(initialOrderNumber || 'APNA-2026-7842');
+  const [query, setQuery] = useState(initialOrderNumber || '');
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,8 +67,6 @@ export const TrackOrderPage: React.FC<TrackOrderPageProps> = ({ initialOrderNumb
   useEffect(() => {
     if (initialOrderNumber) {
       fetchOrderTracking(initialOrderNumber);
-    } else {
-      fetchOrderTracking('APNA-2026-7842');
     }
   }, [initialOrderNumber]);
 
